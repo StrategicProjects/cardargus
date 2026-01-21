@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="500" height="550" viewBox="0 0 500 550">
+  <defs>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&amp;display=swap");
+      .card-title { font-family: "Jost", sans-serif; font-weight: 700; font-size: 28px; fill: white; }
+      .field-label { font-family: "Jost", sans-serif; font-weight: 600; font-size: 11px; fill: white; }
+      .field-value { font-family: "Jost", sans-serif; font-weight: 400; font-size: 11px; fill: #212529; }
+      .footer-text { font-family: "Jost", sans-serif; font-style: italic; font-size: 8px; fill: white; opacity: 0.8; }
+      .badge-text { font-family: "Jost", sans-serif; font-size: 10px; }
+    </style>
+    <!-- Badge clip paths -->
+    <clipPath id="badge1-clip">
+      <rect width="62" height="20" rx="3" ry="3"/>
+    </clipPath>
+    <clipPath id="badge2-clip">
+      <rect width="170" height="20" rx="3" ry="3"/>
+    </clipPath>
+    <clipPath id="badge3-clip">
+      <rect width="190" height="20" rx="3" ry="3"/>
+    </clipPath>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="500" height="550" rx="8" fill="#fab255"/>
+  
+  <!-- Title -->
+  <text x="20" y="45" class="card-title">FAR</text>
+  
+  <!-- Badges Row -->
+  <g transform="translate(20, 60)">
+    
+    <!-- UH Badge -->
+    <g>
+      <g clip-path="url(#badge1-clip)">
+        <rect width="28" height="20" fill="#555"/>
+        <rect x="28" width="34" height="20" fill="white"/>
+      </g>
+      <text x="14" y="10" class="badge-text" fill="white" text-anchor="middle" dominant-baseline="middle">UH</text>
+      <text x="45" y="10" class="badge-text" fill="#333" text-anchor="middle" dominant-baseline="middle">192</text>
+    </g>
+    
+    <!-- Recurso Federal Badge -->
+    <g transform="translate(66, 0)">
+      <g clip-path="url(#badge2-clip)">
+        <rect width="90" height="20" fill="#555"/>
+        <rect x="90" width="80" height="20" fill="white"/>
+      </g>
+      <text x="45" y="10" class="badge-text" fill="white" text-anchor="middle" dominant-baseline="middle">Recurso Federal</text>
+      <text x="130" y="10" class="badge-text" fill="#333" text-anchor="middle" dominant-baseline="middle">36,4 milhões</text>
+    </g>
+    
+    <!-- Contrapartida Estadual Badge -->
+    <g transform="translate(240, 0)">
+      <g clip-path="url(#badge3-clip)">
+        <rect width="130" height="20" fill="#555"/>
+        <rect x="130" width="60" height="20" fill="white"/>
+      </g>
+      <text x="65" y="10" class="badge-text" fill="white" text-anchor="middle" dominant-baseline="middle">Contrapartida Estadual</text>
+      <text x="160" y="10" class="badge-text" fill="#333" text-anchor="middle" dominant-baseline="middle">0,0</text>
+    </g>
+  </g>
+  
+  <!-- Row 1: Empreendimento -->
+  <g transform="translate(20, 95)">
+    <!-- House Icon -->
+    <svg width="50" height="56" viewBox="0 0 572 564" fill="none">
+      <path d="M286.666 20.5544H286.667C288.134 21.715 288.135 21.7152 289.632 22.8992L289.749 22.991L296.055 27.8855C297.612 29.0963 297.62 29.102 299.224 30.3494L299.286 30.3982C303.942 33.9851 308.638 37.4306 313.189 40.7546V40.7556C321.461 46.8148 329.655 53.0311 337.908 59.3513L337.915 59.3552L337.921 59.3601C344.353 64.2774 350.827 69.114 357.341 73.8875C365.614 79.9503 373.812 86.1666 382.062 92.4851L382.068 92.49L382.074 92.4939C388.507 97.4112 394.981 102.248 401.494 107.021C409.767 113.084 417.965 119.3 426.216 125.619L426.223 125.624L426.229 125.629C432.661 130.546 439.135 135.381 445.647 140.154V140.155C455.07 147.062 464.394 154.154 473.814 161.36V161.361C477.79 164.402 481.786 167.427 485.808 170.431C490.661 174.058 495.497 177.743 500.38 181.478L500.382 181.479C507.012 186.55 513.763 191.711 520.628 196.791L523.576 198.963C525.209 200.168 526.818 201.371 528.404 202.582L528.463 202.627C533.293 206.281 538.402 209.786 544.27 212.95C547.924 215.038 550.174 216.439 551.839 217.864C552.719 218.617 553.229 219.211 553.545 219.699C554.612 226.321 554.459 233.408 554.206 242.494L554.204 242.543L554.203 242.593C554.126 246.06 554.128 249.524 554.14 252.824L554.153 256.064C554.164 263.428 554.097 270.804 553.974 278.204C553.791 289.17 553.734 300.108 553.706 310.974C553.658 328.506 553.512 346.045 553.304 363.599C553.1 380.713 552.944 397.833 552.85 414.958C552.844 415.915 552.838 417.197 552.832 418.186V418.187C552.786 426.524 552.743 434.86 552.7 443.194C552.522 478.111 552.171 511.279 551.815 545.753H21.2832C20.7333 493.984 20.5786 479.892 20.4639 462.669L20.3359 440.362L20.1943 415.014C20.1911 414.454 20.1792 412.399 20.1758 411.807V411.805L20.085 398.968C20.0155 390.411 19.9296 381.858 19.832 373.31L19.6777 360.494C19.4613 343.026 19.3339 325.556 19.2871 308.082V308.077L19.25 299.915C19.2077 293.111 19.1365 286.304 19.0312 279.492L18.9639 275.404C18.8433 268.123 18.8074 260.831 18.8369 253.517V253.508C18.8501 249.686 18.8353 245.777 18.7422 241.813L18.6973 240.111C18.5223 233.825 18.4012 229.443 18.3936 226.112C18.3865 223.051 18.4852 221.56 18.5771 220.816C18.6272 220.74 18.6858 220.648 18.7588 220.542C18.9536 220.258 19.175 219.946 19.457 219.556C22.9656 216.262 27.149 213.504 32.6768 210.43L32.8105 210.356L32.9414 210.28C38.8184 206.877 44.038 202.807 48.1201 199.693C49.7923 198.462 51.4636 197.236 53.1348 196.014L53.165 195.993L53.1943 195.97C60.023 190.936 66.7359 185.779 73.2754 180.769C79.5598 175.964 85.9122 171.229 92.3311 166.531L92.334 166.529C99.3183 161.415 106.203 156.196 113.013 150.852C120.322 145.117 127.778 139.528 135.377 133.967L135.391 133.957C142.144 129.004 148.787 123.974 155.348 118.948L155.349 118.949C163.393 112.788 171.512 106.72 179.708 100.714L179.716 100.708L179.725 100.702C186.417 95.7851 193.002 90.793 199.502 85.8152C207.547 79.6542 215.667 73.586 223.862 67.5798L223.878 67.5681C231.583 61.9076 239.15 56.1311 246.587 50.4353C253.736 44.9702 260.959 39.5928 268.253 34.2781L268.265 34.2693L268.275 34.2615C272.777 30.9703 277.275 27.5745 281.734 24.0115C283.011 22.9996 283.012 22.9988 284.314 21.9666L284.346 21.9412C285.02 21.4043 285.692 20.8622 286.364 20.3191C286.465 20.3971 286.565 20.476 286.666 20.5544Z" stroke="white" stroke-width="35"/>
+    </svg>
+    
+    <!-- Field -->
+    <g transform="translate(60, 0)">
+      <text x="0" y="10" class="field-label">Empreendimento</text>
+      <rect x="0" y="15" width="400" height="32" rx="4" fill="#f8f8ff" stroke="#dee2e6"/>
+      <text x="10" y="36" class="field-value">CAIARA II</text>
+    </g>
+  </g>
+  
+  <!-- Row 2: Endereço -->
+  <g transform="translate(20, 165)">
+    <text x="0" y="10" class="field-label">Endereço</text>
+    <rect x="0" y="15" width="460" height="48" rx="4" fill="#f8f8ff" stroke="#dee2e6"/>
+    <text x="10" y="34" class="field-value">Av. Maurício de Nassau, na Quadra compreendida pela Av. Maurício de Nassau,</text>
+    <text x="10" y="50" class="field-value">Av. Beira Rio e Faixa FA3, no bairro do Cordeiro, Recife</text>
+  </g>
+  
+  <!-- Row 3: Cidade + RD -->
+  <g transform="translate(20, 238)">
+    <g>
+      <text x="0" y="10" class="field-label">Cidade</text>
+      <rect x="0" y="15" width="220" height="32" rx="4" fill="#f8f8ff" stroke="#dee2e6"/>
+      <text x="10" y="36" class="field-value">Recife</text>
+    </g>
+    <g transform="translate(230, 0)">
+      <text x="0" y="10" class="field-label">RD</text>
+      <rect x="0" y="15" width="230" height="32" rx="4" fill="#f8f8ff" stroke="#dee2e6"/>
+      <text x="10" y="36" class="field-value">Metropolitana</text>
+    </g>
+  </g>
+  
+  <!-- Row 4: Proponente + Construtora -->
+  <g transform="translate(20, 298)">
+    <g>
+      <text x="0" y="10" class="field-label">Proponente</text>
+      <rect x="0" y="15" width="220" height="32" rx="4" fill="#f8f8ff" stroke="#dee2e6"/>
+      <text x="10" y="36" class="field-value">PREFEITURA DO RECIFE</text>
+    </g>
+    <g transform="translate(230, 0)">
+      <text x="0" y="10" class="field-label">Construtora</text>
+      <rect x="0" y="15" width="230" height="32" rx="4" fill="#f8f8ff" stroke="#dee2e6"/>
+      <text x="10" y="36" class="field-value">EXATA</text>
+    </g>
+  </g>
+  
+  <!-- Row 5: Status da Obra + Status da Contratação -->
+  <g transform="translate(20, 358)">
+    <g>
+      <text x="0" y="10" class="field-label">Status da Obra</text>
+      <rect x="0" y="15" width="220" height="32" rx="4" fill="#f8f8ff" stroke="#dee2e6"/>
+      <text x="10" y="36" class="field-value">Em andamento</text>
+    </g>
+    <g transform="translate(230, 0)">
+      <text x="0" y="10" class="field-label">Status da Contratação</text>
+      <rect x="0" y="15" width="230" height="32" rx="4" fill="#f8f8ff" stroke="#dee2e6"/>
+      <text x="10" y="36" class="field-value">Contratado</text>
+    </g>
+  </g>
+  
+  <!-- Row 6: Previsão + Percentual + Valor do Terreno -->
+  <g transform="translate(20, 418)">
+    <g>
+      <text x="0" y="10" class="field-label">Previsão de Entrega</text>
+      <rect x="0" y="15" width="140" height="32" rx="4" fill="#f8f8ff" stroke="#dee2e6"/>
+      <text x="10" y="36" class="field-value">mai/2026</text>
+    </g>
+    <g transform="translate(150, 0)">
+      <text x="0" y="10" class="field-label">Percentual Medido</text>
+      <rect x="0" y="15" width="140" height="32" rx="4" fill="#f8f8ff" stroke="#dee2e6"/>
+      <text x="10" y="36" class="field-value">0%</text>
+    </g>
+    <g transform="translate(300, 0)">
+      <text x="0" y="10" class="field-label">Valor do Terreno</text>
+      <rect x="0" y="15" width="160" height="32" rx="4" fill="#f8f8ff" stroke="#dee2e6"/>
+      <text x="10" y="36" class="field-value">0,0</text>
+    </g>
+  </g>
+  
+  <!-- Footer -->
+  <text x="20" y="490" class="footer-text">Atualizado em 9 de janeiro de 2026 às 09:09:08.</text>
+  
+  <!-- Logos -->
+  <g transform="translate(380, 15)">
+    <rect width="45" height="40" rx="4" fill="none" stroke="white" stroke-width="2"/>
+    <text x="22" y="18" font-family="Jost, sans-serif" font-size="7" fill="white" text-anchor="middle" font-weight="700">MORAR</text>
+    <text x="22" y="28" font-family="Jost, sans-serif" font-size="8" fill="white" text-anchor="middle" font-weight="700">BEM</text>
+    <text x="22" y="36" font-family="Jost, sans-serif" font-size="4" fill="white" text-anchor="middle">PERNAMBUCO</text>
+  </g>
+  
+  <g transform="translate(430, 15)">
+    <rect width="50" height="40" rx="4" fill="none" stroke="white" stroke-width="2"/>
+    <text x="25" y="12" font-family="Jost, sans-serif" font-size="5" fill="white" text-anchor="middle">Secretaria de</text>
+    <text x="25" y="19" font-family="Jost, sans-serif" font-size="5" fill="white" text-anchor="middle">Desenvolvimento</text>
+    <text x="25" y="26" font-family="Jost, sans-serif" font-size="5" fill="white" text-anchor="middle">Urbano e Habitação</text>
+    <text x="25" y="36" font-family="Jost, sans-serif" font-size="5" fill="white" text-anchor="middle" font-weight="600">GOVERNO PE</text>
+  </g>
+</svg>

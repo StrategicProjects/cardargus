@@ -1,0 +1,127 @@
+url: https://monitoramento.pe.gov.br/cardargus
+
+template:
+  bootstrap: 5
+  bootswatch: flatly
+  bslib:
+    primary: "#fab255"
+    
+home:
+  title: cardargus - SVG Cards for R
+  description: >
+    Create beautiful SVG information cards with embedded styles, 
+    Google Fonts, badges, and logos.
+
+authors:
+  Andre Leite:
+    href: https://github.com/milkway
+  Hugo Vasconcelos:
+    href: https://github.com/hugoavmedeiros
+  Diogo Bezerra:
+    href: https://github.com/DiCarvalhoB
+
+navbar:
+  structure:
+    left:  [intro, reference, articles]
+    right: [search, github]
+  components:
+    intro:
+      text: Get Started
+      href: articles/cardargus.html
+    articles:
+      text: Articles
+      menu:
+        - text: Introduction to cardargus
+          href: articles/cardargus.html
+        - text: Customizing Cards
+          href: articles/customization.html
+        - text: Working with Badges
+          href: articles/badges.html
+        - text: Icons and Logos
+          href: articles/icons.html
+        - text: Font Management
+          href: articles/fonts.html
+        - text: Export and Conversion
+          href: articles/export.html
+
+reference:
+  - title: Card Creation
+    desc: Main functions for creating SVG cards
+    contents:
+      - svg_card
+      
+  - title: Badges
+    desc: Functions for creating shields.io-style badges
+    contents:
+      - create_badge
+      - create_badge_row
+      
+  - title: Icons
+    desc: SVG icons for use in cards (or use your own SVG file paths)
+    contents:
+      - icon_house
+      - icon_building
+      - icon_construction
+      - icon_map_pin
+      - icon_money
+      
+  - title: Logos
+    desc: Logo and SVG management
+    contents:
+      - load_svg_for_embed
+      - create_logo_row
+      - create_bottom_logo_row
+      - get_svg_path
+      - list_bundled_svgs
+      - svgs_dir
+
+  - title: Fonts
+    desc: Google Fonts management
+    contents:
+      - setup_fonts
+      - install_fonts
+      - register_google_font
+      - register_font
+      - font_available
+      - list_fonts
+      - font_cache_dir
+      - fonts_dir
+      - get_font_css
+      
+  - title: Export
+    desc: Functions for saving and converting cards
+    contents:
+      - save_svg
+      - svg_to_png
+      - svg_to_png_with_margin
+      - svg_to_formats
+      - batch_svg_to_png
+      
+  - title: Chrome Rendering
+    desc: High-fidelity conversion using headless Chrome
+    contents:
+      - svg_to_png_chrome
+      - svg_to_pdf_chrome
+      - chrome_available
+      - ensure_chrome
+      - find_chrome_path
+      
+  - title: R Markdown / Quarto
+    desc: Functions for displaying cards in documents
+    contents:
+      - include_card
+      - include_card_png
+      - save_card_for_knitr
+      - register_knitr_engine
+      - card_to_grob
+      
+  - title: Utilities
+    desc: Helper functions
+    contents:
+      - is_light_color
+      - compress_number
+
+footer:
+  structure:
+    left: developed_by
+    right: built_with

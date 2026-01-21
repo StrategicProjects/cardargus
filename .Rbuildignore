@@ -1,0 +1,15 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^LICENSE\.md$
+^README\.Rmd$
+^example\.R$
+^\.github$
+^docs$
+^_pkgdown\.yml$
+^pkgdown$
+^\.lintr$
+^codecov\.yml$
+^\.DS_Store$
+^\.Rhistory$
+^cran-comments\.md$
+^CRAN-SUBMISSION$
