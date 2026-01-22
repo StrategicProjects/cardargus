@@ -9,7 +9,7 @@
 ^pkgdown$
 ^\.lintr$
 ^codecov\.yml$
-^\.DS_Store$
+\.DS_Store$
 ^\.Rhistory$
 ^cran-comments\.md$
 ^CRAN-SUBMISSION$
