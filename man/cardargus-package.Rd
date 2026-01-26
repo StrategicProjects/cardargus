@@ -4,9 +4,9 @@
 \name{cardargus-package}
 \alias{cardargus}
 \alias{cardargus-package}
-\title{cardargus: Generate SVG Information Cards with Embedded Fonts and Badges}
+\title{cardargus: Generate 'SVG' Information Cards with Embedded Fonts and Badges}
 \description{
-Create self-contained SVG information cards with embedded Google Fonts, shields.io-style badges, and custom logos. Cards are fully portable SVG files ideal for dashboards, reports, and web applications. Includes functions to export cards to PNG format and display them in 'R Markdown' and 'Quarto' documents.
+Create self-contained 'SVG' information cards with embedded 'Google Fonts', shields-style badges, and custom logos. Cards are fully portable 'SVG' files ideal for dashboards, reports, and web applications. Includes functions to export cards to PNG format and display them in 'R Markdown' and 'Quarto' documents.
 }
 \seealso{
 Useful links:

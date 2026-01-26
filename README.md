@@ -254,10 +254,6 @@ Install `chromote` for Chrome support:
 install.packages("chromote")
 ```
 
-## Documentation
-
-See full documentation at: <https://monitoramento.pe.gov.br/cardargus/>
-
 ## Authors
 
 - **Andre Leite** - *Maintainer* - <leite@castlab.org>
