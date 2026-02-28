@@ -11,7 +11,7 @@ svg_to_pdf_chrome(
   output_path,
   background = "transparent",
   print_background = TRUE,
-  timeout = 30
+  load_wait = 0.5
 )
 ```
 
@@ -33,9 +33,9 @@ svg_to_pdf_chrome(
 
   Whether to include CSS backgrounds in PDF (default TRUE).
 
-- timeout:
+- load_wait:
 
-  Maximum time in seconds to wait for page load (default 30).
+  Seconds to wait for page to load (default 0.5).
 
 ## Value
 
@@ -44,11 +44,10 @@ Path to the generated PDF file.
 ## Examples
 
 ``` r
-if (FALSE)  # It requires an external Chrome/Chromium installation 
+if (FALSE) { # \dontrun{
 svg <- svg_card("FAR", list(), list())
 if (chrome_available()) {
   pdf_path <- svg_to_pdf_chrome(svg, tempfile(fileext = ".pdf"))
 }
-#> Error in as.character(svg_input): cannot coerce type 'closure' to vector of type 'character'
- # \dontrun{}
+} # }
 ```

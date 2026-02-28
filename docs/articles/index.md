@@ -3,14 +3,14 @@
 ### All vignettes
 
 - [Working with
-  Badges](https://monitoramento.pe.gov.br/cardargus/articles/badges.md):
+  Badges](https://strategicprojects.github.io/cardargus/articles/badges.md):
 - [Introduction to
-  cardargus](https://monitoramento.pe.gov.br/cardargus/articles/cardargus.md):
+  cardargus](https://strategicprojects.github.io/cardargus/articles/cardargus.md):
 - [Customizing
-  Cards](https://monitoramento.pe.gov.br/cardargus/articles/customization.md):
+  Cards](https://strategicprojects.github.io/cardargus/articles/customization.md):
 - [Export and
-  Conversion](https://monitoramento.pe.gov.br/cardargus/articles/export.md):
+  Conversion](https://strategicprojects.github.io/cardargus/articles/export.md):
 - [Font
-  Management](https://monitoramento.pe.gov.br/cardargus/articles/fonts.md):
+  Management](https://strategicprojects.github.io/cardargus/articles/fonts.md):
 - [Icons and
-  Logos](https://monitoramento.pe.gov.br/cardargus/articles/icons.md):
+  Logos](https://strategicprojects.github.io/cardargus/articles/icons.md):

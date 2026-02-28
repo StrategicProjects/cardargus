@@ -33,7 +33,7 @@ A list with svg_content, width, and height
 This function is useful when you want to embed custom logos or icons in
 cards. You can pass any SVG file path to the `logos`, `bottom_logos`, or
 `with_icon` parameters of
-[`svg_card()`](https://monitoramento.pe.gov.br/cardargus/reference/svg_card.md).
+[`svg_card()`](https://strategicprojects.github.io/cardargus/reference/svg_card.md).
 
 ## Examples
 

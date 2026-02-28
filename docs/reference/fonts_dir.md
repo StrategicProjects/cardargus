@@ -3,7 +3,7 @@
 **\[deprecated\]**
 
 This function is deprecated. Use
-[`font_cache_dir()`](https://monitoramento.pe.gov.br/cardargus/reference/font_cache_dir.md)
+[`font_cache_dir()`](https://strategicprojects.github.io/cardargus/reference/font_cache_dir.md)
 instead to get the directory where fonts are cached.
 
 ## Usage

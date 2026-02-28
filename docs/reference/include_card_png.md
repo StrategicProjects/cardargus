@@ -21,7 +21,7 @@ include_card_png(
 - svg_string:
 
   SVG string from
-  [`svg_card()`](https://monitoramento.pe.gov.br/cardargus/reference/svg_card.md).
+  [`svg_card()`](https://strategicprojects.github.io/cardargus/reference/svg_card.md).
 
 - dpi:
 
@@ -38,7 +38,7 @@ include_card_png(
 - background:
 
   Background color passed to
-  [`svg_to_png()`](https://monitoramento.pe.gov.br/cardargus/reference/svg_to_png.md)
+  [`svg_to_png()`](https://strategicprojects.github.io/cardargus/reference/svg_to_png.md)
   (default transparent).
 
 - engine:

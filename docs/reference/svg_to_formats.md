@@ -6,7 +6,7 @@ are:
 - `"svg"` - saves the SVG
 
 - `"png"` - rasterizes to PNG via
-  [`svg_to_png`](https://monitoramento.pe.gov.br/cardargus/reference/svg_to_png.md)
+  [`svg_to_png`](https://strategicprojects.github.io/cardargus/reference/svg_to_png.md)
 
 - `"pdf"` - converts to PDF (prefers rsvg)
 

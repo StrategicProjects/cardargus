@@ -3,7 +3,7 @@
 Embeds the SVG as an `<img>` using a `data:image/svg+xml;base64,...`
 URI. This is more robust than inline `<svg>` for Pandoc/pkgdown (avoids
 "unclosed div" warnings). For non-HTML outputs, it falls back to
-[`include_card_png()`](https://monitoramento.pe.gov.br/cardargus/reference/include_card_png.md).
+[`include_card_png()`](https://strategicprojects.github.io/cardargus/reference/include_card_png.md).
 
 ## Usage
 
@@ -22,7 +22,7 @@ include_card(
 - svg_string:
 
   SVG string from
-  [`svg_card()`](https://monitoramento.pe.gov.br/cardargus/reference/svg_card.md).
+  [`svg_card()`](https://strategicprojects.github.io/cardargus/reference/svg_card.md).
 
 - width:
 

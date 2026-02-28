@@ -41,19 +41,19 @@ install_fonts()
 #> ✔ Jost (WOFF2)
 #> ℹ Downloading "Jost"...
 
-#> ✔ Downloading "Montserrat"... [7ms]
+#> ✔ Downloading "Montserrat"... [8ms]
 #> 
 #> ℹ Downloading "Montserrat"...
 #> ✔ Montserrat (WOFF2)
 #> ℹ Downloading "Montserrat"...
 
-#> ✔ Downloading "Roboto"... [16ms]
+#> ✔ Downloading "Roboto"... [22ms]
 #> 
 #> ℹ Downloading "Roboto"...
 #> ✔ Roboto (WOFF2)
 #> ℹ Downloading "Roboto"...
 
-#> ✔ Downloading "Open Sans"... [12ms]
+#> ✔ Downloading "Open Sans"... [14ms]
 #> 
 #> ℹ Downloading "Open Sans"...
 #> ✔ Open Sans (WOFF2)
@@ -71,7 +71,7 @@ install_fonts()
 #> ℹ Cache: /Users/leite/Library/Caches/org.R-project.R/R/cardargus
 #> ℹ Downloading "Open Sans"...
 
-#> ✔ Downloading "Open Sans"... [15ms]
+#> ✔ Downloading "Open Sans"... [16ms]
 #> 
 install_fonts(c("Jost", "Roboto"))
 #> 
@@ -101,7 +101,7 @@ install_fonts(c("Jost", "Roboto"))
 #> ℹ Cache: /Users/leite/Library/Caches/org.R-project.R/R/cardargus
 #> ℹ Downloading "Roboto"...
 
-#> ✔ Downloading "Roboto"... [20ms]
+#> ✔ Downloading "Roboto"... [18ms]
 #> 
 # }
 ```

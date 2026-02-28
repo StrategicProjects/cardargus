@@ -313,9 +313,9 @@ This is expected behavior. librsvg cannot:
 - Make HTTP requests for web fonts
 
 **Solution**: Use
-[`svg_to_png_chrome()`](https://monitoramento.pe.gov.br/cardargus/reference/svg_to_png_chrome.md)
+[`svg_to_png_chrome()`](https://strategicprojects.github.io/cardargus/reference/svg_to_png_chrome.md)
 or ensure fonts are embedded with
-[`save_svg()`](https://monitoramento.pe.gov.br/cardargus/reference/save_svg.md).
+[`save_svg()`](https://strategicprojects.github.io/cardargus/reference/save_svg.md).
 
 ### Chrome not found
 

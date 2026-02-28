@@ -13,7 +13,7 @@ card_to_grob(svg_string, dpi = 150, engine = c("auto", "chrome", "rsvg"))
 - svg_string:
 
   SVG string from
-  [`svg_card()`](https://monitoramento.pe.gov.br/cardargus/reference/svg_card.md).
+  [`svg_card()`](https://strategicprojects.github.io/cardargus/reference/svg_card.md).
 
 - dpi:
 

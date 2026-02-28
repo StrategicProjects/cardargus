@@ -49,7 +49,7 @@ ensure_chrome()
 #> [1] TRUE
 
 # Download Chrome if not available
-if (FALSE)  # Requires an external Chrome/Chromium installation 
+if (FALSE) { # \dontrun{
 ensure_chrome(download = TRUE)
- # \dontrun{}
+} # }
 ```

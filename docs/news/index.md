@@ -13,17 +13,17 @@ function names have been removed.
 
 | Removed function | Use instead |
 |----|----|
-| `house_icon_svg()` | [`icon_house()`](https://monitoramento.pe.gov.br/cardargus/reference/icon_house.md) |
-| `building_icon_svg()` | [`icon_building()`](https://monitoramento.pe.gov.br/cardargus/reference/icon_building.md) |
-| `construction_icon_svg()` | [`icon_construction()`](https://monitoramento.pe.gov.br/cardargus/reference/icon_construction.md) |
-| `map_pin_icon_svg()` | [`icon_map_pin()`](https://monitoramento.pe.gov.br/cardargus/reference/icon_map_pin.md) |
-| `money_icon_svg()` | [`icon_money()`](https://monitoramento.pe.gov.br/cardargus/reference/icon_money.md) |
-| `badge_svg()` | [`create_badge()`](https://monitoramento.pe.gov.br/cardargus/reference/create_badge.md) |
-| `badge_row_svg()` | [`create_badge_row()`](https://monitoramento.pe.gov.br/cardargus/reference/create_badge_row.md) |
-| `setup_cardargus_fonts()` | [`setup_fonts()`](https://monitoramento.pe.gov.br/cardargus/reference/setup_fonts.md) |
-| `install_cardargus_fonts()` | [`install_fonts()`](https://monitoramento.pe.gov.br/cardargus/reference/install_fonts.md) |
-| `cardargus_font_cache_dir()` | [`font_cache_dir()`](https://monitoramento.pe.gov.br/cardargus/reference/font_cache_dir.md) |
-| `register_knitr_engine()` | [`register_cardargus_knitr()`](https://monitoramento.pe.gov.br/cardargus/reference/register_cardargus_knitr.md) |
+| `house_icon_svg()` | [`icon_house()`](https://strategicprojects.github.io/cardargus/reference/icon_house.md) |
+| `building_icon_svg()` | [`icon_building()`](https://strategicprojects.github.io/cardargus/reference/icon_building.md) |
+| `construction_icon_svg()` | [`icon_construction()`](https://strategicprojects.github.io/cardargus/reference/icon_construction.md) |
+| `map_pin_icon_svg()` | [`icon_map_pin()`](https://strategicprojects.github.io/cardargus/reference/icon_map_pin.md) |
+| `money_icon_svg()` | [`icon_money()`](https://strategicprojects.github.io/cardargus/reference/icon_money.md) |
+| `badge_svg()` | [`create_badge()`](https://strategicprojects.github.io/cardargus/reference/create_badge.md) |
+| `badge_row_svg()` | [`create_badge_row()`](https://strategicprojects.github.io/cardargus/reference/create_badge_row.md) |
+| `setup_cardargus_fonts()` | [`setup_fonts()`](https://strategicprojects.github.io/cardargus/reference/setup_fonts.md) |
+| `install_cardargus_fonts()` | [`install_fonts()`](https://strategicprojects.github.io/cardargus/reference/install_fonts.md) |
+| `cardargus_font_cache_dir()` | [`font_cache_dir()`](https://strategicprojects.github.io/cardargus/reference/font_cache_dir.md) |
+| `register_knitr_engine()` | [`register_cardargus_knitr()`](https://strategicprojects.github.io/cardargus/reference/register_cardargus_knitr.md) |
 
 ### New features
 
@@ -32,15 +32,15 @@ function names have been removed.
 Added headless Chrome support for superior font rendering via the
 `chromote` package.
 
-- [`svg_to_png_chrome()`](https://monitoramento.pe.gov.br/cardargus/reference/svg_to_png_chrome.md) -
+- [`svg_to_png_chrome()`](https://strategicprojects.github.io/cardargus/reference/svg_to_png_chrome.md) -
   Convert SVG to PNG using headless Chrome
-- [`svg_to_pdf_chrome()`](https://monitoramento.pe.gov.br/cardargus/reference/svg_to_pdf_chrome.md) -
+- [`svg_to_pdf_chrome()`](https://strategicprojects.github.io/cardargus/reference/svg_to_pdf_chrome.md) -
   Convert SVG to vector PDF using headless Chrome
-- [`chrome_available()`](https://monitoramento.pe.gov.br/cardargus/reference/chrome_available.md) -
+- [`chrome_available()`](https://strategicprojects.github.io/cardargus/reference/chrome_available.md) -
   Check if Chrome/Chromium is available
-- [`ensure_chrome()`](https://monitoramento.pe.gov.br/cardargus/reference/ensure_chrome.md) -
+- [`ensure_chrome()`](https://strategicprojects.github.io/cardargus/reference/ensure_chrome.md) -
   Check and optionally download Chrome for Testing
-- [`find_chrome_path()`](https://monitoramento.pe.gov.br/cardargus/reference/find_chrome_path.md) -
+- [`find_chrome_path()`](https://strategicprojects.github.io/cardargus/reference/find_chrome_path.md) -
   Find Chrome executable on the system
 
 #### Chrome auto-download
@@ -83,13 +83,13 @@ svg_card(
 
 All knitr/Quarto functions now support an `engine` parameter:
 
-- [`include_card()`](https://monitoramento.pe.gov.br/cardargus/reference/include_card.md) -
+- [`include_card()`](https://strategicprojects.github.io/cardargus/reference/include_card.md) -
   Added `engine` parameter
-- [`include_card_png()`](https://monitoramento.pe.gov.br/cardargus/reference/include_card_png.md) -
+- [`include_card_png()`](https://strategicprojects.github.io/cardargus/reference/include_card_png.md) -
   Added `engine` parameter
-- [`save_card_for_knitr()`](https://monitoramento.pe.gov.br/cardargus/reference/save_card_for_knitr.md) -
+- [`save_card_for_knitr()`](https://strategicprojects.github.io/cardargus/reference/save_card_for_knitr.md) -
   Added `engine` parameter
-- [`card_to_grob()`](https://monitoramento.pe.gov.br/cardargus/reference/card_to_grob.md) -
+- [`card_to_grob()`](https://strategicprojects.github.io/cardargus/reference/card_to_grob.md) -
   Added `engine` parameter
 
 Engine options: - `"auto"` (default): Uses Chrome if available,
@@ -99,20 +99,20 @@ rsvg/magick rendering
 ### Bug fixes
 
 - Fixed duplicate `@font-face` declarations in
-  [`embed_svg_fonts()`](https://monitoramento.pe.gov.br/cardargus/reference/embed_svg_fonts.md)
+  [`embed_svg_fonts()`](https://strategicprojects.github.io/cardargus/reference/embed_svg_fonts.md)
 - Fixed double font embedding in
-  [`svg_to_formats()`](https://monitoramento.pe.gov.br/cardargus/reference/svg_to_formats.md)
+  [`svg_to_formats()`](https://strategicprojects.github.io/cardargus/reference/svg_to_formats.md)
 - Now uses modern CSS weight range syntax (`font-weight: 100 900`)
 - Removed unused `inst/fonts/` directory
 
 ### Deprecated
 
 - `fonts_dir()` - Use
-  [`font_cache_dir()`](https://monitoramento.pe.gov.br/cardargus/reference/font_cache_dir.md)
+  [`font_cache_dir()`](https://strategicprojects.github.io/cardargus/reference/font_cache_dir.md)
   instead
-- [`custom_logo_svg()`](https://monitoramento.pe.gov.br/cardargus/reference/custom_logo_svg.md) -
+- [`custom_logo_svg()`](https://strategicprojects.github.io/cardargus/reference/custom_logo_svg.md) -
   Use
-  [`load_svg_for_embed()`](https://monitoramento.pe.gov.br/cardargus/reference/load_svg_for_embed.md)
+  [`load_svg_for_embed()`](https://strategicprojects.github.io/cardargus/reference/load_svg_for_embed.md)
   or pass file paths directly
 
 ------------------------------------------------------------------------
@@ -123,7 +123,7 @@ rsvg/magick rendering
 
 #### Card Creation
 
-- [`svg_card()`](https://monitoramento.pe.gov.br/cardargus/reference/svg_card.md) -
+- [`svg_card()`](https://strategicprojects.github.io/cardargus/reference/svg_card.md) -
   Main function for creating SVG cards with badges, fields, and logos
 - Support for Google Fonts via embedded CSS
 - Shields.io-style badges with uniform height
@@ -131,59 +131,59 @@ rsvg/magick rendering
 
 #### Icons
 
-- [`icon_house()`](https://monitoramento.pe.gov.br/cardargus/reference/icon_house.md) -
+- [`icon_house()`](https://strategicprojects.github.io/cardargus/reference/icon_house.md) -
   House/home icon
-- [`icon_building()`](https://monitoramento.pe.gov.br/cardargus/reference/icon_building.md) -
+- [`icon_building()`](https://strategicprojects.github.io/cardargus/reference/icon_building.md) -
   Building icon
-- [`icon_construction()`](https://monitoramento.pe.gov.br/cardargus/reference/icon_construction.md) -
+- [`icon_construction()`](https://strategicprojects.github.io/cardargus/reference/icon_construction.md) -
   Construction icon
-- [`icon_map_pin()`](https://monitoramento.pe.gov.br/cardargus/reference/icon_map_pin.md) -
+- [`icon_map_pin()`](https://strategicprojects.github.io/cardargus/reference/icon_map_pin.md) -
   Location pin icon
-- [`icon_money()`](https://monitoramento.pe.gov.br/cardargus/reference/icon_money.md) -
+- [`icon_money()`](https://strategicprojects.github.io/cardargus/reference/icon_money.md) -
   Money/currency icon
 
 #### Logos
 
-- [`load_svg_for_embed()`](https://monitoramento.pe.gov.br/cardargus/reference/load_svg_for_embed.md) -
+- [`load_svg_for_embed()`](https://strategicprojects.github.io/cardargus/reference/load_svg_for_embed.md) -
   Load and process external SVG files
-- [`create_logo_row()`](https://monitoramento.pe.gov.br/cardargus/reference/create_logo_row.md) -
+- [`create_logo_row()`](https://strategicprojects.github.io/cardargus/reference/create_logo_row.md) -
   Create horizontal logo rows
-- [`get_svg_path()`](https://monitoramento.pe.gov.br/cardargus/reference/get_svg_path.md) -
+- [`get_svg_path()`](https://strategicprojects.github.io/cardargus/reference/get_svg_path.md) -
   Get paths to bundled SVGs
-- [`list_bundled_svgs()`](https://monitoramento.pe.gov.br/cardargus/reference/list_bundled_svgs.md) -
+- [`list_bundled_svgs()`](https://strategicprojects.github.io/cardargus/reference/list_bundled_svgs.md) -
   List available bundled SVGs
 
 #### Export
 
-- [`save_svg()`](https://monitoramento.pe.gov.br/cardargus/reference/save_svg.md) -
+- [`save_svg()`](https://strategicprojects.github.io/cardargus/reference/save_svg.md) -
   Save card as SVG file
-- [`svg_to_png()`](https://monitoramento.pe.gov.br/cardargus/reference/svg_to_png.md) -
+- [`svg_to_png()`](https://strategicprojects.github.io/cardargus/reference/svg_to_png.md) -
   Convert card to PNG
-- [`svg_to_png_with_margin()`](https://monitoramento.pe.gov.br/cardargus/reference/svg_to_png_with_margin.md) -
+- [`svg_to_png_with_margin()`](https://strategicprojects.github.io/cardargus/reference/svg_to_png_with_margin.md) -
   Convert with margin
-- [`batch_svg_to_png()`](https://monitoramento.pe.gov.br/cardargus/reference/batch_svg_to_png.md) -
+- [`batch_svg_to_png()`](https://strategicprojects.github.io/cardargus/reference/batch_svg_to_png.md) -
   Batch convert multiple cards
 
 #### R Markdown / Quarto Integration
 
-- [`include_card()`](https://monitoramento.pe.gov.br/cardargus/reference/include_card.md) -
+- [`include_card()`](https://strategicprojects.github.io/cardargus/reference/include_card.md) -
   Display card inline as SVG
-- [`include_card_png()`](https://monitoramento.pe.gov.br/cardargus/reference/include_card_png.md) -
+- [`include_card_png()`](https://strategicprojects.github.io/cardargus/reference/include_card_png.md) -
   Display card inline as PNG
-- [`save_card_for_knitr()`](https://monitoramento.pe.gov.br/cardargus/reference/save_card_for_knitr.md) -
+- [`save_card_for_knitr()`](https://strategicprojects.github.io/cardargus/reference/save_card_for_knitr.md) -
   Save for knitr::include_graphics()
-- [`register_cardargus_knitr()`](https://monitoramento.pe.gov.br/cardargus/reference/register_cardargus_knitr.md) -
+- [`register_cardargus_knitr()`](https://strategicprojects.github.io/cardargus/reference/register_cardargus_knitr.md) -
   Register custom knitr engine
-- [`card_to_grob()`](https://monitoramento.pe.gov.br/cardargus/reference/card_to_grob.md) -
+- [`card_to_grob()`](https://strategicprojects.github.io/cardargus/reference/card_to_grob.md) -
   Convert to grid graphical object
 
 #### Font Management
 
-- [`setup_fonts()`](https://monitoramento.pe.gov.br/cardargus/reference/setup_fonts.md) -
+- [`setup_fonts()`](https://strategicprojects.github.io/cardargus/reference/setup_fonts.md) -
   Quick setup for showtext
-- [`register_google_font()`](https://monitoramento.pe.gov.br/cardargus/reference/register_google_font.md) -
+- [`register_google_font()`](https://strategicprojects.github.io/cardargus/reference/register_google_font.md) -
   Register Google Fonts
-- [`font_available()`](https://monitoramento.pe.gov.br/cardargus/reference/font_available.md) -
+- [`font_available()`](https://strategicprojects.github.io/cardargus/reference/font_available.md) -
   Check font availability
-- [`install_fonts()`](https://monitoramento.pe.gov.br/cardargus/reference/install_fonts.md) -
+- [`install_fonts()`](https://strategicprojects.github.io/cardargus/reference/install_fonts.md) -
   Install fonts locally

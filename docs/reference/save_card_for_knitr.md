@@ -20,7 +20,7 @@ save_card_for_knitr(
 - svg_string:
 
   SVG string from
-  [`svg_card()`](https://monitoramento.pe.gov.br/cardargus/reference/svg_card.md).
+  [`svg_card()`](https://strategicprojects.github.io/cardargus/reference/svg_card.md).
 
 - filename:
 

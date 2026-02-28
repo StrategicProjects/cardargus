@@ -9,10 +9,10 @@ Saves an SVG string to disk. Before saving, the function:
     rendering.
 
 This function expects the font helpers to be available in the package:
-[`detect_svg_fonts()`](https://monitoramento.pe.gov.br/cardargus/reference/detect_svg_fonts.md),
-[`ensure_cardargus_fonts()`](https://monitoramento.pe.gov.br/cardargus/reference/ensure_cardargus_fonts.md),
+[`detect_svg_fonts()`](https://strategicprojects.github.io/cardargus/reference/detect_svg_fonts.md),
+[`ensure_cardargus_fonts()`](https://strategicprojects.github.io/cardargus/reference/ensure_cardargus_fonts.md),
 and
-[`embed_svg_fonts()`](https://monitoramento.pe.gov.br/cardargus/reference/embed_svg_fonts.md).
+[`embed_svg_fonts()`](https://strategicprojects.github.io/cardargus/reference/embed_svg_fonts.md).
 
 ## Usage
 
@@ -39,5 +39,5 @@ Path to the saved SVG file.
 ``` r
 svg <- svg_card("FAR", list(), list())
 save_svg(svg, tempfile(fileext = ".svg"))
-#> [1] "/var/folders/j9/7g_srh2x0d71c5q0pbj5mxh40000gn/T//Rtmpy89dSb/file5a5d7d0c4256.svg"
+#> [1] "/var/folders/j9/7g_srh2x0d71c5q0pbj5mxh40000gn/T//Rtmpo8Jc82/file3e83456914d0.svg"
 ```

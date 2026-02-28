@@ -22,7 +22,7 @@ library(cardargus)
 ## Creating your first card
 
 The simplest way to create a card is using the
-[`svg_card()`](https://monitoramento.pe.gov.br/cardargus/reference/svg_card.md)
+[`svg_card()`](https://strategicprojects.github.io/cardargus/reference/svg_card.md)
 function:
 
 ``` r
@@ -61,7 +61,7 @@ card <- svg_card(
 ## Displaying cards in R Markdown / Quarto
 
 Use
-[`include_card()`](https://monitoramento.pe.gov.br/cardargus/reference/include_card.md)
+[`include_card()`](https://strategicprojects.github.io/cardargus/reference/include_card.md)
 to display cards inline in your documents:
 
 ``` r
@@ -155,7 +155,7 @@ card <- svg_card(
 ## Custom cards
 
 For more control, use
-[`svg_card()`](https://monitoramento.pe.gov.br/cardargus/reference/svg_card.md)
+[`svg_card()`](https://strategicprojects.github.io/cardargus/reference/svg_card.md)
 directly with all options:
 
 ``` r
@@ -197,17 +197,17 @@ card <- svg_card(
 ## Next steps
 
 - [Customizing
-  Cards](https://monitoramento.pe.gov.br/cardargus/articles/customization.md) -
+  Cards](https://strategicprojects.github.io/cardargus/articles/customization.md) -
   Colors, fonts, and styles
 - [Working with
-  Badges](https://monitoramento.pe.gov.br/cardargus/articles/badges.md) -
+  Badges](https://strategicprojects.github.io/cardargus/articles/badges.md) -
   Shields.io-style badges
 - [Icons and
-  Logos](https://monitoramento.pe.gov.br/cardargus/articles/icons.md) -
+  Logos](https://strategicprojects.github.io/cardargus/articles/icons.md) -
   Using custom icons
 - [Font
-  Management](https://monitoramento.pe.gov.br/cardargus/articles/fonts.md) -
+  Management](https://strategicprojects.github.io/cardargus/articles/fonts.md) -
   Google Fonts integration
 - [Export and
-  Conversion](https://monitoramento.pe.gov.br/cardargus/articles/export.md) -
+  Conversion](https://strategicprojects.github.io/cardargus/articles/export.md) -
   PNG, PDF, and batch processing

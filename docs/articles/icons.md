@@ -30,7 +30,7 @@ Icons can be added to fields in three ways:
 
 1.  **TRUE**: Uses the default house icon
 2.  **Built-in icon function**: e.g.,
-    [`icon_building()`](https://monitoramento.pe.gov.br/cardargus/reference/icon_building.md)
+    [`icon_building()`](https://strategicprojects.github.io/cardargus/reference/icon_building.md)
 3.  **File path**: Any SVG file on your system
 
 ``` r
@@ -139,7 +139,7 @@ card <- svg_card(
 ## Loading external SVGs
 
 Use
-[`load_svg_for_embed()`](https://monitoramento.pe.gov.br/cardargus/reference/load_svg_for_embed.md)
+[`load_svg_for_embed()`](https://strategicprojects.github.io/cardargus/reference/load_svg_for_embed.md)
 to load and resize external SVG files:
 
 ``` r

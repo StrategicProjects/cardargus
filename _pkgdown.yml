@@ -1,4 +1,4 @@
-url: https://monitoramento.pe.gov.br/cardargus
+url: https://strategicprojects.github.io/cardargus/
 
 template:
   bootstrap: 5
@@ -104,6 +104,8 @@ reference:
       - chrome_available
       - ensure_chrome
       - find_chrome_path
+      - batch_svg_to_base64_chrome
+      - batch_svg_to_png_chrome
       
   - title: R Markdown / Quarto
     desc: Functions for displaying cards in documents

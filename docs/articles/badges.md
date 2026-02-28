@@ -96,7 +96,7 @@ card <- svg_card(
 ## Uniform badge height
 
 When using
-[`create_badge_row()`](https://monitoramento.pe.gov.br/cardargus/reference/create_badge_row.md)
+[`create_badge_row()`](https://strategicprojects.github.io/cardargus/reference/create_badge_row.md)
 or in cards, all badges automatically have the same height for visual
 consistency:
 

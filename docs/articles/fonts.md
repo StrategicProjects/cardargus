@@ -121,7 +121,7 @@ list_bundled_svgs()
 ### Font not rendering correctly
 
 1.  Run
-    [`setup_fonts()`](https://monitoramento.pe.gov.br/cardargus/reference/setup_fonts.md)
+    [`setup_fonts()`](https://strategicprojects.github.io/cardargus/reference/setup_fonts.md)
     before creating cards
 2.  Check if font is available: `font_available("Jost")`
 3.  Install required packages:
