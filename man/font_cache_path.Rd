@@ -6,6 +6,12 @@
 \usage{
 font_cache_path(family)
 }
+\arguments{
+\item{family}{Font family name.}
+}
+\value{
+Path to the cached font file.
+}
 \description{
 Build a cache filename for a font family
 }

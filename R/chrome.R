@@ -15,13 +15,12 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' if (chrome_available()) {
-#'   svg_to_png_chrome(my_svg, "output.png")
+#'    cat("Using Chrome")
 #' } else {
-#'   svg_to_png(my_svg, "output.png")
+#'    cat("Using Magick")
 #' }
-#' }
+#' 
 chrome_available <- function(verbose = FALSE) {
   if (!requireNamespace("chromote", quietly = TRUE)) {
     if (verbose) cli::cli_alert_warning("Package {.pkg chromote} is not installed.")
@@ -29,8 +28,7 @@ chrome_available <- function(verbose = FALSE) {
   }
   
   tryCatch({
-    path <- chromote::find_chrome()
-    if (verbose) cli::cli_alert_success("Chrome found: {.path {path}}")
+    if (verbose) cli::cli_alert_success("Chrome found: {.path {find_chrome_path()}}")
     TRUE
   }, error = function(e) {
     if (verbose) cli::cli_alert_warning("Chrome not found: {e$message}")
@@ -48,11 +46,9 @@ chrome_available <- function(verbose = FALSE) {
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' path <- find_chrome_path()
 #' if (!is.null(path)) {
 #'   message("Chrome found at: ", path)
-#' }
 #' }
 find_chrome_path <- function() {
   # Check environment variable first
@@ -130,22 +126,18 @@ find_chrome_path <- function() {
 #' - Set the `CHROMOTE_CHROME` environment variable to point to an existing installation
 #'
 #' @examples
-#' \dontrun{
 #' # Check and report status
 #' ensure_chrome()
 #'
 #' # Download Chrome if not available
+#' \dontrun{
 #' ensure_chrome(download = TRUE)
-#'
-#' # Then use Chrome rendering
-#' svg_to_png_chrome(my_svg, "output.png")
 #' }
 ensure_chrome <- function(download = FALSE, verbose = TRUE) {
   # Check if already available
   if (chrome_available(verbose = FALSE)) {
     if (verbose) {
-      path <- find_chrome_path()
-      cli::cli_alert_success("Chrome is available: {.path {path}}")
+      cli::cli_alert_success("Chrome is available: {.path {find_chrome_path()}}")
     }
     return(TRUE)
   }
@@ -249,7 +241,7 @@ ensure_chrome <- function(download = FALSE, verbose = TRUE) {
 chrome_cache_dir <- function() {
   tryCatch(
     tools::R_user_dir("cardargus", which = "cache"),
-    error = function(e) file.path(path.expand("~"), ".cache", "cardargus")
+    error = function(e) file.path(tempdir(), "cardargus-chrome")
   )
 }
 
@@ -257,9 +249,8 @@ chrome_cache_dir <- function() {
 #' @keywords internal
 get_chrome_download_info <- function() {
   # Chrome for Testing URLs (stable channel)
-  # These are official Google-provided builds for testing/automation
   base_url <- "https://storage.googleapis.com/chrome-for-testing-public"
-  version <- "131.0.6778.87"  # Stable version
+  version <- "131.0.6778.87"
   
   platform <- get_chrome_platform()
   if (is.null(platform)) return(NULL)
@@ -307,10 +298,8 @@ find_chrome_in_dir <- function(dir) {
     candidates <- list.files(dir, pattern = "chrome\\.exe$", 
                              recursive = TRUE, full.names = TRUE)
   } else if (os == "Darwin") {
-    # macOS app bundle structure
     candidates <- list.files(dir, pattern = "^Google Chrome for Testing$|^Chromium$|^chrome$", 
                              recursive = TRUE, full.names = TRUE)
-    # Also check for the actual binary inside .app
     app_dirs <- list.dirs(dir, recursive = TRUE)
     for (app in app_dirs) {
       if (grepl("\\.app/Contents/MacOS$", app)) {
@@ -323,7 +312,6 @@ find_chrome_in_dir <- function(dir) {
                              recursive = TRUE, full.names = TRUE)
   }
   
-  # Return first executable
   for (cand in candidates) {
     if (file.exists(cand)) {
       info <- file.info(cand)
@@ -353,7 +341,6 @@ write_svg_html_temp <- function(svg_string,
                                 background = "transparent") {
   svg_string <- as.character(svg_string)
   
-  # Extract dimensions from SVG if not provided
   if (is.null(width_px)) {
     width_px <- parse_svg_root_dim(svg_string, "width")
   }
@@ -361,15 +348,13 @@ write_svg_html_temp <- function(svg_string,
     height_px <- parse_svg_root_dim(svg_string, "height")
   }
   
-  # Fallback defaults
   if (is.na(width_px) || is.null(width_px)) width_px <- 800
   if (is.na(height_px) || is.null(height_px)) height_px <- 500
   
   width_px <- as.integer(ceiling(width_px))
   height_px <- as.integer(ceiling(height_px))
   
-  # Minimal HTML wrapper - Chrome renders webfonts and @font-face perfectly
-html <- sprintf(
+  html <- sprintf(
     '<!doctype html>
 <html>
 <head>
@@ -407,7 +392,134 @@ html <- sprintf(
 }
 
 # ------------------------------------------------------------------------------
-# Public API: Chrome-based conversion
+# Internal: sanitize SVG metadata only (not @import)
+# ------------------------------------------------------------------------------
+
+#' Sanitize SVG metadata for Chrome rendering
+#'
+#' @description
+#' Removes problematic Inkscape/Sodipodi metadata that can cause issues,
+#' but preserves @import rules since Chrome handles them correctly.
+#'
+#' @param svg_content SVG string.
+#' @return Sanitized SVG string.
+#' @keywords internal
+sanitize_svg_metadata <- function(svg_content) {
+  svg <- as.character(svg_content)
+  
+  svg <- gsub("<sodipodi:namedview[^>]*?/\\s*>", "", svg, perl = TRUE)
+  svg <- gsub("<sodipodi:namedview[\\s\\S]*?</sodipodi:namedview\\s*>", "", svg, perl = TRUE)
+  svg <- gsub("<inkscape:page[^>]*?/\\s*>", "", svg, perl = TRUE)
+  svg <- gsub("<inkscape:page[\\s\\S]*?</inkscape:page\\s*>", "", svg, perl = TRUE)
+  svg <- gsub("<metadata[\\s\\S]*?</metadata\\s*>", "", svg, perl = TRUE)
+  
+  svg <- gsub("\\s+sodipodi:[a-zA-Z0-9_.-]+\\s*=\\s*\"[^\"]*\"", "", svg, perl = TRUE)
+  svg <- gsub("\\s+inkscape:[a-zA-Z0-9_.-]+\\s*=\\s*\"[^\"]*\"", "", svg, perl = TRUE)
+  
+  svg
+}
+
+# ------------------------------------------------------------------------------
+# Internal: Chrome session management
+# ------------------------------------------------------------------------------
+
+#' Safely close a Chromote session
+#'
+#' @description
+#' Closes a chromote session handling pending promises to avoid
+#' "Unhandled promise error: timed out waiting for response" warnings.
+#' This function processes pending async operations before closing
+#' and silently ignores any timeout errors during cleanup.
+#'
+#' @param session A ChromoteSession object to close.
+#' @param timeout_before Seconds to wait for pending promises before closing (default 2).
+#' @param timeout_after Seconds to wait for cleanup after closing (default 1).
+#'
+#' @return NULL (invisibly). Called for side effects.
+#' @keywords internal
+cleanup_chromote_session <- function(session, 
+                                     timeout_before = 2, 
+                                     timeout_after = 1) {
+  tryCatch({
+    if (requireNamespace("later", quietly = TRUE)) {
+      later::run_now(timeoutSecs = timeout_before)
+    }
+    if (!is.null(session)) {
+      session$close()
+    }
+    if (requireNamespace("later", quietly = TRUE)) {
+      later::run_now(timeoutSecs = timeout_after)
+    }
+  }, error = function(e) NULL)
+  
+  invisible(NULL)
+}
+
+
+#' Start a new Chrome session safely
+#'
+#' @description
+#' Creates a new ChromoteSession, optionally closing an existing one first.
+#' Includes a small delay after closing to allow Chrome to clean up.
+#'
+#' @param old_session Previous session to close (can be NULL).
+#'
+#' @return New ChromoteSession object.
+#' @keywords internal
+start_chrome_session <- function(old_session = NULL) {
+  if (!is.null(old_session)) {
+    tryCatch(cleanup_chromote_session(old_session), error = function(e) NULL)
+    Sys.sleep(0.3)
+  }
+  chromote::ChromoteSession$new()
+}
+
+
+#' Convert a single SVG using an existing Chrome session
+#'
+#' @description
+#' Internal helper that renders an SVG to PNG using an existing Chrome session.
+#' Uses fixed-time waiting instead of event-based waiting for reliability.
+#'
+#' @param b ChromoteSession object.
+#' @param svg_content SVG content string (already sanitized).
+#' @param scale DPI scale factor.
+#' @param background Background color.
+#' @param load_wait Seconds to wait for page load (default 0.5).
+#'
+#' @return Base64 encoded PNG string.
+#' @keywords internal
+convert_svg_with_session <- function(b, svg_content, scale, background, load_wait = 0.5) {
+  svg_content <- sanitize_svg_metadata(svg_content)
+  page <- write_svg_html_temp(svg_content, background = background)
+  
+  file_url <- paste0("file://", normalizePath(page$path, winslash = "/"))
+  
+  # Navigate without waiting for event (more reliable than loadEventFired)
+  b$Page$navigate(file_url, wait_ = FALSE)
+  
+  # Fixed-time wait for page to load
+  Sys.sleep(load_wait)
+  
+  # Set viewport
+  b$Emulation$setDeviceMetricsOverride(
+    width = as.integer(page$width),
+    height = as.integer(page$height),
+    deviceScaleFactor = scale,
+    mobile = FALSE
+  )
+  
+  # Small extra delay for rendering
+  Sys.sleep(0.1)
+  
+  # Capture screenshot
+  shot <- b$Page$captureScreenshot(format = "png", fromSurface = TRUE)
+  
+  shot$data
+}
+
+# ------------------------------------------------------------------------------
+# Public API: Chrome-based conversion (single file)
 # ------------------------------------------------------------------------------
 
 #' Convert SVG to PNG using headless Chrome
@@ -423,26 +535,25 @@ html <- sprintf(
 #'   so dpi = 300 results in approximately 3.125x scaling.
 #' @param background Background color for the HTML page (default "transparent").
 #'   Use "white", "#FFFFFF", etc. for a solid background.
-#' @param timeout Maximum time in seconds to wait for page load (default 30).
+#' @param load_wait Seconds to wait for page to load (default 0.5).
+#'   Increase if fonts are not rendering correctly.
 #'
 #' @return Path to the generated PNG file.
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' svg <- svg_card("FAR", list(), list())
-#' 
-#' # High-quality PNG with Chrome rendering
-#' png_path <- svg_to_png_chrome(svg, "card.png", dpi = 300)
-#' 
-#' # Lower resolution for web
-#' png_path <- svg_to_png_chrome(svg, "card_web.png", dpi = 150)
+#' file_name <- tempfile(fileext = ".png")
+#' \dontrun{
+#' if (chrome_available()) {
+#'   png_path <- svg_to_png_chrome(svg, file_name, dpi = 300)
+#' }
 #' }
 svg_to_png_chrome <- function(svg_input,
-                               output_path = NULL,
-                               dpi = 300,
-                               background = "transparent",
-                               timeout = 30) {
+                              output_path = NULL,
+                              dpi = 300,
+                              background = "transparent",
+                              load_wait = 0.5) {
   
   if (!requireNamespace("chromote", quietly = TRUE)) {
     cli::cli_abort(c(
@@ -464,50 +575,24 @@ svg_to_png_chrome <- function(svg_input,
     svg_content <- as.character(svg_input)
   }
   
-  # Sanitize SVG (remove problematic metadata, but keep @import for Chrome)
-  # We only remove Inkscape/sodipodi stuff, not the font imports
-  svg_content <- sanitize_svg_metadata(svg_content)
-  
   if (is.null(output_path)) {
     output_path <- tempfile(fileext = ".png")
   }
   ensure_output_dir(output_path)
   
-  # Calculate scale factor from DPI (Chrome base is 96 DPI)
   scale <- dpi / 96
   
-  # Create HTML wrapper
-  page <- write_svg_html_temp(svg_content, background = background)
-  
-  # Start Chrome session
   b <- chromote::ChromoteSession$new()
-  on.exit({
-    try(b$close(), silent = TRUE)
-  }, add = TRUE)
+  on.exit(cleanup_chromote_session(b), add = TRUE)
   
-  # Navigate to HTML file
-  file_url <- paste0("file://", normalizePath(page$path, winslash = "/"))
-  b$Page$navigate(file_url)
-  b$Page$loadEventFired(timeout = timeout)
+  b64 <- convert_svg_with_session(b, svg_content, scale, background, load_wait)
   
-  # Small delay to ensure fonts are loaded
-  Sys.sleep(0.3)
-  
-  # Set viewport with scale factor for DPI
-  b$Emulation$setDeviceMetricsOverride(
-    width = as.integer(page$width),
-    height = as.integer(page$height),
-    deviceScaleFactor = scale,
-    mobile = FALSE
-  )
-  
-  # Capture screenshot
-  shot <- b$Page$captureScreenshot(format = "png", fromSurface = TRUE)
-  raw <- base64enc::base64decode(shot$data)
+  raw <- base64enc::base64decode(b64)
   writeBin(raw, output_path)
   
   output_path
 }
+
 
 #' Convert SVG to PDF using headless Chrome
 #'
@@ -519,7 +604,7 @@ svg_to_png_chrome <- function(svg_input,
 #' @param output_path Output path for the PDF file.
 #' @param background Background color for the HTML page (default "transparent").
 #' @param print_background Whether to include CSS backgrounds in PDF (default TRUE).
-#' @param timeout Maximum time in seconds to wait for page load (default 30).
+#' @param load_wait Seconds to wait for page to load (default 0.5).
 #'
 #' @return Path to the generated PDF file.
 #' @export
@@ -527,13 +612,15 @@ svg_to_png_chrome <- function(svg_input,
 #' @examples
 #' \dontrun{
 #' svg <- svg_card("FAR", list(), list())
-#' pdf_path <- svg_to_pdf_chrome(svg, "card.pdf")
+#' if (chrome_available()) {
+#'   pdf_path <- svg_to_pdf_chrome(svg, tempfile(fileext = ".pdf"))
+#' }
 #' }
 svg_to_pdf_chrome <- function(svg_input,
-                               output_path,
-                               background = "transparent",
-                               print_background = TRUE,
-                               timeout = 30) {
+                              output_path,
+                              background = "transparent",
+                              print_background = TRUE,
+                              load_wait = 0.5) {
   
   if (!requireNamespace("chromote", quietly = TRUE)) {
     cli::cli_abort(c(
@@ -555,29 +642,21 @@ svg_to_pdf_chrome <- function(svg_input,
     svg_content <- as.character(svg_input)
   }
   
-  # Sanitize SVG metadata only (keep @import for Chrome)
   svg_content <- sanitize_svg_metadata(svg_content)
-  
   ensure_output_dir(output_path)
   
-  # Create HTML wrapper
   page <- write_svg_html_temp(svg_content, background = background)
   
-  # Start Chrome session
   b <- chromote::ChromoteSession$new()
-  on.exit({
-    try(b$close(), silent = TRUE)
-  }, add = TRUE)
+  on.exit(cleanup_chromote_session(b), add = TRUE)
   
-  # Navigate to HTML file
   file_url <- paste0("file://", normalizePath(page$path, winslash = "/"))
-  b$Page$navigate(file_url)
-  b$Page$loadEventFired(timeout = timeout)
   
-  # Small delay for font loading
-  Sys.sleep(0.3)
+  # Navigate without waiting for event
+  b$Page$navigate(file_url, wait_ = FALSE)
+  Sys.sleep(load_wait)
   
-  # Generate PDF with exact page size (inches = pixels / 96)
+  # Generate PDF
   pdf <- b$Page$printToPDF(
     printBackground = print_background,
     marginTop = 0,
@@ -596,31 +675,249 @@ svg_to_pdf_chrome <- function(svg_input,
 }
 
 # ------------------------------------------------------------------------------
-# Internal: sanitize SVG metadata only (not @import)
+# Public API: Batch conversion
 # ------------------------------------------------------------------------------
 
-#' Sanitize SVG metadata for Chrome rendering
+#' Batch convert SVGs to PNG base64 using headless Chrome
 #'
 #' @description
-#' Removes problematic Inkscape/Sodipodi metadata that can cause issues,
-#' but preserves @import rules since Chrome handles them correctly.
+#' Converts multiple SVGs to base64-encoded PNG strings using a single
+#' Chrome session. Much faster than calling svg_to_png_chrome() repeatedly.
 #'
-#' @param svg_content SVG string.
-#' @return Sanitized SVG string.
-#' @keywords internal
-sanitize_svg_metadata <- function(svg_content) {
-  svg <- as.character(svg_content)
+#' @param svg_list List of SVG strings or file paths.
+#' @param dpi Resolution (default 300).
+#' @param background Background color (default "transparent").
+#' @param load_wait Seconds to wait for each page to load (default 0.5).
+#'   Increase if conversions are failing.
+#' @param restart_every Restart Chrome session every N conversions (default 50).
+#'   Helps prevent memory issues and stale connections.
+#' @param retry_attempts Number of retry attempts on failure (default 3).
+#' @param progress Show progress bar (default TRUE).
+#'
+#' @return Character vector of base64-encoded PNGs (data URI format).
+#'   Returns NA for failed conversions.
+#' @export
+batch_svg_to_base64_chrome <- function(svg_list,
+                                       dpi = 300,
+                                       background = "transparent",
+                                       load_wait = 0.5,
+                                       restart_every = 50,
+                                       retry_attempts = 3,
+                                       progress = TRUE) {
   
-  # Remove problematic metadata blocks (safe for rendering)
-  svg <- gsub("<sodipodi:namedview[^>]*?/\\s*>", "", svg, perl = TRUE)
-  svg <- gsub("<sodipodi:namedview[\\s\\S]*?</sodipodi:namedview\\s*>", "", svg, perl = TRUE)
-  svg <- gsub("<inkscape:page[^>]*?/\\s*>", "", svg, perl = TRUE)
-  svg <- gsub("<inkscape:page[\\s\\S]*?</inkscape:page\\s*>", "", svg, perl = TRUE)
-  svg <- gsub("<metadata[\\s\\S]*?</metadata\\s*>", "", svg, perl = TRUE)
+  if (!requireNamespace("chromote", quietly = TRUE)) {
+    cli::cli_abort(c(
+      "x" = "Package {.pkg chromote} is required.",
+      "i" = "Install with: {.code install.packages('chromote')}"
+    ))
+  }
   
-  # Remove attributes with undefined prefixes
-  svg <- gsub("\\s+sodipodi:[a-zA-Z0-9_.-]+\\s*=\\s*\"[^\"]*\"", "", svg, perl = TRUE)
-  svg <- gsub("\\s+inkscape:[a-zA-Z0-9_.-]+\\s*=\\s*\"[^\"]*\"", "", svg, perl = TRUE)
+  n <- length(svg_list)
+  results <- rep(NA_character_, n)
+  scale <- dpi / 96
   
-  svg
+  if (progress) cli::cli_progress_bar("Converting SVGs", total = n)
+  
+  b <- start_chrome_session(NULL)
+  
+  on.exit({
+    tryCatch(cleanup_chromote_session(b), error = function(e) NULL)
+  }, add = TRUE)
+  
+  for (i in seq_len(n)) {
+    # Restart session periodically
+    if (i > 1 && ((i - 1) %% restart_every == 0)) {
+      if (progress) cli::cli_alert_info("Restarting Chrome session at item {i}...")
+      b <- start_chrome_session(b)
+    }
+    
+    svg_input <- svg_list[[i]]
+    success <- FALSE
+    attempt <- 0
+    current_wait <- load_wait
+    
+    # Read SVG content once
+    if (is.character(svg_input) && length(svg_input) == 1 && file.exists(svg_input)) {
+      svg_content <- paste(readLines(svg_input, warn = FALSE), collapse = "\n")
+    } else {
+      svg_content <- as.character(svg_input)
+    }
+    
+    while (!success && attempt < retry_attempts) {
+      attempt <- attempt + 1
+      
+      result <- tryCatch({
+        b64 <- convert_svg_with_session(b, svg_content, scale, background, current_wait)
+        list(success = TRUE, data = paste0("data:image/png;base64,", b64))
+      }, error = function(e) {
+        list(success = FALSE, error = e$message)
+      })
+      
+      if (result$success) {
+        results[[i]] <- result$data
+        success <- TRUE
+      } else {
+        if (attempt < retry_attempts) {
+          if (progress) {
+            cli::cli_alert_warning(
+              "Item {i} failed (attempt {attempt}/{retry_attempts}). Restarting session..."
+            )
+          }
+          b <- start_chrome_session(b)
+          current_wait <- current_wait + 0.3  # Increase wait time on retry
+        } else {
+          if (progress) {
+            cli::cli_alert_danger("Item {i} failed: {result$error}")
+          }
+        }
+      }
+    }
+    
+    if (progress) cli::cli_progress_update()
+  }
+  
+  if (progress) {
+    cli::cli_progress_done()
+    n_success <- sum(!is.na(results))
+    n_failed <- n - n_success
+    if (n_failed > 0) {
+      cli::cli_alert_warning("Completed: {n_success} successful, {n_failed} failed")
+    } else {
+      cli::cli_alert_success("All {n} conversions completed successfully")
+    }
+  }
+  
+  results
+}
+
+
+#' Batch convert SVGs to PNG files using headless Chrome
+#'
+#' @description
+#' Converts multiple SVGs to PNG files using a single Chrome session.
+#' Much faster than calling svg_to_png_chrome() repeatedly.
+#'
+#' @param svg_list List of SVG strings or file paths.
+#' @param output_paths Character vector of output paths. If NULL, temp files are created.
+#' @param dpi Resolution (default 300).
+#' @param background Background color (default "transparent").
+#' @param load_wait Seconds to wait for each page to load (default 0.5).
+#'   Increase if conversions are failing.
+#' @param restart_every Restart Chrome session every N conversions (default 50).
+#' @param retry_attempts Number of retry attempts on failure (default 3).
+#' @param progress Show progress bar (default TRUE).
+#'
+#' @return Character vector of output file paths. Returns NA for failed conversions.
+#' @export
+batch_svg_to_png_chrome <- function(svg_list,
+                                    output_paths = NULL,
+                                    dpi = 300,
+                                    background = "transparent",
+                                    load_wait = 0.5,
+                                    restart_every = 50,
+                                    retry_attempts = 3,
+                                    progress = TRUE) {
+  
+  if (!requireNamespace("chromote", quietly = TRUE)) {
+    cli::cli_abort(c(
+      "x" = "Package {.pkg chromote} is required.",
+      "i" = "Install with: {.code install.packages('chromote')}"
+    ))
+  }
+  if (!requireNamespace("base64enc", quietly = TRUE)) {
+    cli::cli_abort(c(
+      "x" = "Package {.pkg base64enc} is required.",
+      "i" = "Install with: {.code install.packages('base64enc')}"
+    ))
+  }
+  
+  n <- length(svg_list)
+  
+  if (is.null(output_paths)) {
+    output_paths <- vapply(seq_len(n), function(i) tempfile(fileext = ".png"), character(1))
+  }
+  
+  if (length(output_paths) != n) {
+    cli::cli_abort("Length of output_paths must match length of svg_list.")
+  }
+  
+  results <- rep(NA_character_, n)
+  scale <- dpi / 96
+  
+  if (progress) cli::cli_progress_bar("Converting SVGs", total = n)
+  
+  b <- start_chrome_session(NULL)
+  
+  on.exit({
+    tryCatch(cleanup_chromote_session(b), error = function(e) NULL)
+  }, add = TRUE)
+  
+  for (i in seq_len(n)) {
+    # Restart session periodically
+    if (i > 1 && ((i - 1) %% restart_every == 0)) {
+      if (progress) cli::cli_alert_info("Restarting Chrome session at item {i}...")
+      b <- start_chrome_session(b)
+    }
+    
+    svg_input <- svg_list[[i]]
+    output_path <- output_paths[[i]]
+    success <- FALSE
+    attempt <- 0
+    current_wait <- load_wait
+    
+    # Read SVG content once
+    if (is.character(svg_input) && length(svg_input) == 1 && file.exists(svg_input)) {
+      svg_content <- paste(readLines(svg_input, warn = FALSE), collapse = "\n")
+    } else {
+      svg_content <- as.character(svg_input)
+    }
+    
+    while (!success && attempt < retry_attempts) {
+      attempt <- attempt + 1
+      
+      result <- tryCatch({
+        ensure_output_dir(output_path)
+        b64 <- convert_svg_with_session(b, svg_content, scale, background, current_wait)
+        raw <- base64enc::base64decode(b64)
+        writeBin(raw, output_path)
+        list(success = TRUE, path = output_path)
+      }, error = function(e) {
+        list(success = FALSE, error = e$message)
+      })
+      
+      if (result$success) {
+        results[[i]] <- result$path
+        success <- TRUE
+      } else {
+        if (attempt < retry_attempts) {
+          if (progress) {
+            cli::cli_alert_warning(
+              "Item {i} failed (attempt {attempt}/{retry_attempts}). Restarting session..."
+            )
+          }
+          b <- start_chrome_session(b)
+          current_wait <- current_wait + 0.3
+        } else {
+          if (progress) {
+            cli::cli_alert_danger("Item {i} failed: {result$error}")
+          }
+        }
+      }
+    }
+    
+    if (progress) cli::cli_progress_update()
+  }
+  
+  if (progress) {
+    cli::cli_progress_done()
+    n_success <- sum(!is.na(results))
+    n_failed <- n - n_success
+    if (n_failed > 0) {
+      cli::cli_alert_warning("Completed: {n_success} successful, {n_failed} failed")
+    } else {
+      cli::cli_alert_success("All {n} conversions completed successfully")
+    }
+  }
+  
+  results
 }

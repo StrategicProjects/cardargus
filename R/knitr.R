@@ -192,16 +192,14 @@ save_card_for_knitr <- function(svg_string,
 #' @return Invisible NULL.
 #' @export
 #' @examples
-#' \dontrun{
 #' # In your setup chunk:
-#' register_knitr_engine()
+#' register_cardargus_knitr()
 #' 
 #' # Then use cardargus as chunk engine:
 #' # ```{cardargus}
 #' # svg_card(title = "My Card", ...)
 #' # ```
-#' }
-register_knitr_engine <- function() {
+register_cardargus_knitr <- function() {
   if (!requireNamespace("knitr", quietly = TRUE)) {
     cli::cli_abort(c(
       "x" = "Package {.pkg knitr} is required.",

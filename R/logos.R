@@ -16,7 +16,7 @@
 #' @return A list with svg_content, width, and height
 #' @export
 #' @examples
-#' \dontrun{
+#' \dontrun{ # Need a external svg file
 #' # Load a custom logo
 #' logo <- load_svg_for_embed("/path/to/logo.svg", target_height = 40)
 #' 

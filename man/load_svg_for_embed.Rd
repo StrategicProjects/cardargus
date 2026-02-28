@@ -26,7 +26,7 @@ You can pass any SVG file path to the \code{logos}, \code{bottom_logos}, or \cod
 parameters of \code{svg_card()}.
 }
 \examples{
-\dontrun{
+\dontrun{ # Need a external svg file
 # Load a custom logo
 logo <- load_svg_for_embed("/path/to/logo.svg", target_height = 40)
 

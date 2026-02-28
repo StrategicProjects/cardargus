@@ -17,11 +17,10 @@ Checks whether the chromote package can find and use a Chrome or Chromium
 installation for headless rendering.
 }
 \examples{
-\dontrun{
 if (chrome_available()) {
-  svg_to_png_chrome(my_svg, "output.png")
+   cat("Using Chrome")
 } else {
-  svg_to_png(my_svg, "output.png")
+   cat("Using Magick")
 }
-}
+
 }

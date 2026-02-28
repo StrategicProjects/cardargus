@@ -4,9 +4,9 @@
 
 ### Function renames (tidyverse style)
 
-All functions now follow `snake_case` naming convention. Old names are still available as aliases for backward compatibility but may be deprecated in future versions.
+All functions now follow `snake_case` naming convention. The old function names have been removed.
 
-| Old name | New name |
+| Removed function | Use instead |
 |----------|----------|
 | `house_icon_svg()` | `icon_house()` |
 | `building_icon_svg()` | `icon_building()` |
@@ -18,7 +18,7 @@ All functions now follow `snake_case` naming convention. Old names are still ava
 | `setup_cardargus_fonts()` | `setup_fonts()` |
 | `install_cardargus_fonts()` | `install_fonts()` |
 | `cardargus_font_cache_dir()` | `font_cache_dir()` |
-| `register_cardargus_knitr()` | `register_knitr_engine()` |
+| `register_knitr_engine()` | `register_cardargus_knitr()` |
 
 ## New features
 
@@ -128,7 +128,7 @@ Engine options:
 * `include_card()` - Display card inline as SVG
 * `include_card_png()` - Display card inline as PNG
 * `save_card_for_knitr()` - Save for knitr::include_graphics()
-* `register_knitr_engine()` - Register custom knitr engine
+* `register_cardargus_knitr()` - Register custom knitr engine
 * `card_to_grob()` - Convert to grid graphical object
 
 ### Font Management

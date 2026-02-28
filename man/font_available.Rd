@@ -16,8 +16,6 @@ TRUE if font is cached (any supported format), FALSE otherwise
 Check if a font is available for embedding
 }
 \examples{
-\dontrun{
 font_available("Jost")
 font_available("Montserrat")
-}
 }

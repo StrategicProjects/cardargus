@@ -1,25 +1,3 @@
-# fonts.R - Font management functions
-#
-# Download, register, and manage Google Fonts for use with cardargus.
-
-#' Get the path to fonts directory
-#'
-#' @description
-#' `r lifecycle::badge("deprecated")`
-#' 
-#' This function is deprecated. Use [font_cache_dir()] instead to get the
-#' directory where fonts are cached.
-#'
-#' @return Character string with the path to font cache directory
-#' @keywords internal
-fonts_dir <- function() {
-  cli::cli_warn(c(
-    "!" = "{.fn fonts_dir} is deprecated.",
-    "i" = "Use {.fn font_cache_dir} instead."
-  ))
-  font_cache_dir()
-}
-
 #' Get the path to package SVGs directory
 #'
 #' Returns the path to the inst/svgs directory where SVG files are stored.
@@ -47,8 +25,8 @@ get_svg_path <- function(filename, height = NULL, width = NULL) {
   if (path == "") {
     available <- list.files(svgs_dir(), pattern = "\\.svg$", full.names = FALSE)
     cli::cli_abort(c(
-      "x" = "SVG file {.val {filename}} not found.",
-      "i" = "Available files: {.val {available}}"
+      "x" =  glue::glue("SVG file {.val {filename}} not found.", filename = filename),
+      "i" = glue::glue("Available files: {.val {available}}", available = available)
     ))
   }
   
@@ -141,24 +119,32 @@ setup_fonts <- function(fonts = c("Jost", "Montserrat"), auto = TRUE) {
 #' Returns the directory where cardargus caches downloaded font files.
 #' Fonts in this directory are automatically embedded in SVG/PNG exports.
 #'
+#' @param persistent Logical. If TRUE (default), uses persistent cache via
+#'   \code{tools::R_user_dir()}. If FALSE or if persistent cache is unavailable,
+#'   uses a session-specific temporary directory.
 #' @return A character path to the cache directory.
 #' @export
-#' @examples
-#' \dontrun{
-#' font_cache_dir()
-#' # List cached fonts
-#' list.files(font_cache_dir())
-#' }
-font_cache_dir <- function() {
-  dir <- tryCatch(
-    tools::R_user_dir("cardargus", which = "cache"),
-    error = function(e) file.path(path.expand("~"), ".cache", "cardargus")
-  )
+font_cache_dir <- function(persistent = TRUE) {
+  if (persistent) {
+    dir <- tryCatch(
+      tools::R_user_dir("cardargus", which = "cache"),
+      error = function(e) NULL
+    )
+  } else {
+    dir <- NULL
+  }
+  
+  if (is.null(dir)) {
+    dir <- file.path(tempdir(), "cardargus-fonts")
+  }
+  
   if (!dir.exists(dir)) dir.create(dir, recursive = TRUE, showWarnings = FALSE)
   dir
 }
 
 #' Build a cache filename for a font family
+#' @param family Font family name.
+#' @return Path to the cached font file.
 #' @keywords internal
 font_cache_path <- function(family) {
   key <- gsub("[^A-Za-z0-9._-]+", "_", family)
@@ -188,7 +174,7 @@ download_google_font_woff2 <- function(family, weight = "400") {
       )
       
       candidates <- list.files(tmp, pattern = "\\.(woff2|ttf|woff)$", 
-                                full.names = TRUE, recursive = TRUE)
+                               full.names = TRUE, recursive = TRUE)
       
       if (!length(candidates)) stop("No font files downloaded.")
       file.copy(candidates[1], out, overwrite = TRUE)
@@ -253,8 +239,7 @@ download_google_font_woff2 <- function(family, weight = "400") {
     }
   }
   
-  # If woff2 not found, try ttf as last resort and convert if possible
-  # (most systems can use ttf directly anyway)
+  # If woff2 not found, try ttf as last resort
   for (css_url in urls_to_try) {
     css <- tryCatch({
       paste(readLines(css_url, warn = FALSE), collapse = "\n")
@@ -276,7 +261,6 @@ download_google_font_woff2 <- function(family, weight = "400") {
       }, error = function(e) FALSE)
       
       if (isTRUE(ok) && file.exists(ttf_out) && file.info(ttf_out)$size > 1000) {
-        # Return ttf path - embed_svg_fonts will need to handle this
         return(ttf_out)
       }
     }
@@ -345,10 +329,8 @@ ensure_cardargus_fonts <- function(families, weight = "400") {
   cache_dir <- font_cache_dir()
   
   for (fam in families) {
-    # Check for existing cached file in various formats
     key <- gsub("[^A-Za-z0-9._-]+", "_", fam)
     
-    # Try different extensions
     for (ext in c("woff2", "ttf", "woff", "otf")) {
       fp <- file.path(cache_dir, paste0(key, ".", ext))
       if (file.exists(fp)) {
@@ -357,7 +339,6 @@ ensure_cardargus_fonts <- function(families, weight = "400") {
       }
     }
     
-    # If not found, try to download
     if (is.na(out[[fam]])) {
       fp <- download_google_font_woff2(fam, weight = weight)
       out[[fam]] <- if (!is.na(fp) && file.exists(fp)) fp else NA_character_
@@ -373,10 +354,8 @@ ensure_cardargus_fonts <- function(families, weight = "400") {
 #' @return TRUE if font is cached (any supported format), FALSE otherwise
 #' @export
 #' @examples
-#' \dontrun{
 #' font_available("Jost")
 #' font_available("Montserrat")
-#' }
 font_available <- function(family) {
   cache_dir <- font_cache_dir()
   key <- gsub("[^A-Za-z0-9._-]+", "_", family)
@@ -394,9 +373,7 @@ font_available <- function(family) {
 #' @return Character vector of font family names that are cached
 #' @export
 #' @examples
-#' \dontrun{
 #' list_fonts()
-#' }
 list_fonts <- function() {
   cache_dir <- font_cache_dir()
   files <- list.files(cache_dir, pattern = "\\.(woff2|ttf|woff|otf)$", full.names = FALSE)
@@ -414,7 +391,7 @@ list_fonts <- function() {
 #' @return Named logical vector indicating success for each font
 #' @export
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' install_fonts()
 #' install_fonts(c("Jost", "Roboto"))
 #' }
@@ -445,7 +422,7 @@ install_fonts <- function(fonts = c("Jost", "Montserrat", "Roboto", "Open Sans")
     if (verbose) {
       if (success) {
         format_type <- if (grepl("\\.ttf$", fp)) "TTF" else "WOFF2"
-        cli::cli_alert_success("{fam} ({format_type})")
+        cli::cli_alert_success(glue::glue("{fam} ({format_type})", format_type = format_type))
       } else {
         cli::cli_alert_danger("{fam} - check internet connection")
       }
@@ -482,44 +459,32 @@ install_fonts <- function(fonts = c("Jost", "Montserrat", "Roboto", "Open Sans")
 #'   the filename without extension is used.
 #' @return Path to the cached font file (invisible)
 #' @export
-#' @examples
-#' \dontrun{
-#' # Download Jost font from Google Fonts website, then:
-#' register_font("~/Downloads/Jost-Regular.ttf", "Jost")
-#' 
-#' # Now svg_to_png will use this font
-#' card <- svg_card("FAR", list(), list())
-#' svg_to_png(card, "card.png")
-#' }
 register_font <- function(font_path, family = NULL) {
   if (!file.exists(font_path)) {
-    stop("Font file not found: ", font_path)
+    cli::cli_abort("Font file not found: {.path {font_path}}")
   }
   
   ext <- tolower(tools::file_ext(font_path))
   if (!ext %in% c("ttf", "woff2", "woff", "otf")) {
-    stop("Unsupported font format. Use TTF, WOFF2, WOFF, or OTF files.")
+    cli::cli_abort("Unsupported font format. Use TTF, WOFF2, WOFF, or OTF files.")
   }
   
   if (is.null(family)) {
     family <- tools::file_path_sans_ext(basename(font_path))
-    # Clean up common suffixes like -Regular, -Bold, etc.
     family <- gsub("-?(Regular|Bold|Italic|Light|Medium|SemiBold|ExtraBold|Black|Thin).*$", "", family, ignore.case = TRUE)
   }
   
-  # Determine output path
   cache_dir <- font_cache_dir()
   key <- gsub("[^A-Za-z0-9._-]+", "_", family)
   out_path <- file.path(cache_dir, paste0(key, ".", ext))
   
-  # Copy file
   file.copy(font_path, out_path, overwrite = TRUE)
   
   if (file.exists(out_path)) {
-    message(sprintf("Font '%s' registered successfully.", family))
-    message(sprintf("Cached at: %s", out_path))
+    cli::cli_alert_success("Font {.val {family}} registered successfully.")
+    cli::cli_alert_info("Cached at: {.path {out_path}}")
   } else {
-    stop("Failed to copy font file to cache.")
+    cli::cli_abort("Failed to copy font file to cache.")
   }
   
   invisible(out_path)
@@ -538,7 +503,10 @@ register_font <- function(font_path, family = NULL) {
 #' @keywords internal
 embed_svg_fonts <- function(svg_content, font_family, woff2_path) {
   if (!requireNamespace("base64enc", quietly = TRUE)) {
-    stop("Package 'base64enc' is required to embed fonts.")
+    cli::cli_abort(c(
+      "x" = "Package {.pkg base64enc} is required to embed fonts.",
+      "i" = "Install with: {.code install.packages('base64enc')}"
+    ))
   }
   if (is.na(woff2_path) || !file.exists(woff2_path)) {
     return(as.character(svg_content))
@@ -546,49 +514,36 @@ embed_svg_fonts <- function(svg_content, font_family, woff2_path) {
   
   svg <- as.character(svg_content)
   
-  # FIRST: Remove ALL existing @font-face declarations for this font family
-
-  # This prevents duplication when embedding fonts multiple times
-  # Pattern matches @font-face blocks that contain this font family name
-  # Handles both single and double quotes around font-family name
   escaped_family <- gsub("([\\[\\](){}|.+*?^$\\\\])", "\\\\\\1", font_family, perl = TRUE)
   
-  # Remove @font-face blocks for this font family (double quotes)
   pattern_dq <- sprintf('@font-face\\s*\\{[^}]*font-family\\s*:\\s*"%s"[^}]*\\}', escaped_family)
   svg <- gsub(pattern_dq, "", svg, perl = TRUE)
   
-  # Remove @font-face blocks for this font family (single quotes)
   pattern_sq <- sprintf("@font-face\\s*\\{[^}]*font-family\\s*:\\s*'%s'[^}]*\\}", escaped_family)
   svg <- gsub(pattern_sq, "", svg, perl = TRUE)
   
-  # Clean up any resulting empty lines or excessive whitespace
   svg <- gsub("\n{3,}", "\n\n", svg, perl = TRUE)
   
   raw <- readBin(woff2_path, "raw", n = file.info(woff2_path)$size)
   b64 <- base64enc::base64encode(raw)
   
-  # Determine format based on file extension
   ext <- tolower(tools::file_ext(woff2_path))
   
   mime_and_format <- switch(ext,
-    "woff2" = c("font/woff2", "woff2"),
-    "ttf"   = c("font/ttf", "truetype"),
-    "woff"  = c("font/woff", "woff"),
-    "otf"   = c("font/otf", "opentype"),
-    c("font/woff2", "woff2")  # default
+                            "woff2" = c("font/woff2", "woff2"),
+                            "ttf"   = c("font/ttf", "truetype"),
+                            "woff"  = c("font/woff", "woff"),
+                            "otf"   = c("font/otf", "opentype"),
+                            c("font/woff2", "woff2")
   )
   mime_type <- mime_and_format[1]
   format_str <- mime_and_format[2]
   
-  # Create a SINGLE @font-face rule with a weight range
-  # Modern browsers support font-weight ranges: "400 700" covers normal to bold
-  # This is much cleaner than creating multiple identical declarations
   css <- sprintf(
     '@font-face{font-family:"%s";src:url("data:%s;base64,%s") format("%s");font-weight:100 900;font-style:normal;}',
     font_family, mime_type, b64, format_str
   )
   
-  # Insert at the BEGINNING of <style> tag for priority
   if (grepl("<style[^>]*>", svg, perl = TRUE)) {
     svg <- sub("(<style[^>]*>)", paste0("\\1\n", css, "\n"), svg, perl = TRUE)
   } else if (grepl("<defs>", svg, fixed = TRUE)) {
@@ -596,7 +551,6 @@ embed_svg_fonts <- function(svg_content, font_family, woff2_path) {
   } else if (grepl("<defs[^>]*>", svg, perl = TRUE)) {
     svg <- sub("(<defs[^>]*>)", paste0("\\1\n<style>\n", css, "\n</style>\n"), svg, perl = TRUE)
   } else {
-    # No <defs> - insert after <svg> opening tag
     svg <- sub("(<svg[^>]*>)", paste0("\\1\n<defs><style>\n", css, "\n</style></defs>\n"), svg, perl = TRUE)
   }
   
@@ -616,9 +570,8 @@ embed_svg_fonts <- function(svg_content, font_family, woff2_path) {
 prepare_svg_for_raster <- function(svg_content) {
   svg <- as.character(svg_content)
   
-  # sanitize (defined in conversion.R) - also removes @import
   if (!exists("sanitize_svg_for_raster", mode = "function")) {
-    stop("sanitize_svg_for_raster() was not found (it should live in conversion.R).")
+    cli::cli_abort("Internal function {.fn sanitize_svg_for_raster} was not found.")
   }
   svg <- sanitize_svg_for_raster(svg)
   
@@ -631,8 +584,7 @@ prepare_svg_for_raster <- function(svg_content) {
     if (!is.na(fp) && file.exists(fp)) {
       svg <- embed_svg_fonts(svg, font_family = fam, woff2_path = fp)
     } else {
-      # Font not available - warn user
-      warning(sprintf("Font '%s' could not be embedded. PNG may use fallback font.", fam))
+      cli::cli_warn("Font {.val {fam}} could not be embedded. PNG may use fallback font.")
     }
   }
   

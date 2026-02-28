@@ -14,7 +14,9 @@
 #'     \item FALSE or NULL - no icon
 #'     \item A character string - path to an SVG file or raw SVG code
 #'   }
-#' @param bg_color Background color of the card
+#' @param bg_color Background color of the card. Can be a solid color (e.g., "#fab255") 
+#'   or a CSS gradient (e.g., "linear-gradient(to right, #1a5a3a, #2e7d32)" or 
+#'   "linear-gradient(135deg, #667eea, #764ba2)").
 #' @param width Card width in pixels
 #' @param padding Padding inside the card
 #' @param corner_radius Corner radius for rounded corners
@@ -70,6 +72,14 @@
 #'          bg_color = "#fab255",
 #'          logos = c("path/to/logo1.svg", "path/to/logo2.svg"),
 #'          bottom_logos = c("path/to/gov_logo.svg"))
+#' 
+#' # With gradient background
+#' svg_card("MCMV", badges, fields,
+#'          bg_color = "linear-gradient(to right, #1a5a3a, #2e7d32)")
+#' 
+#' # Diagonal gradient
+#' svg_card("Programa", badges, fields,
+#'          bg_color = "linear-gradient(135deg, #667eea, #764ba2)")
 svg_card <- function(title = "FAR",
                      badges_data = list(),
                      fields = list(),
@@ -102,6 +112,18 @@ svg_card <- function(title = "FAR",
   # Generate unique ID for this card
   card_id <- generate_id(title, bg_color, width)
   
+  # ===== GRADIENT BACKGROUND SUPPORT =====
+  # Detect if bg_color is a CSS gradient and convert to SVG
+
+  if (grepl("gradient\\(", bg_color, ignore.case = TRUE)) {
+    bg_grad_id <- paste0("bg_grad_", card_id)
+    bg_gradient_def <- css_gradient_to_svg(bg_color, id = bg_grad_id)
+    bg_fill <- sprintf("url(#%s)", bg_grad_id)
+  } else {
+    bg_gradient_def <- ""
+    bg_fill <- bg_color
+  }
+  
   # Calculate content width
   content_width <- width - 2 * padding
   
@@ -124,13 +146,15 @@ svg_card <- function(title = "FAR",
       <clipPath id="card-clip-%s">
         <rect width="%d" rx="%d" ry="%d"/>
       </clipPath>
+      %s
     </defs>',
     gsub(" ", "+", font),
     font, title_fontsize, title_color,
     font, label_fontsize, label_color,
     font, value_fontsize, value_text_color,
     font, footer_fontsize, footer_color,
-    card_id, width, corner_radius, corner_radius
+    card_id, width, corner_radius, corner_radius,
+    bg_gradient_def
   )
   
   # ===== TITLE =====
@@ -188,6 +212,7 @@ svg_card <- function(title = "FAR",
         font = font,
         fontsize = value_fontsize,
         style = "",
+        shadow_offset = 1,
         height = max_badge_height / 2,  # badge_svg doubles this
         as_string = FALSE
       )
@@ -368,7 +393,7 @@ svg_card <- function(title = "FAR",
   # ===== FOOTER (text left) + BOTTOM LOGOS (right, same line) =====
   footer_logos_svg <- ""
   footer_elements <- character()
-  footer_height <- 0
+  #footer_height <- 0
   footer_present <- (!is.null(footer) || length(bottom_logos) > 0)
 
   # Footer Y positions are computed after final_height is known so we can:
@@ -455,7 +480,7 @@ svg_card <- function(title = "FAR",
 </svg>',
     width, round(final_height), width, round(final_height),
     defs,
-    width, round(final_height), corner_radius, bg_color,
+    width, round(final_height), corner_radius, bg_fill,
     paste(c(elements, footer_elements), collapse = "\n  "),
     top_logos_svg,
     footer_logos_svg

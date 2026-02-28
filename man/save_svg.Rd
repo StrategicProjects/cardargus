@@ -26,8 +26,7 @@ This function expects the font helpers to be available in the package:
 \code{detect_svg_fonts()}, \code{ensure_cardargus_fonts()}, and \code{embed_svg_fonts()}.
 }
 \examples{
-\dontrun{
 svg <- svg_card("FAR", list(), list())
-save_svg(svg, "card.svg")
-}
+save_svg(svg, tempfile(fileext = ".svg"))
+
 }

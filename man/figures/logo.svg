@@ -38,10 +38,12 @@
     </style>
     <linearGradient
        id="cardGrad"
-       x1="0%"
-       y1="0%"
-       x2="100%"
-       y2="100%">
+       x1="20.261515"
+       y1="7.5334059"
+       x2="242.59057"
+       y2="229.86246"
+       gradientTransform="scale(0.91306104,1.095217)"
+       gradientUnits="userSpaceOnUse">
       <stop
          offset="0%"
          style="stop-color:#fab255"
@@ -54,18 +56,20 @@
   </defs>
   <!-- Background hexagon -->
   <polygon
-     points="120,10 220,70 220,190 120,250 20,190 20,70"
+     points="220,70 220,190 120,250 20,190 20,70 120,10 "
      fill="url(#cardGrad)"
      stroke="#d4842a"
      stroke-width="3"
-     id="polygon2" />
+     id="polygon2"
+     style="fill:url(#cardGrad)"
+     transform="translate(0,9)" />
   <!-- Card representation -->
   <!-- Card title bar -->
   <!-- Badge representations -->
   <!-- Field lines -->
   <g
      id="g15"
-     transform="translate(0,8)">
+     transform="translate(0,27)">
     <rect
        x="50"
        y="62"
@@ -174,16 +178,4 @@
   <!-- House icon mini -->
   <!-- Package name -->
   <!-- Tagline -->
-  <text
-     x="119.77056"
-     y="201.73105"
-     font-family="Jost, sans-serif"
-     font-size="15.8232px"
-     fill="#ffffff"
-     text-anchor="middle"
-     opacity="0.9"
-     id="text15"
-     style="stroke-width:1.58232"><tspan
-       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Jost, sans-serif;-inkscape-font-specification:'Jost, sans-serif Bold';stroke-width:1.58232"
-       id="tspan15">SVG Cards for R</tspan></text>
 </svg>

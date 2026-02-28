@@ -47,7 +47,9 @@ and optionally with_icon. The with_icon parameter can be:
 \item A character string - path to an SVG file or raw SVG code
 }}
 
-\item{bg_color}{Background color of the card}
+\item{bg_color}{Background color of the card. Can be a solid color (e.g., "#fab255")
+or a CSS gradient (e.g., "linear-gradient(to right, #1a5a3a, #2e7d32)" or
+"linear-gradient(135deg, #667eea, #764ba2)").}
 
 \item{width}{Card width in pixels}
 
@@ -129,4 +131,12 @@ svg_card("FAR", badges, fields,
          bg_color = "#fab255",
          logos = c("path/to/logo1.svg", "path/to/logo2.svg"),
          bottom_logos = c("path/to/gov_logo.svg"))
+
+# With gradient background
+svg_card("MCMV", badges, fields,
+         bg_color = "linear-gradient(to right, #1a5a3a, #2e7d32)")
+
+# Diagonal gradient
+svg_card("Programa", badges, fields,
+         bg_color = "linear-gradient(135deg, #667eea, #764ba2)")
 }

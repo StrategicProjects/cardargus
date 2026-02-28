@@ -9,7 +9,7 @@ svg_to_pdf_chrome(
   output_path,
   background = "transparent",
   print_background = TRUE,
-  timeout = 30
+  load_wait = 0.5
 )
 }
 \arguments{
@@ -21,7 +21,7 @@ svg_to_pdf_chrome(
 
 \item{print_background}{Whether to include CSS backgrounds in PDF (default TRUE).}
 
-\item{timeout}{Maximum time in seconds to wait for page load (default 30).}
+\item{load_wait}{Seconds to wait for page to load (default 0.5).}
 }
 \value{
 Path to the generated PDF file.
@@ -33,6 +33,8 @@ This method produces vector PDFs with perfect font rendering.
 \examples{
 \dontrun{
 svg <- svg_card("FAR", list(), list())
-pdf_path <- svg_to_pdf_chrome(svg, "card.pdf")
+if (chrome_available()) {
+  pdf_path <- svg_to_pdf_chrome(svg, tempfile(fileext = ".pdf"))
+}
 }
 }

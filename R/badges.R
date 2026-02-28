@@ -54,11 +54,17 @@ create_badge <- function(label, value, color,
   height_value <- as.numeric(metrics_value["ascent"]) + as.numeric(metrics_value["descent"])
   current_height <- max(height_label, height_value)
   
-  if (!is.null(height)) {
-    current_height <- max(height, current_height, na.rm = TRUE)
-  }
+  # if (!is.null(height)) {
+  #   current_height <- max(height, current_height, na.rm = TRUE)
+  # }
+  # 
+  # final_height <- current_height * 2
   
-  final_height <- current_height * 2
+  if (!is.null(height)) {
+    final_height <- height * 2  # Usar altura especificada diretamente
+  } else {
+    final_height <- current_height * 2
+  }
   
   # Text positions (exactly as original)
   left_text_x <- horiz_padding + width_label / 2
@@ -257,20 +263,38 @@ create_badge_row <- function(badges_data,
 #' @return SVG gradient definition
 #' @keywords internal
 css_gradient_to_svg <- function(css_gradient, id = "grad") {
-  # Simple linear gradient parser
-  # This handles basic cases like "linear-gradient(to right, #color1, #color2)"
+
+  # Linear gradient parser supporting directional keywords and angles
+  # Handles: "linear-gradient(to right, #color1, #color2)"
+  #          "linear-gradient(135deg, #color1, #color2)"
   
-  if (grepl("to right", css_gradient, ignore.case = TRUE)) {
+  # Check for angle in degrees (e.g., "45deg", "135deg")
+  angle_match <- regmatches(css_gradient, regexpr("(\\d+)deg", css_gradient))
+  
+  if (length(angle_match) > 0 && nchar(angle_match) > 0) {
+    # Extract angle value and convert to SVG coordinates
+    angle <- as.numeric(gsub("deg", "", angle_match))
+    # CSS angles: 0deg = to top, 90deg = to right, 180deg = to bottom
+    # SVG uses coordinates, so we need to convert
+    rad <- (angle - 90) * pi / 180
+    x1 <- sprintf("%.0f%%", 50 - 50 * cos(rad))
+    y1 <- sprintf("%.0f%%", 50 - 50 * sin(rad))
+    x2 <- sprintf("%.0f%%", 50 + 50 * cos(rad))
+    y2 <- sprintf("%.0f%%", 50 + 50 * sin(rad))
+  } else if (grepl("to right", css_gradient, ignore.case = TRUE)) {
     x1 <- "0%"; y1 <- "0%"; x2 <- "100%"; y2 <- "0%"
   } else if (grepl("to left", css_gradient, ignore.case = TRUE)) {
     x1 <- "100%"; y1 <- "0%"; x2 <- "0%"; y2 <- "0%"
   } else if (grepl("to bottom", css_gradient, ignore.case = TRUE)) {
     x1 <- "0%"; y1 <- "0%"; x2 <- "0%"; y2 <- "100%"
+  } else if (grepl("to top", css_gradient, ignore.case = TRUE)) {
+    x1 <- "0%"; y1 <- "100%"; x2 <- "0%"; y2 <- "0%"
   } else {
+    # Default: top to bottom
     x1 <- "0%"; y1 <- "0%"; x2 <- "0%"; y2 <- "100%"
   }
   
-  # Extract colors
+  # Extract colors (hex codes)
   colors <- regmatches(css_gradient, gregexpr("#[0-9A-Fa-f]{3,8}", css_gradient))[[1]]
   if (length(colors) < 2) {
     colors <- c("#ffffff", "#000000")

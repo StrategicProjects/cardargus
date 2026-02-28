@@ -14,10 +14,8 @@ Attempts to find a Chrome or Chromium executable on the system.
 Checks common installation paths and environment variables.
 }
 \examples{
-\dontrun{
 path <- find_chrome_path()
 if (!is.null(path)) {
   message("Chrome found at: ", path)
-}
 }
 }

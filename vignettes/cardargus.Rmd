@@ -81,7 +81,7 @@ For chunk-based workflow, register the cardargus engine:
 
 ```{r engine, eval=FALSE}
 # In setup chunk
-register_knitr_engine()
+register_cardargus_knitr()
 
 # Then use cardargus chunks:
 # ```{cardargus}

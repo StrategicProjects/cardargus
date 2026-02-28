@@ -132,10 +132,9 @@ parse_svg_root_dim <- function(svg_content, attr = c("width", "height")) {
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' svg <- svg_card("FAR", list(), list())
-#' save_svg(svg, "card.svg")
-#' }
+#' save_svg(svg, tempfile(fileext = ".svg"))
+#' 
 save_svg <- function(svg_content, output_path) {
   ensure_output_dir(output_path)
   
@@ -184,11 +183,10 @@ save_svg <- function(svg_content, output_path) {
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' svg <- svg_card("FAR", list(), list())
-#' png_path <- svg_to_png(svg, "output.png", dpi = 300)
-#' png_path <- svg_to_png(svg, "output.png", dpi = 300, background = "white")
-#' }
+#' file_name <- tempfile(fileext = ".png")
+#' png_path <- svg_to_png(svg, file_name, dpi = 300)
+#' png_path <- svg_to_png(svg, file_name, dpi = 300, background = "white")
 svg_to_png <- function(svg_input,
                        output_path = NULL,
                        width = NULL,

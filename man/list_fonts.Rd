@@ -13,7 +13,5 @@ Character vector of font family names that are cached
 List registered/cached fonts
 }
 \examples{
-\dontrun{
 list_fonts()
-}
 }

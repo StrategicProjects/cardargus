@@ -25,7 +25,13 @@ knitr::opts_chunk$set(
 
 ## Installation
 
-You can install the development version of cardargus from [GitHub](https://github.com/) with:
+Install from CRAN:
+
+```{r}
+install.packages("cardargus")
+```
+
+Or install the development version from GitHub:
 
 ```r
 # install.packages("devtools")
@@ -126,7 +132,7 @@ For chunk-based workflows, register the cardargus knitr engine:
 
 ```{r engine}
 # In your setup chunk
-register_knitr_engine()
+register_cardargus_knitr()
 ```
 Then use `cardargus` as a chunk engine:
 
@@ -140,11 +146,41 @@ svg_card(title = "My Card", ...)
 
 - 📦 **Self-contained SVG**: All styles and fonts embedded
 - 🎨 **Customizable**: Colors, fonts, icons, and layouts
+- 🌈 **Gradient Backgrounds**: CSS-style linear gradients support
 - 🏷️ **Badges**: Shields.io-style with dynamic colors and uniform height
 - 🖼️ **Icons**: Built-in SVG icon library
 - 📄 **Export**: High-quality PNG with transparent background
 - 🔤 **Google Fonts**: Native support via showtext/sysfonts
 - 📊 **R Markdown/Quarto**: Direct display functions
+
+## Gradient Backgrounds
+
+Use CSS-style linear gradients for dynamic card backgrounds:
+
+```{r gradient-example, eval=FALSE}
+# Horizontal gradient
+card <- svg_card(
+  title = "HOUSING",
+  bg_color = "linear-gradient(to right, #1a5a3a, #2e7d32)",
+  ...
+)
+
+# Diagonal gradient  
+card <- svg_card(
+  title = "PROGRAM",
+  bg_color = "linear-gradient(135deg, #667eea, #764ba2)",
+  ...
+)
+
+# Vertical gradient
+card <- svg_card(
+  title = "PROJECT",
+  bg_color = "linear-gradient(to bottom, #00c6ff, #0072ff)",
+  ...
+)
+```
+
+Supported directions: `to right`, `to left`, `to top`, `to bottom`, or angles like `45deg`, `135deg`, `180deg`.
 
 ## Custom Cards
 

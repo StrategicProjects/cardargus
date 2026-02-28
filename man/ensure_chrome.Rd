@@ -33,14 +33,11 @@ Alternatively, you can:
 }
 }
 \examples{
-\dontrun{
 # Check and report status
 ensure_chrome()
 
 # Download Chrome if not available
+\dontrun{
 ensure_chrome(download = TRUE)
-
-# Then use Chrome rendering
-svg_to_png_chrome(my_svg, "output.png")
 }
 }

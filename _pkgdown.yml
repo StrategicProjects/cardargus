@@ -3,8 +3,8 @@ url: https://monitoramento.pe.gov.br/cardargus
 template:
   bootstrap: 5
   bootswatch: flatly
-  bslib:
-    primary: "#fab255"
+#  bslib:
+#    primary: "#fab255"
     
 home:
   title: cardargus - SVG Cards for R
@@ -85,7 +85,6 @@ reference:
       - font_available
       - list_fonts
       - font_cache_dir
-      - fonts_dir
       - get_font_css
       
   - title: Export
@@ -112,7 +111,7 @@ reference:
       - include_card
       - include_card_png
       - save_card_for_knitr
-      - register_knitr_engine
+      - register_cardargus_knitr
       - card_to_grob
       
   - title: Utilities

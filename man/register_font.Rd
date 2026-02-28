@@ -19,13 +19,3 @@ Path to the cached font file (invisible)
 Copies a local font file (TTF or WOFF2) to the cardargus cache directory
 so it can be embedded in SVG exports.
 }
-\examples{
-\dontrun{
-# Download Jost font from Google Fonts website, then:
-register_font("~/Downloads/Jost-Regular.ttf", "Jost")
-
-# Now svg_to_png will use this font
-card <- svg_card("FAR", list(), list())
-svg_to_png(card, "card.png")
-}
-}
