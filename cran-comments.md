@@ -1,81 +1,35 @@
-# CRAN Submission Comments
+# cran-comments — cardargus 0.2.4
+
+## Submission summary
+
+This is a maintenance release submitted shortly after 0.2.3 to resolve the
+additional `donttest` issue reported by the CRAN auto-check service for the
+previously released version.
+
+The issue: some examples (`install_fonts()`, `svg_to_png()`, `save_svg()`)
+downloaded Google Fonts into the persistent user cache
+(`tools::R_user_dir("cardargus", "cache")`), which writes to the user's home
+filespace during checks when network access is available on the check machine.
+
+The fix: `font_cache_dir()` now detects `R CMD check` via the
+`_R_CHECK_PACKAGE_NAME_` environment variable and routes all font downloads to a
+session-specific temporary directory. Examples, tests and vignettes therefore no
+longer write anything under `~/.cache`. Interactive and normal use is unchanged
+(the persistent cache remains the default).
 
 ## R CMD check results
 
-0 errors ✔ | 0 warnings ✔ | 0 notes ✔
-
-
-* this is a resubmission
-
-# Response to CRAN Team (2026-02-04)
-
-Dear Prof. Ripley and CRAN Team,
-
-Thank you for notifying me about the check results for cardargus.
-
-Changes made:
-
-1. **Startup message fixed**: Corrected the unsuppressible startup message issue 
-   by ensuring all package messages use `packageStartupMessage()` properly and 
-   can be suppressed with `suppressPackageStartupMessages()`.
-
-2. **Documentation updated**: Adjusted documentation to resolve the reported 
-   NOTEs and WARNs on macOS platforms.
-
-### R CMD check results
-
 0 errors | 0 warnings | 0 notes
 
-Thank you for your review.
-
-Best regards,
-Andre Leite
-
-
-
-# Dear Konstanze, Thank you for your review and feedback. I have made the requested changes:
-
-1. **Single quotes**: Removed single quotes from terms that are not package/software names (e.g., 'SVG' → SVG)
-
-2. **\dontrun{} replacement**: 
-   - Replaced `\dontrun{}` with `\donttest{}` for examples that download data or require external resources (Chrome, files, network access)
-   - Unwrapped examples that execute in < 5 seconds and don't require external dependencies
-   - The svg_to_*_chrome() example uses \dontrun{} because it requires an external Chrome/Chromium installation
-     and the chromote package leaves supervisor connections open that cannot be cleanly closed within the example context.
-
-3. **Examples structure**: Functions that download data (e.g., `install_fonts()`) now use `\donttest{}` instead of `\dontrun{}`
-
-
-# Uwe Ligges: Found the following (possibly) invalid URLs:
-  - URL: https://monitoramento.pe.gov.br/cardargus/
-  - Thank you for your feedback. The invalid URL has been removed. 
+Verified locally with `R CMD check --as-cran --run-donttest`; the home cache
+(`~/.cache/R/cardargus`) is left untouched by the check.
 
 ## Test environments
 
-* local R installation (macOS), R 4.3.x
-* GitHub Actions (ubuntu-latest), R release
-* GitHub Actions (windows-latest), R release
-* R-hub (multiple platforms)
+* local: macOS, R 4.6.0
+* GitHub Actions: ubuntu-latest (R release), windows-latest (R release)
+* win-builder: R-devel
 
-## Package purpose
+## Reverse dependencies
 
-cardargus creates self-contained SVG information cards with embedded Google Fonts, 
-badges, and logos. The cards are portable SVG files that can be used in dashboards, 
-reports, and web applications.
-
-## Dependencies
-
-The package depends on:
-- gdtools: For text metrics and font handling
-- digest: For generating unique IDs
-- stringr: For string manipulation
-- rsvg: For SVG to PNG conversion
-- magick: For image processing
-
-All dependencies are on CRAN.
-
-## Notes
-
-- This is the first CRAN submission for this package
-- The package includes bundled SVG logos in inst/svgs/ for demonstration purposes
-- Font management functions require internet access to download Google Fonts
+There are no reverse dependencies.
