@@ -9,7 +9,7 @@
 ![CRAN
 Downloads](https://cranlogs.r-pkg.org/badges/grand-total/cardargus)  
 ![License](https://img.shields.io/badge/license-MIT-darkviolet.svg) 
-![](https://img.shields.io/badge/devel%20version-0.1.2-blue.svg)
+![](https://img.shields.io/badge/devel%20version-0.2.4-blue.svg)
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
