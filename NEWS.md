@@ -17,6 +17,11 @@
 
 ## Internal / maintenance
 
+* SVG geometry and font-family parsing now use `xml2` (a new soft dependency in
+  Suggests) with a regex fallback, making them robust to attribute order,
+  quoting, units (`px`/`%`), whitespace and viewBox-only sizing. Affects
+  `parse_svg_root_dim()`, `detect_svg_fonts()`, `load_svg_for_embed()`, the logo
+  rows and custom-icon sizing (#13).
 * `generate_id()` is now deterministic (session-local counter) instead of using
   `runif()`, improving reproducibility (#12).
 * Removed dead `footer_logos_svg` placeholder in `svg_card()` (#6).

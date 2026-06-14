@@ -267,13 +267,9 @@ svg_card <- function(title = "FAR",
       } else if (is.character(first_field_icon)) {
         # Use custom SVG provided
         icon_svg <- first_field_icon
-        # Try to extract height from SVG, default to 56
-        height_match <- regmatches(first_field_icon, regexpr('height="[0-9.]+"', first_field_icon))
-        icon_height <- if (length(height_match) > 0) {
-          as.numeric(gsub('[^0-9.]', '', height_match))
-        } else {
-          56
-        }
+        # Try to extract height from SVG (xml2 with regex fallback), default to 56
+        icon_h <- svg_dimension(first_field_icon, "height", prefer = "attr")
+        icon_height <- if (!is.na(icon_h)) icon_h else 56
       } else {
         has_icon <- FALSE
         icon_width <- 0

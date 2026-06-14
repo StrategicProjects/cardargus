@@ -39,19 +39,17 @@ load_svg_for_embed <- function(svg_path, target_height = 40, target_width = NULL
   svg_content <- gsub('<\\?xml[^>]*\\?>', '', svg_content)
   svg_content <- gsub('<!--[^>]*-->', '', svg_content)
   
-  # Extract original dimensions from viewBox or width/height
-  viewbox_match <- regmatches(svg_content, regexec('viewBox="([^"]*)"', svg_content))[[1]]
-  width_match <- regmatches(svg_content, regexec('width="([0-9.]+)', svg_content))[[1]]
-  height_match <- regmatches(svg_content, regexec('height="([0-9.]+)', svg_content))[[1]]
-  
-  # Determine original dimensions
-  if (length(viewbox_match) > 1) {
-    vb_parts <- as.numeric(strsplit(viewbox_match[2], "\\s+")[[1]])
-    orig_width <- vb_parts[3]
-    orig_height <- vb_parts[4]
-  } else if (length(width_match) > 1 && length(height_match) > 1) {
-    orig_width <- as.numeric(width_match[2])
-    orig_height <- as.numeric(height_match[2])
+  # Extract original dimensions from viewBox (preferred for aspect ratio) or
+  # width/height. Parsing delegated to xml2 with regex fallback (R/xml_utils.R).
+  geom <- svg_geometry(svg_content)
+  has_viewbox <- !is.na(geom$vb_w) && !is.na(geom$vb_h)
+
+  if (has_viewbox) {
+    orig_width <- geom$vb_w
+    orig_height <- geom$vb_h
+  } else if (!is.na(geom$attr_w) && !is.na(geom$attr_h)) {
+    orig_width <- geom$attr_w
+    orig_height <- geom$attr_h
   } else {
     # Default to square if can't determine
     orig_width <- 100
@@ -68,7 +66,7 @@ load_svg_for_embed <- function(svg_path, target_height = 40, target_width = NULL
   svg_content <- gsub('(<svg[^>]*?)\\s+height="[^"]*"', '\\1', svg_content)
   
   # Ensure viewBox exists
-  if (length(viewbox_match) < 2) {
+  if (!has_viewbox) {
     svg_content <- gsub('<svg', sprintf('<svg viewBox="0 0 %s %s"', orig_width, orig_height), svg_content)
   }
   
@@ -124,12 +122,11 @@ create_logo_row <- function(logos, target_height = 40, spacing = 10,
       total_width <- total_width + processed$width + (if (i > 1) spacing else 0)
     } else if (is.character(logo)) {
       # It's already SVG content - extract dimensions and resize
-      width_match <- regmatches(logo, regexec('width="([0-9.]+)', logo))[[1]]
-      height_match <- regmatches(logo, regexec('height="([0-9.]+)', logo))[[1]]
-      
-      if (length(width_match) > 1 && length(height_match) > 1) {
-        orig_width <- as.numeric(width_match[2])
-        orig_height <- as.numeric(height_match[2])
+      logo_dims <- svg_dims(logo, prefer = "attr")
+
+      if (!is.na(logo_dims$width) && !is.na(logo_dims$height)) {
+        orig_width <- logo_dims$width
+        orig_height <- logo_dims$height
         aspect_ratio <- orig_width / orig_height
         new_width <- round(target_height * aspect_ratio)
         
@@ -201,12 +198,11 @@ create_bottom_logo_row <- function(logos, target_height = 30, spacing = 10,
       processed_logos[[i]] <- processed
       total_width <- total_width + processed$width + (if (i > 1) spacing else 0)
     } else if (is.character(logo)) {
-      width_match <- regmatches(logo, regexec('width="([0-9.]+)', logo))[[1]]
-      height_match <- regmatches(logo, regexec('height="([0-9.]+)', logo))[[1]]
-      
-      if (length(width_match) > 1 && length(height_match) > 1) {
-        orig_width <- as.numeric(width_match[2])
-        orig_height <- as.numeric(height_match[2])
+      logo_dims <- svg_dims(logo, prefer = "attr")
+
+      if (!is.na(logo_dims$width) && !is.na(logo_dims$height)) {
+        orig_width <- logo_dims$width
+        orig_height <- logo_dims$height
         aspect_ratio <- orig_width / orig_height
         new_width <- round(target_height * aspect_ratio)
         
