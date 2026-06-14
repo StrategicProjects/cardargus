@@ -9,7 +9,12 @@ font_cache_dir(persistent = TRUE)
 \arguments{
 \item{persistent}{Logical. If TRUE (default), uses persistent cache via
 \code{tools::R_user_dir()}. If FALSE or if persistent cache is unavailable,
-uses a session-specific temporary directory.}
+uses a session-specific temporary directory.
+
+When running under \code{R CMD check} (detected via the
+\code{_R_CHECK_PACKAGE_NAME_} environment variable), a session-specific
+temporary directory is always used, so examples, tests and vignettes never
+write to the user's home filespace (per CRAN policy).}
 }
 \value{
 A character path to the cache directory.
