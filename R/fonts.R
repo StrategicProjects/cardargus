@@ -122,9 +122,19 @@ setup_fonts <- function(fonts = c("Jost", "Montserrat"), auto = TRUE) {
 #' @param persistent Logical. If TRUE (default), uses persistent cache via
 #'   \code{tools::R_user_dir()}. If FALSE or if persistent cache is unavailable,
 #'   uses a session-specific temporary directory.
+#'
+#'   When running under \code{R CMD check} (detected via the
+#'   \code{_R_CHECK_PACKAGE_NAME_} environment variable), a session-specific
+#'   temporary directory is always used, so examples, tests and vignettes never
+#'   write to the user's home filespace (per CRAN policy).
 #' @return A character path to the cache directory.
 #' @export
 font_cache_dir <- function(persistent = TRUE) {
+  # Never write to the user's home filespace during R CMD check / examples.
+  if (persistent && running_under_check()) {
+    persistent <- FALSE
+  }
+
   if (persistent) {
     dir <- tryCatch(
       tools::R_user_dir("cardargus", which = "cache"),
@@ -133,13 +143,27 @@ font_cache_dir <- function(persistent = TRUE) {
   } else {
     dir <- NULL
   }
-  
+
   if (is.null(dir)) {
     dir <- file.path(tempdir(), "cardargus-fonts")
   }
-  
+
   if (!dir.exists(dir)) dir.create(dir, recursive = TRUE, showWarnings = FALSE)
   dir
+}
+
+#' Is the package being checked by `R CMD check`?
+#'
+#' @description
+#' `R CMD check` sets the `_R_CHECK_PACKAGE_NAME_` environment variable for the
+#' duration of the check (including while running examples, tests and
+#' vignettes). We use it to route the font cache to a temporary directory so the
+#' check never writes to the user's home filespace.
+#'
+#' @return `TRUE` when running under `R CMD check`, otherwise `FALSE`.
+#' @keywords internal
+running_under_check <- function() {
+  nzchar(Sys.getenv("_R_CHECK_PACKAGE_NAME_"))
 }
 
 #' Build a cache filename for a font family
