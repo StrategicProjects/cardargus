@@ -10,6 +10,8 @@ and 'Quarto' documents.
 
 Useful links:
 
+- <https://strategicprojects.github.io/cardargus/>
+
 - <https://github.com/StrategicProjects/cardargus>
 
 - Report bugs at <https://github.com/StrategicProjects/cardargus/issues>
@@ -19,6 +21,8 @@ Useful links:
 **Maintainer**: Andre Leite <leite@castlab.org>
 
 Authors:
+
+- Andre Leite <leite@castlab.org>
 
 - Hugo Vasconcelos <hugo.vasconcelos@ufpe.br>
 

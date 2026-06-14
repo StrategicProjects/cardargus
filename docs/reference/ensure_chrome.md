@@ -45,8 +45,18 @@ Alternatively, you can:
 ``` r
 # Check and report status
 ensure_chrome()
-#> ✔ Chrome is available: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome
-#> [1] TRUE
+#> ! Chrome/Chromium not found on this system.
+#> 
+#> ── Options to enable Chrome rendering 
+#> Install Chrome or Chromium:
+#>   Linux: `sudo apt install chromium-browser`
+#>   macOS: `brew install --cask google-chrome`
+#>   Windows: Download from <https://www.google.com/chrome/>
+#> Or set path to existing Chrome:
+#>   `Sys.setenv(CHROMOTE_CHROME = "/path/to/chrome")`
+#> Or download Chrome for Testing:
+#>   `ensure_chrome(download = TRUE)`
+#> [1] FALSE
 
 # Download Chrome if not available
 if (FALSE) { # \dontrun{

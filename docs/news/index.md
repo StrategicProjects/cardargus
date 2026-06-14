@@ -1,5 +1,66 @@
 # Changelog
 
+## cardargus 0.2.3 (development)
+
+### Bug fixes
+
+- [`create_badge()`](https://strategicprojects.github.io/cardargus/reference/create_badge.md)
+  now accepts CSS gradient background colors; previously
+  [`is_light_color()`](https://strategicprojects.github.io/cardargus/reference/is_light_color.md)
+  was evaluated before gradient detection and aborted in
+  [`col2rgb()`](https://rdrr.io/r/grDevices/col2rgb.html)
+  ([\#14](https://github.com/StrategicProjects/cardargus/issues/14)).
+- [`css_gradient_to_svg()`](https://strategicprojects.github.io/cardargus/reference/css_gradient_to_svg.md)
+  with a single color now produces a solid gradient of that color
+  instead of falling back to white-to-black
+  ([\#4](https://github.com/StrategicProjects/cardargus/issues/4)).
+- Utility functions in `utils.R`
+  ([`compress_number()`](https://strategicprojects.github.io/cardargus/reference/compress_number.md),
+  [`escape_xml()`](https://strategicprojects.github.io/cardargus/reference/escape_xml.md),
+  [`text_width()`](https://strategicprojects.github.io/cardargus/reference/text_width.md),
+  [`text_height()`](https://strategicprojects.github.io/cardargus/reference/text_height.md),
+  [`wrap_text()`](https://strategicprojects.github.io/cardargus/reference/wrap_text.md))
+  no longer error on `NULL`, `NA`, or length \> 1 input
+  ([\#2](https://github.com/StrategicProjects/cardargus/issues/2)).
+- [`is_light_color()`](https://strategicprojects.github.io/cardargus/reference/is_light_color.md)
+  now validates its input and errors clearly on `NA`, `NULL`, or invalid
+  hex strings instead of returning `NA`/`TRUE` silently
+  ([\#5](https://github.com/StrategicProjects/cardargus/issues/5)).
+- Google Fonts downloaded via `gfonts` are now cached with their real
+  file extension, so `@font-face` declares the correct
+  [`format()`](https://rdrr.io/r/base/format.html)
+  ([\#3](https://github.com/StrategicProjects/cardargus/issues/3)).
+
+### Internal / maintenance
+
+- SVG geometry and font-family parsing now use `xml2` (a new soft
+  dependency in Suggests) with a regex fallback, making them robust to
+  attribute order, quoting, units (`px`/`%`), whitespace and
+  viewBox-only sizing. Affects
+  [`parse_svg_root_dim()`](https://strategicprojects.github.io/cardargus/reference/parse_svg_root_dim.md),
+  [`detect_svg_fonts()`](https://strategicprojects.github.io/cardargus/reference/detect_svg_fonts.md),
+  [`load_svg_for_embed()`](https://strategicprojects.github.io/cardargus/reference/load_svg_for_embed.md),
+  the logo rows and custom-icon sizing
+  ([\#13](https://github.com/StrategicProjects/cardargus/issues/13)).
+- [`generate_id()`](https://strategicprojects.github.io/cardargus/reference/generate_id.md)
+  is now deterministic (session-local counter) instead of using
+  [`runif()`](https://rdrr.io/r/stats/Uniform.html), improving
+  reproducibility
+  ([\#12](https://github.com/StrategicProjects/cardargus/issues/12)).
+- Removed dead `footer_logos_svg` placeholder in
+  [`svg_card()`](https://strategicprojects.github.io/cardargus/reference/svg_card.md)
+  ([\#6](https://github.com/StrategicProjects/cardargus/issues/6)).
+- Network downloads use explicit connect/read timeouts
+  ([\#11](https://github.com/StrategicProjects/cardargus/issues/11)).
+- Added a `tests/testthat/` suite covering the pure utilities
+  ([\#9](https://github.com/StrategicProjects/cardargus/issues/9)).
+- Fixed duplicated roxygen `@param` tags in
+  [`svg_card()`](https://strategicprojects.github.io/cardargus/reference/svg_card.md)
+  and a `lifecycle` reference without the dependency
+  ([\#7](https://github.com/StrategicProjects/cardargus/issues/7),
+  [\#8](https://github.com/StrategicProjects/cardargus/issues/8)).
+  Documentation regenerated with roxygen2 8.0.0.
+
 ## cardargus 0.2.0
 
 CRAN release: 2026-01-31

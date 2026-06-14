@@ -1,5 +1,6 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://strategicprojects.github.io/cardargus/404.html</loc></url>
+<url><loc>https://strategicprojects.github.io/cardargus/CLAUDE.html</loc></url>
 <url><loc>https://strategicprojects.github.io/cardargus/LICENSE-text.html</loc></url>
 <url><loc>https://strategicprojects.github.io/cardargus/articles/badges.html</loc></url>
 <url><loc>https://strategicprojects.github.io/cardargus/articles/cardargus.html</loc></url>
@@ -58,7 +59,10 @@
 <url><loc>https://strategicprojects.github.io/cardargus/reference/list_bundled_svgs.html</loc></url>
 <url><loc>https://strategicprojects.github.io/cardargus/reference/list_fonts.html</loc></url>
 <url><loc>https://strategicprojects.github.io/cardargus/reference/load_svg_for_embed.html</loc></url>
+<url><loc>https://strategicprojects.github.io/cardargus/reference/normalize_font_families.html</loc></url>
+<url><loc>https://strategicprojects.github.io/cardargus/reference/num_lead.html</loc></url>
 <url><loc>https://strategicprojects.github.io/cardargus/reference/parse_svg_root_dim.html</loc></url>
+<url><loc>https://strategicprojects.github.io/cardargus/reference/parse_viewbox.html</loc></url>
 <url><loc>https://strategicprojects.github.io/cardargus/reference/prepare_svg_for_raster.html</loc></url>
 <url><loc>https://strategicprojects.github.io/cardargus/reference/register_cardargus_knitr.html</loc></url>
 <url><loc>https://strategicprojects.github.io/cardargus/reference/register_font.html</loc></url>
@@ -70,11 +74,18 @@
 <url><loc>https://strategicprojects.github.io/cardargus/reference/setup_fonts.html</loc></url>
 <url><loc>https://strategicprojects.github.io/cardargus/reference/start_chrome_session.html</loc></url>
 <url><loc>https://strategicprojects.github.io/cardargus/reference/svg_card.html</loc></url>
+<url><loc>https://strategicprojects.github.io/cardargus/reference/svg_dimension.html</loc></url>
+<url><loc>https://strategicprojects.github.io/cardargus/reference/svg_dims.html</loc></url>
+<url><loc>https://strategicprojects.github.io/cardargus/reference/svg_font_families.html</loc></url>
+<url><loc>https://strategicprojects.github.io/cardargus/reference/svg_font_families_regex.html</loc></url>
+<url><loc>https://strategicprojects.github.io/cardargus/reference/svg_geometry.html</loc></url>
+<url><loc>https://strategicprojects.github.io/cardargus/reference/svg_geometry_regex.html</loc></url>
 <url><loc>https://strategicprojects.github.io/cardargus/reference/svg_to_formats.html</loc></url>
 <url><loc>https://strategicprojects.github.io/cardargus/reference/svg_to_pdf_chrome.html</loc></url>
 <url><loc>https://strategicprojects.github.io/cardargus/reference/svg_to_png.html</loc></url>
 <url><loc>https://strategicprojects.github.io/cardargus/reference/svg_to_png_chrome.html</loc></url>
 <url><loc>https://strategicprojects.github.io/cardargus/reference/svg_to_png_with_margin.html</loc></url>
+<url><loc>https://strategicprojects.github.io/cardargus/reference/svg_xml_parse.html</loc></url>
 <url><loc>https://strategicprojects.github.io/cardargus/reference/svgs_dir.html</loc></url>
 <url><loc>https://strategicprojects.github.io/cardargus/reference/text_height.html</loc></url>
 <url><loc>https://strategicprojects.github.io/cardargus/reference/text_width.html</loc></url>

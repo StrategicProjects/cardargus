@@ -27,5 +27,5 @@ if (chrome_available()) {
 } else {
    cat("Using Magick")
 }
-#> Using Chrome
+#> Using Magick
 ```

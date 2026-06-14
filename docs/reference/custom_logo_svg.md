@@ -1,8 +1,6 @@
 # Generic logo placeholder SVG
 
-**\[deprecated\]**
-
-This function is deprecated. Use
+**Deprecated.** Use
 [`load_svg_for_embed()`](https://strategicprojects.github.io/cardargus/reference/load_svg_for_embed.md)
 instead, or simply pass the SVG file path directly to
 [`svg_card()`](https://strategicprojects.github.io/cardargus/reference/svg_card.md).
