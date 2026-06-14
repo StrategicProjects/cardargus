@@ -39,8 +39,8 @@ vignettes/*.pdf
 # R Environment Variables
 .Renviron
 
-# pkgdown site
-# docs/
+# pkgdown site (built and deployed to the gh-pages branch by GitHub Actions)
+docs/
 
 # translation temp files
 po/*~
