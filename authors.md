@@ -11,7 +11,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/StrategicProjects/cardargus/blob/main/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/StrategicProjects/cardargus/blob/v0.2.4/DESCRIPTION)
 
 Leite A, Vasconcelos H, Bezerra D (2026). *cardargus: Generate SVG
 Information Cards with Embedded Fonts and Badges*. R package version
