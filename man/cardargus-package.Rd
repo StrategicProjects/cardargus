@@ -6,11 +6,14 @@
 \alias{cardargus-package}
 \title{cardargus: Generate SVG Information Cards with Embedded Fonts and Badges}
 \description{
+\if{html}{\figure{logo.svg}{options: style='float: right' alt='logo' width='120'}}
+
 Create self-contained SVG information cards with embedded 'Google Fonts', shields-style badges, and custom logos. Cards are fully portable SVG files ideal for dashboards, reports, and web applications. Includes functions to export cards to PNG format and display them in 'R Markdown' and 'Quarto' documents.
 }
 \seealso{
 Useful links:
 \itemize{
+  \item \url{https://strategicprojects.github.io/cardargus/}
   \item \url{https://github.com/StrategicProjects/cardargus}
   \item Report bugs at \url{https://github.com/StrategicProjects/cardargus/issues}
 }
@@ -21,6 +24,7 @@ Useful links:
 
 Authors:
 \itemize{
+  \item Andre Leite \email{leite@castlab.org}
   \item Hugo Vasconcelos \email{hugo.vasconcelos@ufpe.br}
   \item Diogo Bezerra \email{diogo.bezerra@ufpe.br}
 }

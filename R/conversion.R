@@ -86,28 +86,9 @@ write_svg_tempfile <- function(svg_content) {
 #' @keywords internal
 parse_svg_root_dim <- function(svg_content, attr = c("width", "height")) {
   attr <- match.arg(attr)
-  svg <- as.character(svg_content)
-  
-  # 1) Direct attribute width="..." / height="..."
-  m <- regexpr(paste0(attr, '="[^"]+"'), svg)
-  if (m[1] != -1) {
-    s <- regmatches(svg, m)
-    val <- suppressWarnings(as.numeric(sub(".*?([0-9.]+).*", "\\1", s)))
-    if (!is.na(val)) return(val)
-  }
-  
-  # 2) Fallback to viewBox (minx miny w h)
-  vb <- regmatches(svg, regexec('viewBox="([^"]+)"', svg))[[1]]
-  if (length(vb) > 1) {
-    parts <- strsplit(trimws(vb[2]), "\\s+")[[1]]
-    parts <- suppressWarnings(as.numeric(parts))
-    if (length(parts) == 4 && all(!is.na(parts))) {
-      if (attr == "width") return(parts[3])
-      if (attr == "height") return(parts[4])
-    }
-  }
-  
-  NA_real_
+  # Prefer the width/height attribute, then fall back to viewBox.
+  # Parsing is delegated to xml2 (with a regex fallback); see R/xml_utils.R.
+  svg_dimension(svg_content, attr, prefer = "attr")
 }
 
 # ------------------------------------------------------------------------------

@@ -160,28 +160,38 @@ font_cache_path <- function(family) {
 download_google_font_woff2 <- function(family, weight = "400") {
   out <- font_cache_path(family)
   if (file.exists(out)) return(out)
-  
+
+  key <- gsub("[^A-Za-z0-9._-]+", "_", family)
+
   # Try gfonts package if available
   if (requireNamespace("gfonts", quietly = TRUE)) {
-    ok <- tryCatch({
+    res <- tryCatch({
       tmp <- tempfile("cardargus_font_")
       dir.create(tmp)
-      
+
       gfonts::download_font(
         family = family,
         output_dir = tmp,
         variants = "regular"
       )
-      
-      candidates <- list.files(tmp, pattern = "\\.(woff2|ttf|woff)$", 
+
+      candidates <- list.files(tmp, pattern = "\\.(woff2|ttf|woff|otf)$",
                                full.names = TRUE, recursive = TRUE)
-      
+
       if (!length(candidates)) stop("No font files downloaded.")
-      file.copy(candidates[1], out, overwrite = TRUE)
-      TRUE
-    }, error = function(e) FALSE)
-    
-    if (isTRUE(ok) && file.exists(out)) return(out)
+
+      # Prefer a real woff2; otherwise keep the actual extension so that
+      # embed_svg_fonts() declares the correct @font-face format().
+      woff2 <- candidates[grepl("\\.woff2$", candidates, ignore.case = TRUE)]
+      src <- if (length(woff2)) woff2[1] else candidates[1]
+      ext <- tolower(tools::file_ext(src))
+      dest <- file.path(font_cache_dir(), paste0(key, ".", ext))
+
+      file.copy(src, dest, overwrite = TRUE)
+      dest
+    }, error = function(e) NULL)
+
+    if (!is.null(res) && file.exists(res)) return(res)
   }
   
   # Fallback: fetch CSS from Google Fonts API
@@ -206,6 +216,7 @@ download_google_font_woff2 <- function(family, weight = "400") {
       css <- tryCatch({
         h <- curl::new_handle()
         curl::handle_setheaders(h, "User-Agent" = ua)
+        curl::handle_setopt(h, connecttimeout = 15L, timeout = 60L)
         req <- curl::curl_fetch_memory(css_url, handle = h)
         if (req$status_code == 200) rawToChar(req$content) else NULL
       }, error = function(e) NULL)
@@ -279,37 +290,8 @@ download_google_font_woff2 <- function(family, weight = "400") {
 #' @return Character vector of font family names (unique).
 #' @keywords internal
 detect_svg_fonts <- function(svg_content) {
-  svg <- as.character(svg_content)
-  families <- character()
-  
-  # CSS: font-family: "Jost", sans-serif;
-  css_hits <- gregexpr("font-family\\s*:\\s*([^;}{]+)", svg, perl = TRUE)
-  css_matches <- regmatches(svg, css_hits)[[1]]
-  if (length(css_matches)) {
-    for (m in css_matches) {
-      val <- sub("^font-family\\s*:\\s*", "", m)
-      val <- strsplit(val, ",", fixed = TRUE)[[1]][1]
-      val <- gsub("[\"']", "", trimws(val))
-      if (nzchar(val)) families <- c(families, val)
-    }
-  }
-  
-  # Attributes: font-family="Jost"
-  attr_hits <- gregexpr('font-family\\s*=\\s*"([^"]+)"', svg, perl = TRUE)
-  attr_matches <- regmatches(svg, attr_hits)[[1]]
-  if (length(attr_matches)) {
-    for (m in attr_matches) {
-      val <- sub('^font-family\\s*=\\s*"', "", m)
-      val <- sub('"$', "", val)
-      val <- strsplit(val, ",", fixed = TRUE)[[1]][1]
-      val <- gsub("[\"']", "", trimws(val))
-      if (nzchar(val)) families <- c(families, val)
-    }
-  }
-  
-  families <- unique(families[nzchar(families)])
-  generics <- c("sans-serif", "serif", "monospace", "cursive", "fantasy", "system-ui")
-  families[!(tolower(families) %in% generics)]
+  # Parsing is delegated to xml2 (with a regex fallback); see R/xml_utils.R.
+  svg_font_families(svg_content)
 }
 
 # ------------------------------------------------------------------------------

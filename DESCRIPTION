@@ -1,7 +1,7 @@
 Package: cardargus
 Title: Generate SVG Information Cards with Embedded Fonts and Badges
-Version: 0.2.2
-Date: 2026-02-28
+Version: 0.2.3
+Date: 2026-06-13
 Authors@R: c(
     person("Andre", "Leite", email = "leite@castlab.org", role = c("aut", "cre")),
     person("Hugo", "Vasconcelos", email = "hugo.vasconcelos@ufpe.br", role = "aut"),
@@ -15,7 +15,6 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 Language: en-US
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.3
 URL: https://strategicprojects.github.io/cardargus/, https://github.com/StrategicProjects/cardargus
 BugReports: https://github.com/StrategicProjects/cardargus/issues
 Imports:
@@ -37,6 +36,8 @@ Suggests:
     showtext,
     sysfonts,
     systemfonts,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    xml2
 Config/testthat/edition: 3
 VignetteBuilder: knitr
+Config/roxygen2/version: 8.0.0
