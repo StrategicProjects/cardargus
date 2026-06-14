@@ -425,9 +425,7 @@ icon_money <- function(width = 50, height = 56,
 #' Generic logo placeholder SVG
 #'
 #' @description
-#' `r lifecycle::badge("deprecated")`
-#' 
-#' This function is deprecated. Use [load_svg_for_embed()] instead,
+#' **Deprecated.** Use [load_svg_for_embed()] instead,
 #' or simply pass the SVG file path directly to `svg_card()`.
 #'
 #' @param svg_content Raw SVG content or path to SVG file

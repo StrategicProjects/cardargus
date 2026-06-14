@@ -17,9 +17,7 @@ custom_logo_svg(svg_content, width = 40, height = 40)
 SVG string
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
-
-This function is deprecated. Use \code{\link[=load_svg_for_embed]{load_svg_for_embed()}} instead,
+\strong{Deprecated.} Use \code{\link[=load_svg_for_embed]{load_svg_for_embed()}} instead,
 or simply pass the SVG file path directly to \code{svg_card()}.
 }
 \keyword{internal}

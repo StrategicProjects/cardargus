@@ -88,7 +88,7 @@ Use \code{get_svg_path("filename.svg")} for bundled logos, or any local path.}
 
 \item{gap_to_footer}{Distance (px) between the last info block and the footer row.}
 
-\item{footer_row_padding_bottom}{Bottom padding (px) under the footer row (text + logos).}
+\item{footer_row_padding_bottom}{Bottom padding (px) under the footer row.}
 
 \item{footer_fontsize}{Footer font size}
 

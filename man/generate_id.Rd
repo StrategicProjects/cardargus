@@ -13,6 +13,9 @@ generate_id(...)
 Character string with unique ID
 }
 \description{
-Generate unique ID suffix
+Produces a short, collision-resistant suffix derived from the supplied
+content plus a session-local counter. Using a counter (instead of
+\code{\link[stats:runif]{stats::runif()}}) keeps output deterministic and reproducible within a
+session while remaining unique across calls.
 }
 \keyword{internal}

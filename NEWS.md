@@ -1,3 +1,31 @@
+# cardargus 0.2.3 (development)
+
+## Bug fixes
+
+* `create_badge()` now accepts CSS gradient background colors; previously
+  `is_light_color()` was evaluated before gradient detection and aborted
+  in `col2rgb()` (#14).
+* `css_gradient_to_svg()` with a single color now produces a solid gradient of
+  that color instead of falling back to white-to-black (#4).
+* Utility functions in `utils.R` (`compress_number()`, `escape_xml()`,
+  `text_width()`, `text_height()`, `wrap_text()`) no longer error on `NULL`,
+  `NA`, or length > 1 input (#2).
+* `is_light_color()` now validates its input and errors clearly on `NA`,
+  `NULL`, or invalid hex strings instead of returning `NA`/`TRUE` silently (#5).
+* Google Fonts downloaded via `gfonts` are now cached with their real file
+  extension, so `@font-face` declares the correct `format()` (#3).
+
+## Internal / maintenance
+
+* `generate_id()` is now deterministic (session-local counter) instead of using
+  `runif()`, improving reproducibility (#12).
+* Removed dead `footer_logos_svg` placeholder in `svg_card()` (#6).
+* Network downloads use explicit connect/read timeouts (#11).
+* Added a `tests/testthat/` suite covering the pure utilities (#9).
+* Fixed duplicated roxygen `@param` tags in `svg_card()` and a `lifecycle`
+  reference without the dependency (#7, #8). Documentation regenerated with
+  roxygen2 8.0.0.
+
 # cardargus 0.2.0
 
 ## Breaking changes

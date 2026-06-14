@@ -1,5 +1,9 @@
 # utils.R - Utility functions for SVG cards
 
+# Session-local mutable state (e.g. deterministic id counter for generate_id()).
+.cardargus_state <- new.env(parent = emptyenv())
+.cardargus_state$id_counter <- 0L
+
 #' Check if a color is light
 #'
 #' @param color A hex color string or color name
@@ -9,6 +13,9 @@
 #' is_light_color("#FFFFFF")
 #' is_light_color("#000000")
 is_light_color <- function(color) {
+  if (is.null(color) || length(color) != 1 || is.na(color) || !nzchar(color)) {
+    cli::cli_abort("{.arg color} must be a single non-empty color string.")
+  }
   # Convert color to RGB
   if (grepl("^#", color)) {
     hex <- gsub("^#", "", color)
@@ -20,6 +27,9 @@ is_light_color <- function(color) {
     r <- strtoi(substr(hex, 1, 2), 16)
     g <- strtoi(substr(hex, 3, 4), 16)
     b <- strtoi(substr(hex, 5, 6), 16)
+    if (anyNA(c(r, g, b))) {
+      cli::cli_abort("{.arg color} is not a valid hex color: {.val {color}}.")
+    }
   } else {
     # Try to get RGB from color name
     rgb_vals <- col2rgb(color)
@@ -43,7 +53,8 @@ is_light_color <- function(color) {
 #' compress_number(1234567)
 #' compress_number(36400000)
 compress_number <- function(x, digits = 1) {
-  if (is.na(x) || is.null(x)) return("S/I")
+  if (is.null(x) || length(x) != 1) return("S/I")
+  if (is.na(x)) return("S/I")
   if (x == 0) return("0,0")
   
   abs_x <- abs(x)
@@ -87,11 +98,18 @@ get_font_css <- function(font_name = "Jost", weights = c(400, 500, 600, 700)) {
 
 #' Generate unique ID suffix
 #'
+#' @description
+#' Produces a short, collision-resistant suffix derived from the supplied
+#' content plus a session-local counter. Using a counter (instead of
+#' [stats::runif()]) keeps output deterministic and reproducible within a
+#' session while remaining unique across calls.
+#'
 #' @param ... Values to hash
 #' @return Character string with unique ID
 #' @keywords internal
 generate_id <- function(...) {
-  digest::digest(paste(..., runif(1), sep = "_"), algo = "crc32")
+  .cardargus_state$id_counter <- .cardargus_state$id_counter + 1L
+  digest::digest(paste(..., .cardargus_state$id_counter, sep = "_"), algo = "crc32")
 }
 
 #' Escape XML special characters
@@ -100,7 +118,9 @@ generate_id <- function(...) {
 #' @return Escaped text
 #' @keywords internal
 escape_xml <- function(text) {
-  if (is.na(text) || is.null(text)) return("")
+  if (is.null(text) || length(text) == 0) return("")
+  text <- as.character(text)
+  text[is.na(text)] <- ""
   text <- gsub("&", "&amp;", text)
   text <- gsub("<", "&lt;", text)
   text <- gsub(">", "&gt;", text)
@@ -117,7 +137,7 @@ escape_xml <- function(text) {
 #' @return Numeric width in pixels
 #' @keywords internal
 text_width <- function(text, font = "Jost", fontsize = 12) {
-  if (is.na(text) || text == "") return(0)
+  if (is.null(text) || length(text) != 1 || is.na(text) || text == "") return(0)
   metrics <- gdtools::str_metrics(text, fontname = font, fontsize = fontsize)
   return(as.numeric(metrics["width"]))
 }
@@ -130,7 +150,7 @@ text_width <- function(text, font = "Jost", fontsize = 12) {
 #' @return Numeric height in pixels
 #' @keywords internal
 text_height <- function(text, font = "Jost", fontsize = 12) {
-  if (is.na(text) || text == "") return(fontsize)
+  if (is.null(text) || length(text) != 1 || is.na(text) || text == "") return(fontsize)
   metrics <- gdtools::str_metrics(text, fontname = font, fontsize = fontsize)
   return(as.numeric(metrics["ascent"]) + as.numeric(metrics["descent"]))
 }
@@ -144,8 +164,8 @@ text_height <- function(text, font = "Jost", fontsize = 12) {
 #' @return List with wrapped lines and total height
 #' @keywords internal
 wrap_text <- function(text, max_width, font = "Jost", fontsize = 12) {
-  if (is.na(text) || text == "") {
-    return(list(lines = "", height = fontsize * 1.2))
+  if (is.null(text) || length(text) != 1 || is.na(text) || text == "") {
+    return(list(lines = "", height = fontsize * 1.2, line_height = fontsize * 1.2))
   }
   
   words <- strsplit(text, " ")[[1]]

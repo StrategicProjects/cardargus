@@ -38,9 +38,6 @@
 #' @param footer_row_padding_bottom Bottom padding (px) under the footer row.
 #' @param footer Footer text (e.g., update timestamp)
 #' @param footer_fontsize Footer font size
-#' @param gap_to_footer Distance (px) between the last info block and the footer row.
-#' @param footer_row_padding_bottom Bottom padding (px) under the footer row (text + logos).
-#' @param show_viewer If TRUE (and interactive), preview the SVG in the RStudio Viewer.
 #' @param footer_color Color for footer text (default "white")
 #' @param uniform_row_height If TRUE, keep the height inside a row.
 #' @param show_viewer If TRUE (and interactive), preview the SVG in the Viewer.
@@ -391,7 +388,6 @@ svg_card <- function(title = "FAR",
   }
   
   # ===== FOOTER (text left) + BOTTOM LOGOS (right, same line) =====
-  footer_logos_svg <- ""
   footer_elements <- character()
   #footer_height <- 0
   footer_present <- (!is.null(footer) || length(bottom_logos) > 0)
@@ -475,15 +471,12 @@ svg_card <- function(title = "FAR",
   %s
   <!-- Top-right logos -->
   %s
-  <!-- Footer-row logos (right) -->
-  %s
 </svg>',
     width, round(final_height), width, round(final_height),
     defs,
     width, round(final_height), corner_radius, bg_fill,
     paste(c(elements, footer_elements), collapse = "\n  "),
-    top_logos_svg,
-    footer_logos_svg
+    top_logos_svg
   )
   
   # In interactive / iterative use, also render in the Viewer while still returning the SVG.

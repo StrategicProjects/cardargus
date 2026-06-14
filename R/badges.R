@@ -71,17 +71,26 @@ create_badge <- function(label, value, color,
   right_text_x <- left_width + horiz_padding + extra_right_pad + width_value / 2
   text_y <- final_height * 0.55
   
-  # Determine text colors based on background
-  if (is_light_color(color)) {
+  # Determine text colors based on background.
+  # For gradients, col2rgb() can't parse the CSS string, so judge lightness
+  # from the gradient's first hex stop (fallback: assume a dark background).
+  is_grad <- grepl("gradient\\(", color, ignore.case = TRUE)
+  bg_is_light <- if (is_grad) {
+    hexes <- regmatches(color, gregexpr("#[0-9A-Fa-f]{3,8}", color))[[1]]
+    if (length(hexes)) is_light_color(hexes[1]) else FALSE
+  } else {
+    is_light_color(color)
+  }
+  if (bg_is_light) {
     value_text_shadow <- "#ccc"
     value_text_main <- "#333"
   } else {
     value_text_shadow <- "#010101"
     value_text_main <- "#fff"
   }
-  
+
   # Handle gradient colors
-  if (grepl("gradient\\(", color, ignore.case = TRUE)) {
+  if (is_grad) {
     grad_id <- paste0("grad_", id_suffix)
     svg_grad <- css_gradient_to_svg(color, id = grad_id)
     fill_color <- sprintf("url(#%s)", grad_id)
@@ -296,8 +305,11 @@ css_gradient_to_svg <- function(css_gradient, id = "grad") {
   
   # Extract colors (hex codes)
   colors <- regmatches(css_gradient, gregexpr("#[0-9A-Fa-f]{3,8}", css_gradient))[[1]]
-  if (length(colors) < 2) {
+  if (length(colors) == 0) {
     colors <- c("#ffffff", "#000000")
+  } else if (length(colors) == 1) {
+    # Single color: emit a solid gradient of that color instead of inventing black
+    colors <- c(colors, colors)
   }
   
   stops <- ""

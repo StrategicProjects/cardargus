@@ -4,7 +4,7 @@
 #' @importFrom cli cli_alert_danger cli_progress_step
 #' @importFrom cli cli_h1 cli_h2 cli_h3 cli_bullets cli_warn cli_abort
 #' @importFrom grDevices col2rgb as.raster
-#' @importFrom stats runif setNames
+#' @importFrom stats setNames
 #' @importFrom utils download.file unzip
 #' @keywords internal
 "_PACKAGE"
