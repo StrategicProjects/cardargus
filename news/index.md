@@ -1,6 +1,22 @@
 # Changelog
 
-## cardargus 0.2.3 (development)
+## cardargus 0.2.4
+
+### CRAN policy fix
+
+- The font cache no longer writes to the user’s home filespace during
+  `R CMD check`. When a check is detected (via the
+  `_R_CHECK_PACKAGE_NAME_` environment variable),
+  [`font_cache_dir()`](https://strategicprojects.github.io/cardargus/reference/font_cache_dir.md)
+  routes downloads to a session-specific temporary directory. This
+  resolves the `donttest` additional issue where examples
+  ([`install_fonts()`](https://strategicprojects.github.io/cardargus/reference/install_fonts.md),
+  [`svg_to_png()`](https://strategicprojects.github.io/cardargus/reference/svg_to_png.md),
+  [`save_svg()`](https://strategicprojects.github.io/cardargus/reference/save_svg.md))
+  left `*.woff2` files under `~/.cache/R/cardargus/`. Interactive and
+  normal use is unchanged (the persistent cache is still the default).
+
+## cardargus 0.2.3
 
 ### Bug fixes
 

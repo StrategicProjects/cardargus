@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">cardargus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,7 +41,14 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.2.3" id="cardargus-023-development">cardargus 0.2.3 (development)<a class="anchor" aria-label="anchor" href="#cardargus-023-development"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.2.4" id="cardargus-024">cardargus 0.2.4<a class="anchor" aria-label="anchor" href="#cardargus-024"></a></h2>
+<div class="section level3">
+<h3 id="cran-policy-fix-0-2-4">CRAN policy fix<a class="anchor" aria-label="anchor" href="#cran-policy-fix-0-2-4"></a></h3>
+<ul><li>The font cache no longer writes to the user’s home filespace during <code>R CMD check</code>. When a check is detected (via the <code>_R_CHECK_PACKAGE_NAME_</code> environment variable), <code><a href="../reference/font_cache_dir.html">font_cache_dir()</a></code> routes downloads to a session-specific temporary directory. This resolves the <code>donttest</code> additional issue where examples (<code><a href="../reference/install_fonts.html">install_fonts()</a></code>, <code><a href="../reference/svg_to_png.html">svg_to_png()</a></code>, <code><a href="../reference/save_svg.html">save_svg()</a></code>) left <code>*.woff2</code> files under <code>~/.cache/R/cardargus/</code>. Interactive and normal use is unchanged (the persistent cache is still the default).</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.3" id="cardargus-023">cardargus 0.2.3<a class="anchor" aria-label="anchor" href="#cardargus-023"></a></h2>
 <div class="section level3">
 <h3 id="bug-fixes-0-2-3">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-2-3"></a></h3>
 <ul><li>

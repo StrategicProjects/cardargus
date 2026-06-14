@@ -18,6 +18,11 @@ font_cache_dir(persistent = TRUE)
   FALSE or if persistent cache is unavailable, uses a session-specific
   temporary directory.
 
+  When running under `R CMD check` (detected via the
+  `_R_CHECK_PACKAGE_NAME_` environment variable), a session-specific
+  temporary directory is always used, so examples, tests and vignettes
+  never write to the user's home filespace (per CRAN policy).
+
 ## Value
 
 A character path to the cache directory.

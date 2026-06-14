@@ -15,12 +15,12 @@ Source:
 
 Leite A, Vasconcelos H, Bezerra D (2026). *cardargus: Generate SVG
 Information Cards with Embedded Fonts and Badges*. R package version
-0.2.3, <https://strategicprojects.github.io/cardargus/>.
+0.2.4, <https://strategicprojects.github.io/cardargus/>.
 
     @Manual{,
       title = {cardargus: Generate SVG Information Cards with Embedded Fonts and Badges},
       author = {Andre Leite and Hugo Vasconcelos and Diogo Bezerra},
       year = {2026},
-      note = {R package version 0.2.3},
+      note = {R package version 0.2.4},
       url = {https://strategicprojects.github.io/cardargus/},
     }

@@ -9,7 +9,7 @@ Fonts in this directory are automatically embedded in SVG/PNG exports."><meta pr
 
     <a class="navbar-brand me-2" href="../index.html">cardargus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -60,7 +60,11 @@ Fonts in this directory are automatically embedded in SVG/PNG exports.</p>
 <dl><dt id="arg-persistent">persistent<a class="anchor" aria-label="anchor" href="#arg-persistent"></a></dt>
 <dd><p>Logical. If TRUE (default), uses persistent cache via
 <code><a href="https://rdrr.io/r/tools/userdir.html" class="external-link">tools::R_user_dir()</a></code>. If FALSE or if persistent cache is unavailable,
-uses a session-specific temporary directory.</p></dd>
+uses a session-specific temporary directory.</p>
+<p>When running under <code>R CMD check</code> (detected via the
+<code>_R_CHECK_PACKAGE_NAME_</code> environment variable), a session-specific
+temporary directory is always used, so examples, tests and vignettes never
+write to the user's home filespace (per CRAN policy).</p></dd>
 
 </dl></div>
     <div class="section level2">
