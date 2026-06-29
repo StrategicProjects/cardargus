@@ -17,10 +17,17 @@ knitr::opts_chunk$set(
 # cardargus <img src="man/figures/logo.svg" align="right" height="139" alt="" />
 
 <!-- badges: start -->
-![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/cardargus) &nbsp; 
-![CRAN Downloads](https://cranlogs.r-pkg.org/badges/grand-total/cardargus) &nbsp;
-![License](https://img.shields.io/badge/license-MIT-darkviolet.svg)&nbsp; ![](https://img.shields.io/badge/devel%20version-0.2.5-blue.svg)
+[![CRAN status](https://www.r-pkg.org/badges/version/cardargus)](https://CRAN.R-project.org/package=cardargus)
+[![CRAN checks](https://badges.cranchecks.info/summary/cardargus.svg)](https://cran.r-project.org/web/checks/check_results_cardargus.html)
+[![pkgdown](https://github.com/StrategicProjects/cardargus/actions/workflows/pkgdown.yaml/badge.svg)](https://strategicprojects.github.io/cardargus/)
+[![CRAN downloads](https://cranlogs.r-pkg.org/badges/grand-total/cardargus)](https://cran.r-project.org/package=cardargus)
+[![Monthly downloads](https://cranlogs.r-pkg.org/badges/last-month/cardargus)](https://cran.r-project.org/package=cardargus)
+[![License: MIT](https://img.shields.io/badge/license-MIT-darkviolet.svg)](https://opensource.org/licenses/MIT)
+[![devel version](https://img.shields.io/badge/devel%20version-0.2.5-blue.svg)](https://github.com/StrategicProjects/cardargus)
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![Last commit](https://img.shields.io/github/last-commit/StrategicProjects/cardargus.svg)](https://github.com/StrategicProjects/cardargus/commits/main)
+[![GitHub issues](https://img.shields.io/github/issues/StrategicProjects/cardargus.svg)](https://github.com/StrategicProjects/cardargus/issues)
+[![GitHub stars](https://img.shields.io/github/stars/StrategicProjects/cardargus.svg?style=social)](https://github.com/StrategicProjects/cardargus/stargazers)
 <!-- badges: end -->
 
 **cardargus** is an R package for creating informative SVG cards with embedded styles, Google Fonts, badges, and logos. Cards are self-contained SVG files, ideal for dashboards, reports, and visualizations.
@@ -293,7 +300,9 @@ install.packages("chromote")
 ## Authors
 
 - **Andre Leite** - *Maintainer* - [leite@castlab.org](mailto:leite@castlab.org)
+- **Marcos Wasilew** - [marcos.wasilew@gmail.com](mailto:marcos.wasilew@gmail.com)
 - **Hugo Vasconcelos** - [hugo.vasconcelos@ufpe.br](mailto:hugo.vasconcelos@ufpe.br)
+- **Carlos Amorin** - [carlos.agaf@ufpe.br](mailto:carlos.agaf@ufpe.br)
 - **Diogo Bezerra** - [diogo.bezerra@ufpe.br](mailto:diogo.bezerra@ufpe.br)
 
 ## License
