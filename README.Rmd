@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 ![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/cardargus) &nbsp; 
 ![CRAN Downloads](https://cranlogs.r-pkg.org/badges/grand-total/cardargus) &nbsp;
-![License](https://img.shields.io/badge/license-MIT-darkviolet.svg)&nbsp; ![](https://img.shields.io/badge/devel%20version-0.2.4-blue.svg)
+![License](https://img.shields.io/badge/license-MIT-darkviolet.svg)&nbsp; ![](https://img.shields.io/badge/devel%20version-0.2.5-blue.svg)
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
@@ -110,6 +110,9 @@ save_svg(card, "my_card.svg")
 
 # Convert to high-quality PNG
 svg_to_png(card, "my_card.png", dpi = 300)
+
+# Convert to a vector PDF (via rsvg)
+svg_to_pdf(card, "my_card.pdf")
 ```
 
 

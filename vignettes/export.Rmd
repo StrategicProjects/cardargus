@@ -114,19 +114,51 @@ svg_to_png_with_margin(
 )
 ```
 
+## Converting to PDF
+
+Both engines produce **vector** PDFs (text stays selectable and scales without
+pixelation).
+
+### Standard conversion (rsvg)
+
+`svg_to_pdf()` mirrors `svg_to_png()`: it sanitizes the SVG, embeds the required
+fonts, and writes a vector PDF via `rsvg::rsvg_pdf()`. No Chrome required.
+
+```{r pdf-basic, eval=FALSE}
+# Vector PDF (via rsvg)
+svg_to_pdf(card, "my_card.pdf")
+```
+
+### Chrome-based conversion
+
+Use `svg_to_pdf_chrome()` when you rely on web fonts loaded via `@import`:
+
+```{r pdf-chrome, eval=FALSE}
+if (chrome_available()) {
+  svg_to_pdf_chrome(card, "my_card.pdf")
+}
+```
+
+PDF is also available from the knitr helper:
+
+```{r pdf-knitr, eval=FALSE}
+# Saves card.pdf using Chrome when available, else rsvg
+save_card_for_knitr(card, format = "pdf")
+```
+
 ## Multiple formats
 
 Export to multiple formats at once:
 
 ```{r formats, eval=FALSE}
-# Export to SVG and PNG
+# Export to SVG, PNG and (vector) PDF
 svg_to_formats(
   card,
   output_base = "exports/my_card",  # Without extension
-  formats = c("svg", "png"),
+  formats = c("svg", "png", "pdf"),
   dpi = 300
 )
-# Creates: exports/my_card.svg, exports/my_card.png
+# Creates: exports/my_card.svg, exports/my_card.png, exports/my_card.pdf
 ```
 
 ## Batch processing

@@ -92,6 +92,7 @@ reference:
     contents:
       - save_svg
       - svg_to_png
+      - svg_to_pdf
       - svg_to_png_with_margin
       - svg_to_formats
       - batch_svg_to_png
