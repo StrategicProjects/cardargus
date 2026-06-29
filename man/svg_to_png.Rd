@@ -40,8 +40,11 @@ dimensions. To make DPI matter, this function scales output pixel size by
 \code{(dpi / 96)} when \code{width} / \code{height} are not explicitly provided.
 }
 \examples{
-svg <- svg_card("FAR", list(), list())
-file_name <- tempfile(fileext = ".png")
-png_path <- svg_to_png(svg, file_name, dpi = 300)
-png_path <- svg_to_png(svg, file_name, dpi = 300, background = "white")
+if (requireNamespace("rsvg", quietly = TRUE) ||
+    requireNamespace("magick", quietly = TRUE)) {
+  svg <- svg_card("FAR", list(), list())
+  file_name <- tempfile(fileext = ".png")
+  png_path <- svg_to_png(svg, file_name, dpi = 300)
+  png_path <- svg_to_png(svg, file_name, dpi = 300, background = "white")
+}
 }

@@ -164,10 +164,13 @@ save_svg <- function(svg_content, output_path) {
 #' @export
 #'
 #' @examples
-#' svg <- svg_card("FAR", list(), list())
-#' file_name <- tempfile(fileext = ".png")
-#' png_path <- svg_to_png(svg, file_name, dpi = 300)
-#' png_path <- svg_to_png(svg, file_name, dpi = 300, background = "white")
+#' if (requireNamespace("rsvg", quietly = TRUE) ||
+#'     requireNamespace("magick", quietly = TRUE)) {
+#'   svg <- svg_card("FAR", list(), list())
+#'   file_name <- tempfile(fileext = ".png")
+#'   png_path <- svg_to_png(svg, file_name, dpi = 300)
+#'   png_path <- svg_to_png(svg, file_name, dpi = 300, background = "white")
+#' }
 svg_to_png <- function(svg_input,
                        output_path = NULL,
                        width = NULL,
@@ -257,6 +260,78 @@ svg_to_png <- function(svg_input,
   cli::cli_abort("Failed to convert SVG to PNG (no working renderer found).")
 }
 
+#' Convert SVG to PDF
+#'
+#' @description
+#' Convert an SVG string or SVG file path to a **vector** PDF. As with
+#' [svg_to_png()], the SVG is sanitized and the required WOFF2 fonts are embedded
+#' (downloaded on demand into a user cache) so text renders consistently.
+#' Conversion uses \pkg{rsvg} ([rsvg::rsvg_pdf()]), preserving vector text.
+#'
+#' For headless-Chrome rendering (often best for web fonts), see
+#' [svg_to_pdf_chrome()].
+#'
+#' @param svg_input SVG string or path to an SVG file.
+#' @param output_path Output path for the PDF file (optional; a temp file is used if NULL).
+#' @param width Output width in pixels (NULL to infer from the SVG).
+#' @param height Output height in pixels (NULL to infer from the SVG).
+#'
+#' @return Path to the generated PDF file.
+#' @export
+#'
+#' @examples
+#' if (requireNamespace("rsvg", quietly = TRUE)) {
+#'   svg <- svg_card("FAR", list(), list())
+#'   file_name <- tempfile(fileext = ".pdf")
+#'   pdf_path <- svg_to_pdf(svg, file_name)
+#' }
+svg_to_pdf <- function(svg_input,
+                       output_path = NULL,
+                       width = NULL,
+                       height = NULL) {
+
+  if (!requireNamespace("rsvg", quietly = TRUE)) {
+    cli::cli_abort(c(
+      "x" = "Vector PDF conversion requires the {.pkg rsvg} package.",
+      "i" = "Install with: {.code install.packages('rsvg')}",
+      "i" = "For Chrome-based PDF rendering, see {.fn svg_to_pdf_chrome}."
+    ))
+  }
+
+  # Read SVG (file path vs string)
+  if (is.character(svg_input) && length(svg_input) == 1 && file.exists(svg_input)) {
+    svg_content <- paste(readLines(svg_input, warn = FALSE), collapse = "\n")
+  } else {
+    svg_content <- as.character(svg_input)
+  }
+
+  # Sanitize + embed fonts (download/cache if needed)
+  svg_content <- prepare_svg_for_raster(svg_content)
+
+  # Output path
+  if (is.null(output_path)) output_path <- tempfile(fileext = ".pdf")
+  ensure_output_dir(output_path)
+
+  # Infer dimensions from the SVG when not supplied (CSS px reference)
+  if (is.null(width)) {
+    w0 <- parse_svg_root_dim(svg_content, "width")
+    if (!is.na(w0)) width <- max(1L, round(w0))
+  }
+  if (is.null(height)) {
+    h0 <- parse_svg_root_dim(svg_content, "height")
+    if (!is.na(h0)) height <- max(1L, round(h0))
+  }
+
+  svg_file <- write_svg_tempfile(svg_content)
+
+  tryCatch(
+    rsvg::rsvg_pdf(svg_file, file = output_path, width = width, height = height),
+    error = function(e) cli::cli_abort("Failed to convert SVG to PDF: {e$message}")
+  )
+
+  output_path
+}
+
 #' Convert SVG to multiple formats
 #'
 #' @description
@@ -308,16 +383,22 @@ svg_to_formats <- function(svg_input,
       
     } else if (identical(fmt, "pdf")) {
       ensure_output_dir(output_path)
-      
+
       if (requireNamespace("rsvg", quietly = TRUE)) {
-        svg_file <- write_svg_tempfile(svg_prepared)
+        # Vector PDF (text preserved). Content is already prepared, but
+        # svg_to_pdf() re-runs prepare_svg_for_raster() idempotently.
         tryCatch({
-          rsvg::rsvg_pdf(svg_file, file = output_path)
-          results$pdf <- output_path
+          results$pdf <- svg_to_pdf(svg_prepared, output_path)
         }, error = function(e) {
           cli::cli_warn("Failed to create PDF via rsvg: {e$message}")
         })
       } else if (requireNamespace("magick", quietly = TRUE)) {
+        # NOTE: magick rasterizes the SVG, so this produces a *raster* PDF
+        # (vector text is lost). Install {rsvg} for a vector PDF.
+        cli::cli_warn(c(
+          "!" = "Creating a rasterized PDF via {.pkg magick} (vector text lost).",
+          "i" = "Install {.pkg rsvg} for a vector PDF."
+        ))
         svg_file <- write_svg_tempfile(svg_prepared)
         tryCatch({
           img <- magick::image_read_svg(svg_file)

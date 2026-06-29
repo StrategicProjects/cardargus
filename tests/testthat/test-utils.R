@@ -29,6 +29,10 @@ test_that("is_light_color rejects invalid input (issue #5)", {
   expect_error(is_light_color(c("#fff", "#000")))
 })
 
+test_that("is_light_color rejects an unknown color name via cli (issue #20)", {
+  expect_error(is_light_color("notacolor"), "valid color")
+})
+
 test_that("escape_xml escapes special characters and tolerates NA/NULL (issue #2)", {
   expect_equal(escape_xml("a & b < c > d"), "a &amp; b &lt; c &gt; d")
   expect_equal(escape_xml("\"x\" 'y'"), "&quot;x&quot; &apos;y&apos;")

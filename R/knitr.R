@@ -125,15 +125,15 @@ include_card_png <- function(svg_string,
 #'
 #' @param svg_string SVG string from `svg_card()`.
 #' @param filename Output filename (without extension).
-#' @param format Output format: `"svg"` or `"png"`.
+#' @param format Output format: `"svg"`, `"png"`, or `"pdf"`.
 #' @param dpi Rasterization DPI for PNG (default 300).
 #' @param dir Output directory (defaults to knitr figure directory or tempdir()).
-#' @param engine Rendering engine for PNG: `"auto"`, `"chrome"`, or `"rsvg"`.
+#' @param engine Rendering engine for PNG/PDF: `"auto"`, `"chrome"`, or `"rsvg"`.
 #' @return Path to the saved file.
 #' @export
 save_card_for_knitr <- function(svg_string,
                                 filename = "card",
-                                format = c("svg", "png"),
+                                format = c("svg", "png", "pdf"),
                                 dpi = 300,
                                 dir = NULL,
                                 engine = c("auto", "chrome", "rsvg")) {
@@ -160,9 +160,9 @@ save_card_for_knitr <- function(svg_string,
   if (format == "svg") {
     save_svg(svg_string, output_path)
   } else {
-    # Determine which engine to use
+    # Determine which engine to use (relevant for png/pdf)
     use_chrome <- FALSE
-    
+
     if (engine == "chrome") {
       if (chrome_available()) {
         use_chrome <- TRUE
@@ -173,14 +173,22 @@ save_card_for_knitr <- function(svg_string,
       # Auto: prefer Chrome if available (better font rendering)
       use_chrome <- chrome_available()
     }
-    
-    if (use_chrome) {
-      svg_to_png_chrome(svg_string, output_path, dpi = dpi, background = "transparent")
+
+    if (format == "pdf") {
+      if (use_chrome) {
+        svg_to_pdf_chrome(svg_string, output_path, background = "transparent")
+      } else {
+        svg_to_pdf(svg_string, output_path)
+      }
     } else {
-      svg_to_png(svg_string, output_path, dpi = dpi, background = "transparent")
+      if (use_chrome) {
+        svg_to_png_chrome(svg_string, output_path, dpi = dpi, background = "transparent")
+      } else {
+        svg_to_png(svg_string, output_path, dpi = dpi, background = "transparent")
+      }
     }
   }
-  
+
   output_path
 }
 

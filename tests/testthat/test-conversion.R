@@ -34,3 +34,24 @@ test_that("detect_svg_fonts finds families and drops generics", {
   expect_true("Montserrat" %in% fams)
   expect_false("sans-serif" %in% fams)
 })
+
+test_that("svg_to_pdf writes a vector PDF", {
+  skip_if_not_installed("rsvg")
+  svg <- '<svg xmlns="http://www.w3.org/2000/svg" width="120" height="80"><rect width="120" height="80" fill="#4CAF50"/></svg>'
+  out <- tempfile(fileext = ".pdf")
+  res <- svg_to_pdf(svg, out)
+  expect_identical(res, out)
+  expect_true(file.exists(out))
+  expect_gt(file.info(out)$size, 0)
+  # PDF files start with the "%PDF" magic header
+  hdr <- readBin(out, "raw", n = 4)
+  expect_identical(rawToChar(hdr), "%PDF")
+})
+
+test_that("svg_to_pdf infers a temp output path when NULL", {
+  skip_if_not_installed("rsvg")
+  svg <- '<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50"><circle cx="25" cy="25" r="20"/></svg>'
+  out <- svg_to_pdf(svg)
+  expect_true(file.exists(out))
+  expect_match(out, "\\.pdf$")
+})
