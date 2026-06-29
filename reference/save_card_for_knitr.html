@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">cardargus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -50,7 +50,7 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">save_card_for_knitr</span><span class="op">(</span></span>
 <span>  <span class="va">svg_string</span>,</span>
 <span>  filename <span class="op">=</span> <span class="st">"card"</span>,</span>
-<span>  format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"svg"</span>, <span class="st">"png"</span><span class="op">)</span>,</span>
+<span>  format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"svg"</span>, <span class="st">"png"</span>, <span class="st">"pdf"</span><span class="op">)</span>,</span>
 <span>  dpi <span class="op">=</span> <span class="fl">300</span>,</span>
 <span>  dir <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  engine <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"auto"</span>, <span class="st">"chrome"</span>, <span class="st">"rsvg"</span><span class="op">)</span></span>
@@ -70,7 +70,7 @@
 
 
 <dt id="arg-format">format<a class="anchor" aria-label="anchor" href="#arg-format"></a></dt>
-<dd><p>Output format: <code>"svg"</code> or <code>"png"</code>.</p></dd>
+<dd><p>Output format: <code>"svg"</code>, <code>"png"</code>, or <code>"pdf"</code>.</p></dd>
 
 
 <dt id="arg-dpi">dpi<a class="anchor" aria-label="anchor" href="#arg-dpi"></a></dt>
@@ -82,7 +82,7 @@
 
 
 <dt id="arg-engine">engine<a class="anchor" aria-label="anchor" href="#arg-engine"></a></dt>
-<dd><p>Rendering engine for PNG: <code>"auto"</code>, <code>"chrome"</code>, or <code>"rsvg"</code>.</p></dd>
+<dd><p>Rendering engine for PNG/PDF: <code>"auto"</code>, <code>"chrome"</code>, or <code>"rsvg"</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">

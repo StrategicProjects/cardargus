@@ -17,7 +17,7 @@ dimensions. To make DPI matter, this function scales output pixel size by
 
     <a class="navbar-brand me-2" href="../index.html">cardargus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -108,10 +108,13 @@ dimensions. To make DPI matter, this function scales output pixel size by
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">svg</span> <span class="op">&lt;-</span> <span class="fu"><a href="svg_card.html">svg_card</a></span><span class="op">(</span><span class="st">"FAR"</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">file_name</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".png"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">png_path</span> <span class="op">&lt;-</span> <span class="fu">svg_to_png</span><span class="op">(</span><span class="va">svg</span>, <span class="va">file_name</span>, dpi <span class="op">=</span> <span class="fl">300</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">png_path</span> <span class="op">&lt;-</span> <span class="fu">svg_to_png</span><span class="op">(</span><span class="va">svg</span>, <span class="va">file_name</span>, dpi <span class="op">=</span> <span class="fl">300</span>, background <span class="op">=</span> <span class="st">"white"</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"rsvg"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">||</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"magick"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="va">svg</span> <span class="op">&lt;-</span> <span class="fu"><a href="svg_card.html">svg_card</a></span><span class="op">(</span><span class="st">"FAR"</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">file_name</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".png"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">png_path</span> <span class="op">&lt;-</span> <span class="fu">svg_to_png</span><span class="op">(</span><span class="va">svg</span>, <span class="va">file_name</span>, dpi <span class="op">=</span> <span class="fl">300</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">png_path</span> <span class="op">&lt;-</span> <span class="fu">svg_to_png</span><span class="op">(</span><span class="va">svg</span>, <span class="va">file_name</span>, dpi <span class="op">=</span> <span class="fl">300</span>, background <span class="op">=</span> <span class="st">"white"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

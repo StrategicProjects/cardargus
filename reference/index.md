@@ -77,6 +77,8 @@ Functions for saving and converting cards
   : Save SVG string to file (sanitized + embedded fonts)
 - [`svg_to_png()`](https://strategicprojects.github.io/cardargus/reference/svg_to_png.md)
   : Convert SVG to PNG
+- [`svg_to_pdf()`](https://strategicprojects.github.io/cardargus/reference/svg_to_pdf.md)
+  : Convert SVG to PDF
 - [`svg_to_png_with_margin()`](https://strategicprojects.github.io/cardargus/reference/svg_to_png_with_margin.md)
   : Convert SVG to PNG with optional margin and background
 - [`svg_to_formats()`](https://strategicprojects.github.io/cardargus/reference/svg_to_formats.md)

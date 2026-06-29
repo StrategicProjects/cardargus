@@ -8,7 +8,7 @@ Saves a card to a file and returns the path for use in knitr chunks.
 save_card_for_knitr(
   svg_string,
   filename = "card",
-  format = c("svg", "png"),
+  format = c("svg", "png", "pdf"),
   dpi = 300,
   dir = NULL,
   engine = c("auto", "chrome", "rsvg")
@@ -28,7 +28,7 @@ save_card_for_knitr(
 
 - format:
 
-  Output format: `"svg"` or `"png"`.
+  Output format: `"svg"`, `"png"`, or `"pdf"`.
 
 - dpi:
 
@@ -40,7 +40,7 @@ save_card_for_knitr(
 
 - engine:
 
-  Rendering engine for PNG: `"auto"`, `"chrome"`, or `"rsvg"`.
+  Rendering engine for PNG/PDF: `"auto"`, `"chrome"`, or `"rsvg"`.
 
 ## Value
 

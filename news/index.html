@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">cardargus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,14 +41,38 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.2.4" id="cardargus-024">cardargus 0.2.4<a class="anchor" aria-label="anchor" href="#cardargus-024"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.2.5" id="cardargus-025">cardargus 0.2.5<a class="anchor" aria-label="anchor" href="#cardargus-025"></a></h2>
+<div class="section level3">
+<h3 id="new-features-0-2-5">New features<a class="anchor" aria-label="anchor" href="#new-features-0-2-5"></a></h3>
+<ul><li>
+<code><a href="../reference/svg_to_pdf.html">svg_to_pdf()</a></code> exports a card to a <strong>vector</strong> PDF via <code><a href="https://docs.ropensci.org/rsvg/reference/rsvg.html" class="external-link">rsvg::rsvg_pdf()</a></code>, mirroring <code><a href="../reference/svg_to_png.html">svg_to_png()</a></code> (sanitizes the SVG and embeds WOFF2 fonts). For Chrome-based rendering, <code><a href="../reference/svg_to_pdf_chrome.html">svg_to_pdf_chrome()</a></code> remains available (<a href="https://github.com/StrategicProjects/cardargus/issues/17" class="external-link">#17</a>).</li>
+<li>
+<code><a href="../reference/save_card_for_knitr.html">save_card_for_knitr()</a></code> now accepts <code>format = "pdf"</code> (in addition to <code>"svg"</code> and <code>"png"</code>), using Chrome when available and <code><a href="../reference/svg_to_pdf.html">svg_to_pdf()</a></code> otherwise.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="minor-improvements-0-2-5">Minor improvements<a class="anchor" aria-label="anchor" href="#minor-improvements-0-2-5"></a></h3>
+<ul><li>
+<code>svg_to_formats(formats = "pdf")</code> now reuses <code><a href="../reference/svg_to_pdf.html">svg_to_pdf()</a></code> for the vector path and warns explicitly when it falls back to a rasterized PDF via <code>magick</code>.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-0-2-5">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-2-5"></a></h3>
+<ul><li>
+<code>magick</code> and <code>rsvg</code> moved from <code>Imports</code> to <code>Suggests</code>: they are only needed for raster/PDF export, which is already guarded by <code><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace()</a></code>. This lightens the install footprint and matches the package’s “heavy deps in Suggests” convention (<a href="https://github.com/StrategicProjects/cardargus/issues/19" class="external-link">#19</a>).</li>
+<li>
+<code><a href="../reference/svg_card.html">svg_card()</a></code> now sizes badges using <code>value_fontsize</code> instead of a hard-coded <code>10</code>, preventing clipped/misaligned badge text when <code>value_fontsize</code> differs from 10 (<a href="https://github.com/StrategicProjects/cardargus/issues/18" class="external-link">#18</a>).</li>
+<li>
+<code><a href="../reference/is_light_color.html">is_light_color()</a></code> now reports an unknown color name with a clear <code>cli</code> error instead of letting <code><a href="https://rdrr.io/r/grDevices/col2rgb.html" class="external-link">col2rgb()</a></code> raise a raw base error (<a href="https://github.com/StrategicProjects/cardargus/issues/20" class="external-link">#20</a>).</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.4" id="cardargus-024">cardargus 0.2.4<a class="anchor" aria-label="anchor" href="#cardargus-024"></a></h2><p class="text-muted">CRAN release: 2026-06-14</p>
 <div class="section level3">
 <h3 id="cran-policy-fix-0-2-4">CRAN policy fix<a class="anchor" aria-label="anchor" href="#cran-policy-fix-0-2-4"></a></h3>
 <ul><li>The font cache no longer writes to the user’s home filespace during <code>R CMD check</code>. When a check is detected (via the <code>_R_CHECK_PACKAGE_NAME_</code> environment variable), <code><a href="../reference/font_cache_dir.html">font_cache_dir()</a></code> routes downloads to a session-specific temporary directory. This resolves the <code>donttest</code> additional issue where examples (<code><a href="../reference/install_fonts.html">install_fonts()</a></code>, <code><a href="../reference/svg_to_png.html">svg_to_png()</a></code>, <code><a href="../reference/save_svg.html">save_svg()</a></code>) left <code>*.woff2</code> files under <code>~/.cache/R/cardargus/</code>. Interactive and normal use is unchanged (the persistent cache is still the default).</li>
 </ul></div>
 </div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.2.3" id="cardargus-023">cardargus 0.2.3<a class="anchor" aria-label="anchor" href="#cardargus-023"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.2.3" id="cardargus-023">cardargus 0.2.3<a class="anchor" aria-label="anchor" href="#cardargus-023"></a></h2><p class="text-muted">CRAN release: 2026-06-14</p>
 <div class="section level3">
 <h3 id="bug-fixes-0-2-3">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-2-3"></a></h3>
 <ul><li>

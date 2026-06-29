@@ -3,8 +3,8 @@
 Create self-contained SVG information cards with embedded 'Google
 Fonts', shields-style badges, and custom logos. Cards are fully portable
 SVG files ideal for dashboards, reports, and web applications. Includes
-functions to export cards to PNG format and display them in 'R Markdown'
-and 'Quarto' documents.
+functions to export cards to PNG and PDF formats and display them in 'R
+Markdown' and 'Quarto' documents.
 
 ## See also
 

@@ -55,8 +55,11 @@ Path to the generated PNG file.
 ## Examples
 
 ``` r
-svg <- svg_card("FAR", list(), list())
-file_name <- tempfile(fileext = ".png")
-png_path <- svg_to_png(svg, file_name, dpi = 300)
-png_path <- svg_to_png(svg, file_name, dpi = 300, background = "white")
+if (requireNamespace("rsvg", quietly = TRUE) ||
+    requireNamespace("magick", quietly = TRUE)) {
+  svg <- svg_card("FAR", list(), list())
+  file_name <- tempfile(fileext = ".png")
+  png_path <- svg_to_png(svg, file_name, dpi = 300)
+  png_path <- svg_to_png(svg, file_name, dpi = 300, background = "white")
+}
 ```

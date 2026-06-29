@@ -1,6 +1,54 @@
 # Changelog
 
+## cardargus 0.2.5
+
+### New features
+
+- [`svg_to_pdf()`](https://strategicprojects.github.io/cardargus/reference/svg_to_pdf.md)
+  exports a card to a **vector** PDF via
+  [`rsvg::rsvg_pdf()`](https://docs.ropensci.org/rsvg/reference/rsvg.html),
+  mirroring
+  [`svg_to_png()`](https://strategicprojects.github.io/cardargus/reference/svg_to_png.md)
+  (sanitizes the SVG and embeds WOFF2 fonts). For Chrome-based
+  rendering,
+  [`svg_to_pdf_chrome()`](https://strategicprojects.github.io/cardargus/reference/svg_to_pdf_chrome.md)
+  remains available
+  ([\#17](https://github.com/StrategicProjects/cardargus/issues/17)).
+- [`save_card_for_knitr()`](https://strategicprojects.github.io/cardargus/reference/save_card_for_knitr.md)
+  now accepts `format = "pdf"` (in addition to `"svg"` and `"png"`),
+  using Chrome when available and
+  [`svg_to_pdf()`](https://strategicprojects.github.io/cardargus/reference/svg_to_pdf.md)
+  otherwise.
+
+### Minor improvements
+
+- `svg_to_formats(formats = "pdf")` now reuses
+  [`svg_to_pdf()`](https://strategicprojects.github.io/cardargus/reference/svg_to_pdf.md)
+  for the vector path and warns explicitly when it falls back to a
+  rasterized PDF via `magick`.
+
+### Bug fixes
+
+- `magick` and `rsvg` moved from `Imports` to `Suggests`: they are only
+  needed for raster/PDF export, which is already guarded by
+  [`requireNamespace()`](https://rdrr.io/r/base/ns-load.html). This
+  lightens the install footprint and matches the package’s “heavy deps
+  in Suggests” convention
+  ([\#19](https://github.com/StrategicProjects/cardargus/issues/19)).
+- [`svg_card()`](https://strategicprojects.github.io/cardargus/reference/svg_card.md)
+  now sizes badges using `value_fontsize` instead of a hard-coded `10`,
+  preventing clipped/misaligned badge text when `value_fontsize` differs
+  from 10
+  ([\#18](https://github.com/StrategicProjects/cardargus/issues/18)).
+- [`is_light_color()`](https://strategicprojects.github.io/cardargus/reference/is_light_color.md)
+  now reports an unknown color name with a clear `cli` error instead of
+  letting [`col2rgb()`](https://rdrr.io/r/grDevices/col2rgb.html) raise
+  a raw base error
+  ([\#20](https://github.com/StrategicProjects/cardargus/issues/20)).
+
 ## cardargus 0.2.4
+
+CRAN release: 2026-06-14
 
 ### CRAN policy fix
 
@@ -17,6 +65,8 @@
   normal use is unchanged (the persistent cache is still the default).
 
 ## cardargus 0.2.3
+
+CRAN release: 2026-06-14
 
 ### Bug fixes
 
