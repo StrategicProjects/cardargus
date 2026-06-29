@@ -39,5 +39,5 @@ Path to the saved SVG file.
 ``` r
 svg <- svg_card("FAR", list(), list())
 save_svg(svg, tempfile(fileext = ".svg"))
-#> [1] "/tmp/RtmpyGfV6n/file22df6040a2c0.svg"
+#> [1] "/tmp/Rtmpgz0mMF/file22bd42b0065e.svg"
 ```
