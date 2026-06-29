@@ -4,11 +4,11 @@
 
 - **[Andre Leite](https://github.com/milkway)**. Author, maintainer.
 
-- **Marcos Wasilew**. Author.
+- **[Marcos Wasilew](https://github.com/marcoswasiliew)**. Author.
 
 - **[Hugo Vasconcelos](https://github.com/hugoavmedeiros)**. Author.
 
-- **Carlos Amorin**. Author.
+- **[Carlos Amorin](https://github.com/cagaf)**. Author.
 
 - **[Diogo Bezerra](https://github.com/DiCarvalhoB)**. Author.
 
