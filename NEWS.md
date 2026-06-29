@@ -1,3 +1,30 @@
+# cardargus 0.2.5
+
+## New features
+
+* `svg_to_pdf()` exports a card to a **vector** PDF via `rsvg::rsvg_pdf()`,
+  mirroring `svg_to_png()` (sanitizes the SVG and embeds WOFF2 fonts). For
+  Chrome-based rendering, `svg_to_pdf_chrome()` remains available (#17).
+* `save_card_for_knitr()` now accepts `format = "pdf"` (in addition to `"svg"`
+  and `"png"`), using Chrome when available and `svg_to_pdf()` otherwise.
+
+## Minor improvements
+
+* `svg_to_formats(formats = "pdf")` now reuses `svg_to_pdf()` for the vector path
+  and warns explicitly when it falls back to a rasterized PDF via `magick`.
+
+## Bug fixes
+
+* `magick` and `rsvg` moved from `Imports` to `Suggests`: they are only needed
+  for raster/PDF export, which is already guarded by `requireNamespace()`. This
+  lightens the install footprint and matches the package's "heavy deps in
+  Suggests" convention (#19).
+* `svg_card()` now sizes badges using `value_fontsize` instead of a hard-coded
+  `10`, preventing clipped/misaligned badge text when `value_fontsize` differs
+  from 10 (#18).
+* `is_light_color()` now reports an unknown color name with a clear `cli` error
+  instead of letting `col2rgb()` raise a raw base error (#20).
+
 # cardargus 0.2.4
 
 ## CRAN policy fix

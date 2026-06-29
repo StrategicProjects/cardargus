@@ -31,8 +31,11 @@ is_light_color <- function(color) {
       cli::cli_abort("{.arg color} is not a valid hex color: {.val {color}}.")
     }
   } else {
-    # Try to get RGB from color name
-    rgb_vals <- col2rgb(color)
+    # Try to get RGB from color name (col2rgb() errors on unknown names)
+    rgb_vals <- tryCatch(col2rgb(color), error = function(e) NULL)
+    if (is.null(rgb_vals)) {
+      cli::cli_abort("{.arg color} is not a valid color: {.val {color}}.")
+    }
     r <- rgb_vals[1]
     g <- rgb_vals[2]
     b <- rgb_vals[3]

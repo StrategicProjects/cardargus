@@ -7,7 +7,7 @@
 save_card_for_knitr(
   svg_string,
   filename = "card",
-  format = c("svg", "png"),
+  format = c("svg", "png", "pdf"),
   dpi = 300,
   dir = NULL,
   engine = c("auto", "chrome", "rsvg")
@@ -18,13 +18,13 @@ save_card_for_knitr(
 
 \item{filename}{Output filename (without extension).}
 
-\item{format}{Output format: \code{"svg"} or \code{"png"}.}
+\item{format}{Output format: \code{"svg"}, \code{"png"}, or \code{"pdf"}.}
 
 \item{dpi}{Rasterization DPI for PNG (default 300).}
 
 \item{dir}{Output directory (defaults to knitr figure directory or tempdir()).}
 
-\item{engine}{Rendering engine for PNG: \code{"auto"}, \code{"chrome"}, or \code{"rsvg"}.}
+\item{engine}{Rendering engine for PNG/PDF: \code{"auto"}, \code{"chrome"}, or \code{"rsvg"}.}
 }
 \value{
 Path to the saved file.

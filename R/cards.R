@@ -190,8 +190,8 @@ svg_card <- function(title = "FAR",
     # First pass: calculate max height for uniform badges
     max_badge_height <- 0
     for (badge in badges_data) {
-      metrics_label <- gdtools::str_metrics(badge$label, fontname = font, fontsize = 10)
-      metrics_value <- gdtools::str_metrics(badge$value, fontname = font, fontsize = 10)
+      metrics_label <- gdtools::str_metrics(badge$label, fontname = font, fontsize = value_fontsize)
+      metrics_value <- gdtools::str_metrics(badge$value, fontname = font, fontsize = value_fontsize)
       height_label <- as.numeric(metrics_label["ascent"]) + as.numeric(metrics_label["descent"])
       height_value <- as.numeric(metrics_value["ascent"]) + as.numeric(metrics_value["descent"])
       badge_h <- max(height_label, height_value) * 2
