@@ -4,9 +4,9 @@ Version: 0.2.5
 Date: 2026-06-29
 Authors@R: c(
     person("Andre", "Leite", email = "leite@castlab.org", role = c("aut", "cre")),
-    person("Marcos", "Wasilew", email = "marcos.wasilew@gmail.com", role = "aut"),
+    person("Marcos", "Wasiliew", email = "marcos.wasilew@gmail.com", role = "aut"),
     person("Hugo", "Vasconcelos", email = "hugo.vasconcelos@ufpe.br", role = "aut"),
-    person("Carlos", "Amorin", email = "carlos.agaf@ufpe.br", role = "aut"),
+    person("Carlos", "Amorim", email = "carlos.agaf@ufpe.br", role = "aut"),
     person("Diogo", "Bezerra", email = "diogo.bezerra@ufpe.br", role = "aut"))
 Description: Create self-contained SVG information cards with embedded 'Google 
     Fonts', shields-style badges, and custom logos. Cards are fully 
