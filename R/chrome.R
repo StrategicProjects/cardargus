@@ -578,9 +578,11 @@ load_svg_page <- function(b, svg_content, background,
   svg_content <- sanitize_svg_metadata(svg_content)
   page <- build_svg_html(svg_content, background = background)
 
+  # enc2utf8: the HTML declares charset=utf-8, so the bytes must be UTF-8
+  # regardless of the session's native encoding
   url <- paste0(
     "data:text/html;base64,",
-    base64enc::base64encode(charToRaw(page$html))
+    base64enc::base64encode(charToRaw(enc2utf8(page$html)))
   )
   # Very large documents: navigate via a temp file instead of a data: URL
   if (nchar(url) > 2e6) {
