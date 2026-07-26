@@ -9,7 +9,8 @@ svg_to_png_chrome(
   output_path = NULL,
   dpi = 300,
   background = "transparent",
-  load_wait = 0.5
+  load_wait = 0,
+  timeout = 10
 )
 }
 \arguments{
@@ -23,8 +24,11 @@ so dpi = 300 results in approximately 3.125x scaling.}
 \item{background}{Background color for the HTML page (default "transparent").
 Use "white", "#FFFFFF", etc. for a solid background.}
 
-\item{load_wait}{Seconds to wait for page to load (default 0.5).
-Increase if fonts are not rendering correctly.}
+\item{load_wait}{Extra seconds to wait after the page reports ready
+(default 0). Readiness (fonts loaded, layout painted) is detected
+automatically; this is only a safety margin for edge cases.}
+
+\item{timeout}{Maximum seconds to wait for page readiness (default 10).}
 }
 \value{
 Path to the generated PNG file.
@@ -33,6 +37,12 @@ Path to the generated PNG file.
 Renders an SVG to PNG using headless Chrome via the chromote package.
 This method provides superior font rendering compared to librsvg/ImageMagick,
 as Chrome properly handles @font-face rules, web fonts, and CSS features.
+}
+\details{
+The Chrome session is kept alive and reused across calls (with an automatic
+health check), so repeated conversions avoid the session startup cost. The
+screenshot is only captured after \code{document.fonts.ready} resolves, ensuring
+web fonts are fully rendered.
 }
 \examples{
 svg <- svg_card("FAR", list(), list())

@@ -41,3 +41,8 @@
     })
   }
 }
+
+.onUnload <- function(libpath) {
+  # Close the persistent Chrome session, if one was created
+  tryCatch(close_chrome_session(), error = function(e) NULL)
+}

@@ -8,6 +8,28 @@
 * `save_card_for_knitr()` now accepts `format = "pdf"` (in addition to `"svg"`
   and `"png"`), using Chrome when available and `svg_to_pdf()` otherwise.
 
+## Chrome rendering: more robust, faster, higher quality
+
+The Chrome-based conversion pipeline (`svg_to_png_chrome()`,
+`svg_to_pdf_chrome()`, `batch_svg_to_*_chrome()`) was reworked:
+
+* **Deterministic readiness wait.** Conversions no longer rely on a fixed
+  `Sys.sleep()`: the page load event and `document.fonts.ready` are awaited,
+  so screenshots/PDFs are never captured before web fonts finish rendering,
+  and no time is wasted over-waiting. The `load_wait` argument now means an
+  *extra* wait after readiness and defaults to 0; a new `timeout` argument
+  (default 10s) bounds the readiness wait.
+* **Persistent Chrome session.** A single health-checked session is reused
+  across calls (and replaced transparently if it dies), removing the ~1-2s
+  session startup previously paid on every conversion. The session is closed
+  when the package is unloaded.
+* **No temp files.** Pages are loaded via `data:` URLs instead of temporary
+  HTML files and `file://` navigation (a temp file is used only for very
+  large documents), avoiding path/permission issues on Windows.
+* **Real alpha transparency.** With `background = "transparent"`,
+  `svg_to_png_chrome()` now produces a PNG with a true alpha channel
+  (previously the backdrop was flattened).
+
 ## Minor improvements
 
 * `svg_to_formats(formats = "pdf")` now reuses `svg_to_pdf()` for the vector path

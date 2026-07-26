@@ -1,7 +1,7 @@
 Package: cardargus
 Title: Generate SVG Information Cards with Embedded Fonts and Badges
 Version: 0.2.5
-Date: 2026-06-29
+Date: 2026-07-26
 Authors@R: c(
     person("Andre", "Leite", email = "leite@castlab.org", role = c("aut", "cre")),
     person("Marcos", "Wasiliew", email = "marcos.wasilew@gmail.com", role = "aut"),
