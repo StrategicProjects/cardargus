@@ -1,13 +1,20 @@
 # Convert a single SVG using an existing Chrome session
 
 Internal helper that renders an SVG to PNG using an existing Chrome
-session. Uses fixed-time waiting instead of event-based waiting for
-reliability.
+session. Waits deterministically for fonts/paint via
+[`wait_for_page_ready()`](https://strategicprojects.github.io/cardargus/reference/wait_for_page_ready.md).
 
 ## Usage
 
 ``` r
-convert_svg_with_session(b, svg_content, scale, background, load_wait = 0.5)
+convert_svg_with_session(
+  b,
+  svg_content,
+  scale,
+  background,
+  load_wait = 0,
+  timeout = 10
+)
 ```
 
 ## Arguments
@@ -30,7 +37,11 @@ convert_svg_with_session(b, svg_content, scale, background, load_wait = 0.5)
 
 - load_wait:
 
-  Seconds to wait for page load (default 0.5).
+  Extra fixed wait in seconds after readiness (default 0).
+
+- timeout:
+
+  Maximum seconds to wait for page readiness (default 10).
 
 ## Value
 

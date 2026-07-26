@@ -54,9 +54,10 @@ Chrome session. Much faster than calling svg_to_png_chrome() repeatedly.</p>
 <span>  <span class="va">svg_list</span>,</span>
 <span>  dpi <span class="op">=</span> <span class="fl">300</span>,</span>
 <span>  background <span class="op">=</span> <span class="st">"transparent"</span>,</span>
-<span>  load_wait <span class="op">=</span> <span class="fl">0.5</span>,</span>
+<span>  load_wait <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  restart_every <span class="op">=</span> <span class="fl">50</span>,</span>
 <span>  retry_attempts <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  timeout <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>  progress <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -78,8 +79,9 @@ Chrome session. Much faster than calling svg_to_png_chrome() repeatedly.</p>
 
 
 <dt id="arg-load-wait">load_wait<a class="anchor" aria-label="anchor" href="#arg-load-wait"></a></dt>
-<dd><p>Seconds to wait for each page to load (default 0.5).
-Increase if conversions are failing.</p></dd>
+<dd><p>Extra seconds to wait after each page reports ready
+(default 0). Readiness (fonts loaded, layout painted) is detected
+automatically; increased automatically on retries.</p></dd>
 
 
 <dt id="arg-restart-every">restart_every<a class="anchor" aria-label="anchor" href="#arg-restart-every"></a></dt>
@@ -89,6 +91,10 @@ Helps prevent memory issues and stale connections.</p></dd>
 
 <dt id="arg-retry-attempts">retry_attempts<a class="anchor" aria-label="anchor" href="#arg-retry-attempts"></a></dt>
 <dd><p>Number of retry attempts on failure (default 3).</p></dd>
+
+
+<dt id="arg-timeout">timeout<a class="anchor" aria-label="anchor" href="#arg-timeout"></a></dt>
+<dd><p>Maximum seconds to wait for page readiness (default 10).</p></dd>
 
 
 <dt id="arg-progress">progress<a class="anchor" aria-label="anchor" href="#arg-progress"></a></dt>
@@ -110,7 +116,7 @@ Returns NA for failed conversions.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

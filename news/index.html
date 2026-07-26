@@ -50,6 +50,18 @@
 <code><a href="../reference/save_card_for_knitr.html">save_card_for_knitr()</a></code> now accepts <code>format = "pdf"</code> (in addition to <code>"svg"</code> and <code>"png"</code>), using Chrome when available and <code><a href="../reference/svg_to_pdf.html">svg_to_pdf()</a></code> otherwise.</li>
 </ul></div>
 <div class="section level3">
+<h3 id="chrome-rendering-more-robust-faster-higher-quality-0-2-5">Chrome rendering: more robust, faster, higher quality<a class="anchor" aria-label="anchor" href="#chrome-rendering-more-robust-faster-higher-quality-0-2-5"></a></h3>
+<p>The Chrome-based conversion pipeline (<code><a href="../reference/svg_to_png_chrome.html">svg_to_png_chrome()</a></code>, <code><a href="../reference/svg_to_pdf_chrome.html">svg_to_pdf_chrome()</a></code>, <code>batch_svg_to_*_chrome()</code>) was reworked:</p>
+<ul><li>
+<strong>Deterministic readiness wait.</strong> Conversions no longer rely on a fixed <code><a href="https://rdrr.io/r/base/Sys.sleep.html" class="external-link">Sys.sleep()</a></code>: the page load event and <code>document.fonts.ready</code> are awaited, so screenshots/PDFs are never captured before web fonts finish rendering, and no time is wasted over-waiting. The <code>load_wait</code> argument now means an <em>extra</em> wait after readiness and defaults to 0; a new <code>timeout</code> argument (default 10s) bounds the readiness wait.</li>
+<li>
+<strong>Persistent Chrome session.</strong> A single health-checked session is reused across calls (and replaced transparently if it dies), removing the ~1-2s session startup previously paid on every conversion. The session is closed when the package is unloaded.</li>
+<li>
+<strong>No temp files.</strong> Pages are loaded via <code>data:</code> URLs instead of temporary HTML files and <code>file://</code> navigation (a temp file is used only for very large documents), avoiding path/permission issues on Windows.</li>
+<li>
+<strong>Real alpha transparency.</strong> With <code>background = "transparent"</code>, <code><a href="../reference/svg_to_png_chrome.html">svg_to_png_chrome()</a></code> now produces a PNG with a true alpha channel (previously the backdrop was flattened).</li>
+</ul></div>
+<div class="section level3">
 <h3 id="minor-improvements-0-2-5">Minor improvements<a class="anchor" aria-label="anchor" href="#minor-improvements-0-2-5"></a></h3>
 <ul><li>
 <code>svg_to_formats(formats = "pdf")</code> now reuses <code><a href="../reference/svg_to_pdf.html">svg_to_pdf()</a></code> for the vector path and warns explicitly when it falls back to a rasterized PDF via <code>magick</code>.</li>
@@ -285,7 +297,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

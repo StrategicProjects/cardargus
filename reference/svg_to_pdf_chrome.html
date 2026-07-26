@@ -55,7 +55,8 @@ This method produces vector PDFs with perfect font rendering.</p>
 <span>  <span class="va">output_path</span>,</span>
 <span>  background <span class="op">=</span> <span class="st">"transparent"</span>,</span>
 <span>  print_background <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  load_wait <span class="op">=</span> <span class="fl">0.5</span></span>
+<span>  load_wait <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  timeout <span class="op">=</span> <span class="fl">10</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -80,12 +81,24 @@ This method produces vector PDFs with perfect font rendering.</p>
 
 
 <dt id="arg-load-wait">load_wait<a class="anchor" aria-label="anchor" href="#arg-load-wait"></a></dt>
-<dd><p>Seconds to wait for page to load (default 0.5).</p></dd>
+<dd><p>Extra seconds to wait after the page reports ready
+(default 0). Readiness (fonts loaded, layout painted) is detected
+automatically; this is only a safety margin for edge cases.</p></dd>
+
+
+<dt id="arg-timeout">timeout<a class="anchor" aria-label="anchor" href="#arg-timeout"></a></dt>
+<dd><p>Maximum seconds to wait for page readiness (default 10).</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>Path to the generated PDF file.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>The Chrome session is kept alive and reused across calls (with an automatic
+health check). The PDF is only generated after <code>document.fonts.ready</code>
+resolves, ensuring web fonts are fully rendered.</p>
     </div>
 
     <div class="section level2">
@@ -107,7 +120,7 @@ This method produces vector PDFs with perfect font rendering.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

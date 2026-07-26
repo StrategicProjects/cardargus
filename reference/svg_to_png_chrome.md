@@ -13,7 +13,8 @@ svg_to_png_chrome(
   output_path = NULL,
   dpi = 300,
   background = "transparent",
-  load_wait = 0.5
+  load_wait = 0,
+  timeout = 10
 )
 ```
 
@@ -39,12 +40,24 @@ svg_to_png_chrome(
 
 - load_wait:
 
-  Seconds to wait for page to load (default 0.5). Increase if fonts are
-  not rendering correctly.
+  Extra seconds to wait after the page reports ready (default 0).
+  Readiness (fonts loaded, layout painted) is detected automatically;
+  this is only a safety margin for edge cases.
+
+- timeout:
+
+  Maximum seconds to wait for page readiness (default 10).
 
 ## Value
 
 Path to the generated PNG file.
+
+## Details
+
+The Chrome session is kept alive and reused across calls (with an
+automatic health check), so repeated conversions avoid the session
+startup cost. The screenshot is only captured after
+`document.fonts.ready` resolves, ensuring web fonts are fully rendered.
 
 ## Examples
 

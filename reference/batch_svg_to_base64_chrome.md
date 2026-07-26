@@ -10,9 +10,10 @@ batch_svg_to_base64_chrome(
   svg_list,
   dpi = 300,
   background = "transparent",
-  load_wait = 0.5,
+  load_wait = 0,
   restart_every = 50,
   retry_attempts = 3,
+  timeout = 10,
   progress = TRUE
 )
 ```
@@ -33,8 +34,9 @@ batch_svg_to_base64_chrome(
 
 - load_wait:
 
-  Seconds to wait for each page to load (default 0.5). Increase if
-  conversions are failing.
+  Extra seconds to wait after each page reports ready (default 0).
+  Readiness (fonts loaded, layout painted) is detected automatically;
+  increased automatically on retries.
 
 - restart_every:
 
@@ -44,6 +46,10 @@ batch_svg_to_base64_chrome(
 - retry_attempts:
 
   Number of retry attempts on failure (default 3).
+
+- timeout:
+
+  Maximum seconds to wait for page readiness (default 10).
 
 - progress:
 
