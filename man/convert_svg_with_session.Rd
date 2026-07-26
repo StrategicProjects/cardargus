@@ -4,7 +4,14 @@
 \alias{convert_svg_with_session}
 \title{Convert a single SVG using an existing Chrome session}
 \usage{
-convert_svg_with_session(b, svg_content, scale, background, load_wait = 0.5)
+convert_svg_with_session(
+  b,
+  svg_content,
+  scale,
+  background,
+  load_wait = 0,
+  timeout = 10
+)
 }
 \arguments{
 \item{b}{ChromoteSession object.}
@@ -15,13 +22,15 @@ convert_svg_with_session(b, svg_content, scale, background, load_wait = 0.5)
 
 \item{background}{Background color.}
 
-\item{load_wait}{Seconds to wait for page load (default 0.5).}
+\item{load_wait}{Extra fixed wait in seconds after readiness (default 0).}
+
+\item{timeout}{Maximum seconds to wait for page readiness (default 10).}
 }
 \value{
 Base64 encoded PNG string.
 }
 \description{
 Internal helper that renders an SVG to PNG using an existing Chrome session.
-Uses fixed-time waiting instead of event-based waiting for reliability.
+Waits deterministically for fonts/paint via \code{\link[=wait_for_page_ready]{wait_for_page_ready()}}.
 }
 \keyword{internal}

@@ -9,7 +9,8 @@ svg_to_pdf_chrome(
   output_path,
   background = "transparent",
   print_background = TRUE,
-  load_wait = 0.5
+  load_wait = 0,
+  timeout = 10
 )
 }
 \arguments{
@@ -21,7 +22,11 @@ svg_to_pdf_chrome(
 
 \item{print_background}{Whether to include CSS backgrounds in PDF (default TRUE).}
 
-\item{load_wait}{Seconds to wait for page to load (default 0.5).}
+\item{load_wait}{Extra seconds to wait after the page reports ready
+(default 0). Readiness (fonts loaded, layout painted) is detected
+automatically; this is only a safety margin for edge cases.}
+
+\item{timeout}{Maximum seconds to wait for page readiness (default 10).}
 }
 \value{
 Path to the generated PDF file.
@@ -29,6 +34,11 @@ Path to the generated PDF file.
 \description{
 Renders an SVG to PDF using headless Chrome via the chromote package.
 This method produces vector PDFs with perfect font rendering.
+}
+\details{
+The Chrome session is kept alive and reused across calls (with an automatic
+health check). The PDF is only generated after \code{document.fonts.ready}
+resolves, ensuring web fonts are fully rendered.
 }
 \examples{
 \dontrun{

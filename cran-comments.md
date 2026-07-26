@@ -15,6 +15,12 @@ This is a minor feature release.
 * Minor fixes: `svg_card()` sizes badges using `value_fontsize` (no longer a
   hard-coded `10`); `is_light_color()` reports an unknown color name via `cli`
   instead of a raw `col2rgb()` error.
+* The Chrome-based conversion pipeline (via `chromote`, in Suggests) is more
+  robust: conversions wait deterministically for `document.fonts.ready`
+  instead of a fixed sleep, a single health-checked Chrome session is reused
+  across calls (closed in `.onUnload`), and pages are loaded via `data:` URLs
+  instead of temporary files. Chrome rendering tests are skipped on CRAN
+  (`skip_on_cran()`); no examples or tests launch Chrome during checks.
 
 ## R CMD check results
 
