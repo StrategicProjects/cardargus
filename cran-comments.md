@@ -1,5 +1,18 @@
 # cran-comments — cardargus 0.2.5
 
+## Resubmission
+
+This is a resubmission of 0.2.5. Changes since the previous submission:
+
+* Fixed the invalid URL flagged by CRAN: the GitHub stars badge in README.md
+  now links to the repository root instead of `/stargazers` (which answers
+  404 to HEAD requests).
+* `.onLoad()` no longer attempts to download the Jost font from Google Fonts
+  when it is missing from the system. This removes network access at load
+  time and the non-suppressible startup message that caused the spurious
+  WARNINGs for 0.2.4 on the r-oldrel-macos-arm64 flavor. Fonts are registered
+  on demand at render time, as before.
+
 ## Submission summary
 
 This is a minor feature release.
@@ -26,8 +39,9 @@ This is a minor feature release.
 
 0 errors | 0 warnings | 0 notes
 
-Verified locally with `R CMD check --as-cran --run-donttest`. The font cache fix
-from 0.2.4 is retained: checks do not write to the user's home filespace.
+Verified locally with `R CMD check --as-cran --run-donttest`, re-run on
+2026-07-27 with the resubmission changes included. The font cache fix from
+0.2.4 is retained: checks do not write to the user's home filespace.
 
 ## Test environments
 

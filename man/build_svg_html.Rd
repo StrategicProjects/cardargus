@@ -24,8 +24,7 @@ build_svg_html(
 A list with html, width, and height.
 }
 \description{
-Returns the HTML as an in-memory string (injected into Chrome via
-\code{Page.setDocumentContent}), avoiding temp-file I/O and \verb{file://} path
-issues on Windows.
+Returns the HTML as an in-memory string (loaded into Chrome via a
+\verb{data:} URL), avoiding temp-file I/O and \verb{file://} path issues on Windows.
 }
 \keyword{internal}

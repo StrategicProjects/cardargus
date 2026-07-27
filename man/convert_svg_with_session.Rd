@@ -31,6 +31,7 @@ Base64 encoded PNG string.
 }
 \description{
 Internal helper that renders an SVG to PNG using an existing Chrome session.
-Waits deterministically for fonts/paint via \code{\link[=wait_for_page_ready]{wait_for_page_ready()}}.
+Waits deterministically for load/fonts via \code{\link[=load_svg_page]{load_svg_page()}}. When
+\code{background} is transparent, the PNG is captured with a real alpha channel.
 }
 \keyword{internal}

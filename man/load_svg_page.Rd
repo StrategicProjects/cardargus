@@ -13,7 +13,7 @@ load_svg_page(b, svg_content, background, timeout = 10, extra_wait = 0)
 
 \item{background}{Background color.}
 
-\item{timeout}{Maximum seconds to wait for page readiness.}
+\item{timeout}{Maximum seconds to wait for load and font readiness.}
 
 \item{extra_wait}{Additional fixed wait (seconds) after readiness (default 0).}
 }
@@ -21,8 +21,8 @@ load_svg_page(b, svg_content, background, timeout = 10, extra_wait = 0)
 A list with width and height (CSS px) of the page.
 }
 \description{
-Sanitizes the SVG, wraps it in HTML, injects it via \code{Page.setDocumentContent}
-(no temp files / file:// URLs), and blocks until fonts are loaded and the
-page has painted.
+Sanitizes the SVG, wraps it in HTML, and navigates to it via a \verb{data:} URL
+(no temp files / file:// URLs; a temp file is used only for very large
+documents). Blocks until the load event fires and all fonts are loaded.
 }
 \keyword{internal}

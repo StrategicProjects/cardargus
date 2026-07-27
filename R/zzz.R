@@ -10,7 +10,9 @@
 "_PACKAGE"
 
 .onLoad <- function(libname, pkgname) {
-  # 1) Register knitr helpers only if knitr is installed
+  # Register knitr helpers only if knitr is installed.
+  # NOTE: nenhum acesso a rede aqui (politica do CRAN) — o registro da fonte
+  # Jost acontece sob demanda em fonts.R quando um card e gerado.
   if (requireNamespace("knitr", quietly = TRUE)) {
     tryCatch(
       register_cardargus_knitr(),
@@ -18,27 +20,6 @@
         # Silently ignore to avoid breaking package load
       }
     )
-  }
-  
-  # 2) Check for required system fonts
-  if (requireNamespace("systemfonts", quietly = TRUE)) {
-    tryCatch({
-      fonts <- systemfonts::system_fonts()
-      jost_available <- "Jost" %in% fonts$family
-      
-      if (!jost_available) {
-        # Try to register Jost from Google Fonts if sysfonts is available
-        if (requireNamespace("sysfonts", quietly = TRUE)) {
-          tryCatch({
-            sysfonts::font_add_google("Jost", "Jost")
-          }, error = function(e) {
-            # Silently ignore - user will be notified at attach
-          })
-        }
-      }
-    }, error = function(e) {
-      # Silently ignore font check errors
-    })
   }
 }
 
