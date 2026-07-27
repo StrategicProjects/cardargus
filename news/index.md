@@ -72,6 +72,15 @@ The Chrome-based conversion pipeline
   letting [`col2rgb()`](https://rdrr.io/r/grDevices/col2rgb.html) raise
   a raw base error
   ([\#20](https://github.com/StrategicProjects/cardargus/issues/20)).
+- `.onLoad()` no longer tries to download the Jost font from Google
+  Fonts when it is not installed on the system. Network access at load
+  time is against CRAN policy and produced a non-suppressible startup
+  message on machines without the font (the cause of the spurious
+  WARNINGs on the CRAN r-oldrel-macos-arm64 checks for 0.2.4). Fonts are
+  registered on demand when a card is rendered, as before.
+- The GitHub stars badge in the README now links to the repository root:
+  the `/stargazers` page answers 404 to the HEAD requests CRAN’s URL
+  checker uses.
 
 ## cardargus 0.2.4
 

@@ -1,8 +1,9 @@
 # Load an SVG into a Chrome session and wait until it is rendered
 
-Sanitizes the SVG, wraps it in HTML, injects it via
-`Page.setDocumentContent` (no temp files / file:// URLs), and blocks
-until fonts are loaded and the page has painted.
+Sanitizes the SVG, wraps it in HTML, and navigates to it via a `data:`
+URL (no temp files / file:// URLs; a temp file is used only for very
+large documents). Blocks until the load event fires and all fonts are
+loaded.
 
 ## Usage
 
@@ -26,7 +27,7 @@ load_svg_page(b, svg_content, background, timeout = 10, extra_wait = 0)
 
 - timeout:
 
-  Maximum seconds to wait for page readiness.
+  Maximum seconds to wait for load and font readiness.
 
 - extra_wait:
 

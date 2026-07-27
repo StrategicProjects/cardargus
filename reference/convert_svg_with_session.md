@@ -1,8 +1,10 @@
 # Convert a single SVG using an existing Chrome session
 
 Internal helper that renders an SVG to PNG using an existing Chrome
-session. Waits deterministically for fonts/paint via
-[`wait_for_page_ready()`](https://strategicprojects.github.io/cardargus/reference/wait_for_page_ready.md).
+session. Waits deterministically for load/fonts via
+[`load_svg_page()`](https://strategicprojects.github.io/cardargus/reference/load_svg_page.md).
+When `background` is transparent, the PNG is captured with a real alpha
+channel.
 
 ## Usage
 

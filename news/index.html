@@ -74,6 +74,9 @@
 <code><a href="../reference/svg_card.html">svg_card()</a></code> now sizes badges using <code>value_fontsize</code> instead of a hard-coded <code>10</code>, preventing clipped/misaligned badge text when <code>value_fontsize</code> differs from 10 (<a href="https://github.com/StrategicProjects/cardargus/issues/18" class="external-link">#18</a>).</li>
 <li>
 <code><a href="../reference/is_light_color.html">is_light_color()</a></code> now reports an unknown color name with a clear <code>cli</code> error instead of letting <code><a href="https://rdrr.io/r/grDevices/col2rgb.html" class="external-link">col2rgb()</a></code> raise a raw base error (<a href="https://github.com/StrategicProjects/cardargus/issues/20" class="external-link">#20</a>).</li>
+<li>
+<code>.onLoad()</code> no longer tries to download the Jost font from Google Fonts when it is not installed on the system. Network access at load time is against CRAN policy and produced a non-suppressible startup message on machines without the font (the cause of the spurious WARNINGs on the CRAN r-oldrel-macos-arm64 checks for 0.2.4). Fonts are registered on demand when a card is rendered, as before.</li>
+<li>The GitHub stars badge in the README now links to the repository root: the <code>/stargazers</code> page answers 404 to the HEAD requests CRAN’s URL checker uses.</li>
 </ul></div>
 </div>
     <div class="section level2">

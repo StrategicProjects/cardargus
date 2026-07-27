@@ -1,8 +1,8 @@
 # Build an HTML document wrapping an SVG
 
-Returns the HTML as an in-memory string (injected into Chrome via
-`Page.setDocumentContent`), avoiding temp-file I/O and `file://` path
-issues on Windows.
+Returns the HTML as an in-memory string (loaded into Chrome via a
+`data:` URL), avoiding temp-file I/O and `file://` path issues on
+Windows.
 
 ## Usage
 

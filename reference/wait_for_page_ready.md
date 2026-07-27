@@ -1,13 +1,12 @@
-# Wait until the page is fully rendered (fonts loaded, layout painted)
+# Wait until all fonts on the page are loaded
 
 Deterministic readiness wait: resolves once `document.fonts.ready` fires
-(all `@font-face` fonts loaded) and two animation frames have painted.
-This replaces fixed
+(all `@font-face` fonts loaded, including web fonts fetched over the
+network). This replaces fixed
 [`Sys.sleep()`](https://rdrr.io/r/base/Sys.sleep.html) waits,
-guaranteeing screenshots/PDFs are never captured before web fonts
-render, while returning as soon as the page is actually ready. Falls
-back to a short fixed wait (with a warning) if the readiness signal
-times out.
+guaranteeing screenshots/PDFs are never captured before fonts render,
+while returning as soon as the page is actually ready. Falls back to a
+short fixed wait (with a warning) if the readiness signal times out.
 
 ## Usage
 
