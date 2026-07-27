@@ -15,7 +15,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/StrategicProjects/cardargus/blob/main/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/StrategicProjects/cardargus/blob/v0.2.5/DESCRIPTION)
 
 Leite A, Wasiliew M, Vasconcelos H, Amorim C, Bezerra D (2026).
 *cardargus: Generate SVG Information Cards with Embedded Fonts and
