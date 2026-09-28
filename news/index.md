@@ -2,6 +2,8 @@
 
 ## cardargus 0.2.5
 
+CRAN release: 2026-07-27
+
 ### New features
 
 - [`svg_to_pdf()`](https://strategicprojects.github.io/cardargus/reference/svg_to_pdf.md)
