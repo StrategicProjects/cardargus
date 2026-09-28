@@ -309,7 +309,7 @@ install.packages("chromote")
 ## Authors
 
 - **Andre Leite** - *Maintainer* - <leite@castlab.org>
-- **Marcos Wasiliew** - <marcos.wasilew@gmail.com>
+- **Marcos Wasiliew** - <marcos.wasiliew@gmail.com>
 - **Hugo Vasconcelos** - <hugo.vasconcelos@ufpe.br>
 - **Carlos Amorim** - <carlos.agaf@ufpe.br>
 - **Diogo Bezerra** - <diogo.bezerra@ufpe.br>
