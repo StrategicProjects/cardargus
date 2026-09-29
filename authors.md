@@ -2,7 +2,7 @@
 
 ## Authors
 
-- **[Andre Leite](https://github.com/milkway)**. Author, maintainer.
+- **[André Leite](https://github.com/milkway)**. Author, maintainer.
 
 - **[Marcos Wasiliew](https://github.com/marcoswasiliew)**. Author.
   [](https://orcid.org/0009-0004-4694-3159)
@@ -28,7 +28,7 @@ Embedded Fonts and Badges*. R package version 0.2.5,
 
     @Manual{,
       title = {cardargus: Generate SVG Information Cards with Embedded Fonts and Badges},
-      author = {Andre Leite and Marcos Wasiliew and Hugo Vasconcelos and Carlos Amorim and Diogo Bezerra and Júlia {Nascimento Barreto}},
+      author = {André Leite and Marcos Wasiliew and Hugo Vasconcelos and Carlos Amorim and Diogo Bezerra and Júlia {Nascimento Barreto}},
       year = {2026},
       note = {R package version 0.2.5},
       url = {https://strategicprojects.github.io/cardargus/},
