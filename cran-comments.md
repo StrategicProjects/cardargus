@@ -1,52 +1,39 @@
-# cran-comments — cardargus 0.2.5
-
-## Resubmission
-
-This is a resubmission of 0.2.5. Changes since the previous submission:
-
-* Fixed the invalid URL flagged by CRAN: the GitHub stars badge in README.md
-  now links to the repository root instead of `/stargazers` (which answers
-  404 to HEAD requests).
-* `.onLoad()` no longer attempts to download the Jost font from Google Fonts
-  when it is missing from the system. This removes network access at load
-  time and the non-suppressible startup message that caused the spurious
-  WARNINGs for 0.2.4 on the r-oldrel-macos-arm64 flavor. Fonts are registered
-  on demand at render time, as before.
+# cran-comments — cardargus 0.3.0
 
 ## Submission summary
 
 This is a minor feature release.
 
-* New `svg_to_pdf()` exports a card to a vector PDF via `rsvg::rsvg_pdf()`,
-  mirroring `svg_to_png()` (the SVG is sanitized and required fonts are embedded).
-  `save_card_for_knitr()` gains `format = "pdf"`, and `svg_to_formats()` reuses
-  `svg_to_pdf()` for the vector path.
-* `magick` and `rsvg` moved from `Imports` to `Suggests`: they are only used for
-  raster/PDF export, which is already guarded with `requireNamespace()`. Examples
-  that need them are conditioned on the package being available, so the package
-  checks cleanly with `_R_CHECK_DEPENDS_ONLY_`.
-* Minor fixes: `svg_card()` sizes badges using `value_fontsize` (no longer a
-  hard-coded `10`); `is_light_color()` reports an unknown color name via `cli`
-  instead of a raw `col2rgb()` error.
-* The Chrome-based conversion pipeline (via `chromote`, in Suggests) is more
-  robust: conversions wait deterministically for `document.fonts.ready`
-  instead of a fixed sleep, a single health-checked Chrome session is reused
-  across calls (closed in `.onUnload`), and pages are loaded via `data:` URLs
-  instead of temporary files. Chrome rendering tests are skipped on CRAN
-  (`skip_on_cran()`); no examples or tests launch Chrome during checks.
+* **Preset themes.** `svg_card()` gains a `theme` argument; `card_theme()` /
+  `card_themes()` provide eight customizable presets. Arguments set explicitly
+  in the call always override the theme.
+* **Sparklines.** New `create_sparkline()` generates small line/area/bar
+  mini-charts as standalone SVG strings for embedding in cards.
+* **Font subsetting.** `save_svg()` and `svg_to_formats()` gain
+  `subset_fonts`: instead of the full WOFF2, embed a glyph subset covering
+  only the characters used by the card (Google Fonts CSS API), with fallback
+  to the full font. Off by default; tests of this feature are offline
+  (cache-key/charset helpers only) and no example or test downloads a subset
+  during checks.
+* **Accessibility.** Cards now embed an SVG `<title>` (and optional `<desc>`
+  via the new `alt` argument) and carry `role="img"`/`aria-labelledby`.
+* New *Theme Gallery* vignette. Its card images are pre-rendered,
+  self-contained SVGs shipped as static vignette figures, so building the
+  vignette requires no network access.
+* All new `svg_card()` arguments were appended to the end of the signature,
+  preserving existing positional calls.
 
 ## R CMD check results
 
 0 errors | 0 warnings | 0 notes
 
-Verified locally with `R CMD check --as-cran --run-donttest`, re-run on
-2026-07-27 with the resubmission changes included. The font cache fix from
-0.2.4 is retained: checks do not write to the user's home filespace.
+Verified locally with `R CMD check --as-cran --run-donttest`. The font cache
+policy from previous releases is retained: checks never write to the user's
+home filespace (cache is routed to a session temp dir under `R CMD check`).
 
 ## Test environments
 
 * local: macOS, R 4.6.0
-* GitHub Actions: ubuntu-latest (R release), windows-latest (R release)
 * win-builder: R-devel
 
 ## Reverse dependencies
