@@ -36,3 +36,32 @@ test_that("font_cache_dir(persistent = FALSE) is a temp dir", {
   tmp <- normalizePath(tempdir(), winslash = "/", mustWork = FALSE)
   expect_true(startsWith(normalizePath(d, winslash = "/", mustWork = FALSE), tmp))
 })
+
+# ---- font subsetting (offline: cache keys and charset normalization only) ----
+
+test_that("font_subset_charset normalizes to sorted unique characters", {
+  expect_equal(cardargus:::font_subset_charset("baa"), "ab")
+  # Same glyphs, different order/repetition -> same charset
+  expect_identical(
+    cardargus:::font_subset_charset("CAIARA II"),
+    cardargus:::font_subset_charset("IRA CAI A")
+  )
+  expect_null(cardargus:::font_subset_charset(NULL))
+  expect_null(cardargus:::font_subset_charset(""))
+  # Multiple elements are collapsed
+  expect_equal(cardargus:::font_subset_charset(c("ab", "bc")), "abc")
+})
+
+test_that("font_cache_path separates subsets from the full font", {
+  full <- cardargus:::font_cache_path("Jost")
+  sub1 <- cardargus:::font_cache_path("Jost", text = "abc")
+  sub2 <- cardargus:::font_cache_path("Jost", text = "abd")
+
+  expect_match(basename(full), "^Jost\\.woff2$")
+  expect_false(sub1 == full)
+  expect_false(sub1 == sub2)
+  # Deterministic for the same charset
+  expect_identical(sub1, cardargus:::font_cache_path("Jost", text = "abc"))
+  # Empty/NULL text behaves like the full font
+  expect_identical(cardargus:::font_cache_path("Jost", text = NULL), full)
+})

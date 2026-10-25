@@ -93,6 +93,46 @@ card <- svg_card(
 )
 ```
 
+## Themes
+
+Instead of setting each color individually, apply a preset theme. Explicit
+arguments always win over the theme:
+
+```{r themes, eval=FALSE}
+# Available presets
+card_themes()
+#> "default" "light" "dark" "slate" "ocean" "forest" "sunset" "violet"
+
+# Apply a preset
+card <- svg_card(title = "PREMIUM", theme = "dark", ...)
+
+# Customize a preset with card_theme()
+my_theme <- card_theme("ocean", footer_color = "#cceeff")
+card <- svg_card(title = "REPORT", theme = my_theme, ...)
+
+# Explicit arguments override the theme
+card <- svg_card(title = "ALERT", theme = "dark", bg_color = "#e74c3c", ...)
+```
+
+A theme controls `bg_color`, `title_color`, `label_color`, `value_bg_color`,
+`value_text_color`, `value_border_color`, `footer_color` and (optionally)
+`font`. See the *Theme Gallery* vignette (`vignette("themes")`) for a rendered
+card in every preset.
+
+## Accessibility
+
+Every card embeds its title as an SVG `<title>` element and marks the root
+element with `role="img"`. Use `alt` to add a longer description for screen
+readers:
+
+```{r a11y, eval=FALSE}
+card <- svg_card(
+  title = "FAR",
+  alt = "Card com os indicadores do programa FAR em 2026",
+  ...
+)
+```
+
 ## Fonts
 
 cardargus uses Google Fonts by default. The default font is "Jost", but you can use any Google Font:

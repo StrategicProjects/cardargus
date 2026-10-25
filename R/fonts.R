@@ -167,28 +167,59 @@ running_under_check <- function() {
 }
 
 #' Build a cache filename for a font family
+#'
 #' @param family Font family name.
+#' @param text Optional normalized character set (see [font_subset_charset()]).
+#'   When supplied, the cache key gets a stable suffix derived from the
+#'   character set, so each subset is cached separately from the full font.
 #' @return Path to the cached font file.
 #' @keywords internal
-font_cache_path <- function(family) {
+font_cache_path <- function(family, text = NULL) {
   key <- gsub("[^A-Za-z0-9._-]+", "_", family)
+  if (!is.null(text) && nzchar(text)) {
+    key <- paste0(key, "_sub", substr(digest::digest(text, algo = "md5"), 1, 10))
+  }
   file.path(font_cache_dir(), paste0(key, ".woff2"))
+}
+
+#' Normalize text into a stable character set for font subsetting
+#'
+#' Collapses the input, deduplicates and sorts its characters. Two texts using
+#' the same glyphs therefore map to the same subset (and the same cache file),
+#' regardless of character order or repetition.
+#'
+#' @param text Character vector (or NULL).
+#' @return A single string with the sorted unique characters, or `NULL` when
+#'   there is no usable text.
+#' @keywords internal
+font_subset_charset <- function(text) {
+  if (is.null(text)) return(NULL)
+  text <- paste(as.character(text), collapse = "")
+  if (is.na(text) || !nzchar(text)) return(NULL)
+  chars <- sort(unique(strsplit(text, "")[[1]]))
+  paste(chars, collapse = "")
 }
 
 #' Download a Google Font as WOFF2 to the cache
 #'
 #' @param family Font family name.
 #' @param weight Numeric/character weight (default "400").
+#' @param text Optional normalized character set (see [font_subset_charset()]).
+#'   When supplied, the Google Fonts CSS API is asked for a *subset* containing
+#'   only those glyphs (`&text=` parameter), which is dramatically smaller than
+#'   the full font. Subsets are cached per character set.
 #' @return Path to cached WOFF2 file or NA_character_.
 #' @keywords internal
-download_google_font_woff2 <- function(family, weight = "400") {
-  out <- font_cache_path(family)
+download_google_font_woff2 <- function(family, weight = "400", text = NULL) {
+  if (!is.null(text) && !nzchar(text)) text <- NULL
+
+  out <- font_cache_path(family, text)
   if (file.exists(out)) return(out)
 
-  key <- gsub("[^A-Za-z0-9._-]+", "_", family)
+  key <- tools::file_path_sans_ext(basename(out))
 
-  # Try gfonts package if available
-  if (requireNamespace("gfonts", quietly = TRUE)) {
+  # Try gfonts package if available (full fonts only: gfonts has no subsetting)
+  if (is.null(text) && requireNamespace("gfonts", quietly = TRUE)) {
     res <- tryCatch({
       tmp <- tempfile("cardargus_font_")
       dir.create(tmp)
@@ -220,7 +251,7 @@ download_google_font_woff2 <- function(family, weight = "400") {
   
   # Fallback: fetch CSS from Google Fonts API
   family_encoded <- gsub(" ", "+", family)
-  
+
   # URLs to try (different API formats)
   urls_to_try <- c(
     sprintf("https://fonts.googleapis.com/css2?family=%s:wght@400&display=swap", family_encoded),
@@ -228,6 +259,13 @@ download_google_font_woff2 <- function(family, weight = "400") {
     sprintf("https://fonts.googleapis.com/css?family=%s:400&display=swap", family_encoded),
     sprintf("https://fonts.googleapis.com/css?family=%s&display=swap", family_encoded)
   )
+
+  # Subsetting: the CSS API returns a font with only the requested glyphs.
+  if (!is.null(text)) {
+    urls_to_try <- paste0(
+      urls_to_try, "&text=", utils::URLencode(text, reserved = TRUE)
+    )
+  }
   
   # User-Agent that triggers woff2 response
   ua <- "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
@@ -259,7 +297,14 @@ download_google_font_woff2 <- function(family, weight = "400") {
     # Pattern matches: url(https://...woff2) or url("https://...woff2")
     m <- regexec('url\\(["\']?([^)"\']+\\.woff2)["\']?\\)', css)
     hit <- regmatches(css, m)[[1]]
-    
+
+    # Subset responses (&text=) serve woff2 from extensionless URLs
+    # (fonts.gstatic.com/l/font?kit=...), identified by format('woff2').
+    if (length(hit) < 2) {
+      m <- regexec('url\\(["\']?([^)"\']+)["\']?\\)\\s*format\\([\'"]woff2[\'"]\\)', css)
+      hit <- regmatches(css, m)[[1]]
+    }
+
     if (length(hit) >= 2) {
       font_url <- hit[2]
       
@@ -326,17 +371,32 @@ detect_svg_fonts <- function(svg_content) {
 #'
 #' @param families Character vector of font families.
 #' @param weight Weight to request when downloading (default "400").
+#' @param text Optional normalized character set (see [font_subset_charset()]).
+#'   When supplied, a glyph subset is downloaded/cached instead of the full
+#'   font; if the subset cannot be obtained, the full font is used as fallback.
 #' @return Named character vector family -> font file path (NA if unavailable).
 #' @keywords internal
-ensure_cardargus_fonts <- function(families, weight = "400") {
+ensure_cardargus_fonts <- function(families, weight = "400", text = NULL) {
   families <- unique(as.character(families))
   out <- setNames(rep(NA_character_, length(families)), families)
-  
+
   cache_dir <- font_cache_dir()
-  
+
   for (fam in families) {
+    # Subset requested: try the subset first, fall back to the full font below.
+    if (!is.null(text) && nzchar(text)) {
+      fp <- download_google_font_woff2(fam, weight = weight, text = text)
+      if (!is.na(fp) && file.exists(fp)) {
+        out[[fam]] <- fp
+        next
+      }
+      cli::cli_warn(
+        "Could not download a subset of font {.val {fam}}; using the full font."
+      )
+    }
+
     key <- gsub("[^A-Za-z0-9._-]+", "_", fam)
-    
+
     for (ext in c("woff2", "ttf", "woff", "otf")) {
       fp <- file.path(cache_dir, paste0(key, ".", ext))
       if (file.exists(fp)) {
@@ -344,13 +404,13 @@ ensure_cardargus_fonts <- function(families, weight = "400") {
         break
       }
     }
-    
+
     if (is.na(out[[fam]])) {
       fp <- download_google_font_woff2(fam, weight = weight)
       out[[fam]] <- if (!is.na(fp) && file.exists(fp)) fp else NA_character_
     }
   }
-  
+
   out
 }
 
@@ -571,20 +631,30 @@ embed_svg_fonts <- function(svg_content, font_family, woff2_path) {
 #' referenced by the SVG into @font-face blocks.
 #'
 #' @param svg_content Character SVG.
+#' @param subset_fonts If TRUE, embed a glyph *subset* covering only the
+#'   characters that actually appear in the SVG text, instead of the full font
+#'   (much smaller output). Subsets are downloaded from the Google Fonts CSS
+#'   API and cached per character set; when a subset cannot be obtained, the
+#'   full font is embedded as fallback.
 #' @return A sanitized SVG with embedded WOFF2 fonts.
 #' @keywords internal
-prepare_svg_for_raster <- function(svg_content) {
+prepare_svg_for_raster <- function(svg_content, subset_fonts = FALSE) {
   svg <- as.character(svg_content)
-  
+
   if (!exists("sanitize_svg_for_raster", mode = "function")) {
     cli::cli_abort("Internal function {.fn sanitize_svg_for_raster} was not found.")
   }
   svg <- sanitize_svg_for_raster(svg)
-  
+
   families <- detect_svg_fonts(svg)
   if (!length(families)) return(svg)
-  
-  paths <- ensure_cardargus_fonts(families)
+
+  subset_text <- NULL
+  if (isTRUE(subset_fonts)) {
+    subset_text <- font_subset_charset(svg_text_content(svg))
+  }
+
+  paths <- ensure_cardargus_fonts(families, text = subset_text)
   for (fam in names(paths)) {
     fp <- paths[[fam]]
     if (!is.na(fp) && file.exists(fp)) {

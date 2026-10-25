@@ -103,11 +103,13 @@ parse_svg_root_dim <- function(svg_content, attr = c("width", "height")) {
 #'    break strict XML parsers, and
 #' 2) detects and embeds fonts (WOFF2 via @font-face) for deterministic rendering.
 #'
-#' This function expects the font helpers to be available in the package:
-#' `detect_svg_fonts()`, `ensure_cardargus_fonts()`, and `embed_svg_fonts()`.
-#'
 #' @param svg_content SVG string (or object coercible to character).
 #' @param output_path Output file path.
+#' @param subset_fonts If TRUE, embed a glyph *subset* covering only the
+#'   characters used by the card text, instead of the full font. This typically
+#'   shrinks the saved SVG dramatically. Subsets are downloaded from the Google
+#'   Fonts CSS API (network required on first use) and cached per character
+#'   set; when a subset cannot be obtained, the full font is embedded instead.
 #'
 #' @return Path to the saved SVG file.
 #' @export
@@ -115,28 +117,16 @@ parse_svg_root_dim <- function(svg_content, attr = c("width", "height")) {
 #' @examples
 #' svg <- svg_card("FAR", list(), list())
 #' save_svg(svg, tempfile(fileext = ".svg"))
-#' 
-save_svg <- function(svg_content, output_path) {
+#'
+#' # Much smaller file: embed only the glyphs the card uses
+#' save_svg(svg, tempfile(fileext = ".svg"), subset_fonts = TRUE)
+#'
+save_svg <- function(svg_content, output_path, subset_fonts = FALSE) {
   ensure_output_dir(output_path)
-  
-  svg <- as.character(svg_content)
-  
-  # 1) Remove problematic metadata/namespaces first (prevents XML parsing errors)
-  svg <- sanitize_svg_for_raster(svg)
-  
-  # 2) Detect fonts and embed them (WOFF2 via @font-face)
-  #    (Assumes these helpers exist in the package.)
-  fonts_used <- detect_svg_fonts(svg)
-  if (length(fonts_used)) {
-    font_paths <- ensure_cardargus_fonts(fonts_used)
-    for (family in names(font_paths)) {
-      woff2_path <- font_paths[[family]]
-      if (!is.na(woff2_path) && file.exists(woff2_path)) {
-        svg <- embed_svg_fonts(svg, font_family = family, woff2_path = woff2_path)
-      }
-    }
-  }
-  
+
+  # Sanitize + embed fonts (same pipeline used before rasterization)
+  svg <- prepare_svg_for_raster(svg_content, subset_fonts = subset_fonts)
+
   writeLines(svg, output_path, useBytes = TRUE)
   output_path
 }
@@ -347,6 +337,9 @@ svg_to_pdf <- function(svg_input,
 #' @param formats Vector of formats to generate ("png", "svg", "pdf").
 #' @param dpi Resolution for raster formats.
 #' @param background Background color for PNG output.
+#' @param subset_fonts If TRUE, embed only the glyphs used by the SVG text
+#'   (see [save_svg()]); mainly relevant for the `"svg"` output, whose file
+#'   size it reduces dramatically.
 #'
 #' @return Named list with paths to generated files.
 #' @export
@@ -354,7 +347,8 @@ svg_to_formats <- function(svg_input,
                            output_base,
                            formats = c("svg", "png"),
                            dpi = 300,
-                           background = "transparent") {
+                           background = "transparent",
+                           subset_fonts = FALSE) {
   
   results <- list()
   
@@ -366,7 +360,7 @@ svg_to_formats <- function(svg_input,
   }
   
   # Sanitize + embed fonts ONCE (prepare_svg_for_raster handles this)
-  svg_prepared <- prepare_svg_for_raster(svg_content)
+  svg_prepared <- prepare_svg_for_raster(svg_content, subset_fonts = subset_fonts)
   
   for (fmt in formats) {
     output_path <- paste0(output_base, ".", fmt)

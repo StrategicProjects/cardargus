@@ -31,7 +31,10 @@ svg_card(
   footer_fontsize = 8,
   footer_color = "white",
   uniform_row_height = TRUE,
-  show_viewer = interactive()
+  show_viewer = interactive(),
+  theme = NULL,
+  alt = NULL,
+  value_border_color = "#dee2e6"
 )
 }
 \arguments{
@@ -97,6 +100,19 @@ Use \code{get_svg_path("filename.svg")} for bundled logos, or any local path.}
 \item{uniform_row_height}{If TRUE, keep the height inside a row.}
 
 \item{show_viewer}{If TRUE (and interactive), preview the SVG in the Viewer.}
+
+\item{theme}{A preset theme name (see \code{\link[=card_themes]{card_themes()}}) or a theme object
+created with \code{\link[=card_theme]{card_theme()}}. The theme provides defaults for the visual
+arguments (\code{bg_color}, \code{title_color}, \code{label_color}, \code{value_bg_color},
+\code{value_text_color}, \code{value_border_color}, \code{footer_color} and, optionally,
+\code{font}); any of those arguments set explicitly in the call always wins
+over the theme.}
+
+\item{alt}{Optional alternative text describing the card content, embedded
+as an SVG \verb{<desc>} element for screen readers. The card \code{title} is always
+embedded as an SVG \verb{<title>} element.}
+
+\item{value_border_color}{Border color for value boxes (default "#dee2e6")}
 }
 \value{
 SVG string
@@ -139,4 +155,11 @@ svg_card("MCMV", badges, fields,
 # Diagonal gradient
 svg_card("Programa", badges, fields,
          bg_color = "linear-gradient(135deg, #667eea, #764ba2)")
+
+# Preset theme (see card_themes() for the available names)
+svg_card("MCMV", badges, fields, theme = "dark")
+
+# Theme with accessible description
+svg_card("FAR", badges, fields, theme = "ocean",
+         alt = "Card com indicadores do programa FAR")
 }

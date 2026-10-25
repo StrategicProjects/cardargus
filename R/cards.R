@@ -6,6 +6,15 @@
 #' fonts, badges, logos, and field labels/values.
 #'
 #' @param title Card title (e.g., "FAR", "FNHIS")
+#' @param theme A preset theme name (see [card_themes()]) or a theme object
+#'   created with [card_theme()]. The theme provides defaults for the visual
+#'   arguments (`bg_color`, `title_color`, `label_color`, `value_bg_color`,
+#'   `value_text_color`, `value_border_color`, `footer_color` and, optionally,
+#'   `font`); any of those arguments set explicitly in the call always wins
+#'   over the theme.
+#' @param alt Optional alternative text describing the card content, embedded
+#'   as an SVG `<desc>` element for screen readers. The card `title` is always
+#'   embedded as an SVG `<title>` element.
 #' @param badges_data List of badge data (label, value, color)
 #' @param fields List of field rows, each row is a list of fields with label, value, 
 #'   and optionally with_icon. The with_icon parameter can be:
@@ -28,6 +37,7 @@
 #' @param label_color Color for field labels (default "white")
 #' @param value_bg_color Background color for value boxes
 #' @param value_text_color Text color for values
+#' @param value_border_color Border color for value boxes (default "#dee2e6")
 #' @param show_house_icon Show house icon next to empreendimento
 #' @param logos Character vector of logo file paths or SVG strings for top right.
 #'   Use `get_svg_path("filename.svg")` for bundled logos, or any local path.
@@ -77,6 +87,13 @@
 #' # Diagonal gradient
 #' svg_card("Programa", badges, fields,
 #'          bg_color = "linear-gradient(135deg, #667eea, #764ba2)")
+#'
+#' # Preset theme (see card_themes() for the available names)
+#' svg_card("MCMV", badges, fields, theme = "dark")
+#'
+#' # Theme with accessible description
+#' svg_card("FAR", badges, fields, theme = "ocean",
+#'          alt = "Card com indicadores do programa FAR")
 svg_card <- function(title = "FAR",
                      badges_data = list(),
                      fields = list(),
@@ -103,9 +120,29 @@ svg_card <- function(title = "FAR",
                      footer_fontsize = 8,
                      footer_color = "white",
                      uniform_row_height = TRUE,
-                     show_viewer = interactive()
+                     show_viewer = interactive(),
+                     # New in 0.3.0 — kept at the end so existing positional
+                     # calls (title, badges_data, fields, ...) keep working.
+                     theme = NULL,
+                     alt = NULL,
+                     value_border_color = "#dee2e6"
                      ) {
-  
+
+  # ===== THEME SUPPORT =====
+  # A theme supplies defaults for the visual arguments; anything the caller
+  # sets explicitly in the call always wins over the theme.
+  if (!is.null(theme)) {
+    th <- if (inherits(theme, "cardargus_theme")) theme else card_theme(theme)
+    if (missing(bg_color))           bg_color           <- th$bg_color
+    if (missing(title_color))        title_color        <- th$title_color
+    if (missing(label_color))        label_color        <- th$label_color
+    if (missing(value_bg_color))     value_bg_color     <- th$value_bg_color
+    if (missing(value_text_color))   value_text_color   <- th$value_text_color
+    if (missing(value_border_color)) value_border_color <- th$value_border_color
+    if (missing(footer_color))       footer_color       <- th$footer_color
+    if (missing(font) && !is.null(th$font)) font        <- th$font
+  }
+
   # Generate unique ID for this card
   card_id <- generate_id(title, bg_color, width)
   
@@ -356,8 +393,8 @@ svg_card <- function(title = "FAR",
       
       
       elements <- c(elements, sprintf(
-        '<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" rx="%d" fill="%s" stroke="#dee2e6" stroke-width="1"/>',
-        field_x, box_y, fw, box_height, value_box_radius, value_bg_color
+        '<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" rx="%d" fill="%s" stroke="%s" stroke-width="1"/>',
+        field_x, box_y, fw, box_height, value_box_radius, value_bg_color, value_border_color
       ))
       
       # Draw value text (possibly multi-line)
@@ -456,10 +493,24 @@ svg_card <- function(title = "FAR",
       footer_elements <- c(footer_elements, logo_row$svg_content)
     }
   }
-# ===== ASSEMBLE FINAL SVG =====
+# ===== ACCESSIBILITY (SVG <title>/<desc> + WAI-ARIA) =====
+  a11y_title_id <- paste0("cardtitle-", card_id)
+  a11y_ids <- a11y_title_id
+  a11y_nodes <- sprintf('<title id="%s">%s</title>', a11y_title_id, escape_xml(title))
+  if (!is.null(alt) && length(alt) == 1 && !is.na(alt) && nzchar(alt)) {
+    a11y_desc_id <- paste0("carddesc-", card_id)
+    a11y_ids <- paste(a11y_ids, a11y_desc_id)
+    a11y_nodes <- paste0(
+      a11y_nodes,
+      sprintf('\n  <desc id="%s">%s</desc>', a11y_desc_id, escape_xml(alt))
+    )
+  }
+
+  # ===== ASSEMBLE FINAL SVG =====
   svg <- sprintf(
     '<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="%d" height="%d" viewBox="0 0 %d %d">
+<svg xmlns="http://www.w3.org/2000/svg" width="%d" height="%d" viewBox="0 0 %d %d" role="img" aria-labelledby="%s">
+  %s
   %s
   <!-- Background -->
   <rect width="%d" height="%d" rx="%d" fill="%s"/>
@@ -468,7 +519,8 @@ svg_card <- function(title = "FAR",
   <!-- Top-right logos -->
   %s
 </svg>',
-    width, round(final_height), width, round(final_height),
+    width, round(final_height), width, round(final_height), a11y_ids,
+    a11y_nodes,
     defs,
     width, round(final_height), corner_radius, bg_fill,
     paste(c(elements, footer_elements), collapse = "\n  "),

@@ -4,12 +4,17 @@
 \alias{download_google_font_woff2}
 \title{Download a Google Font as WOFF2 to the cache}
 \usage{
-download_google_font_woff2(family, weight = "400")
+download_google_font_woff2(family, weight = "400", text = NULL)
 }
 \arguments{
 \item{family}{Font family name.}
 
 \item{weight}{Numeric/character weight (default "400").}
+
+\item{text}{Optional normalized character set (see \code{\link[=font_subset_charset]{font_subset_charset()}}).
+When supplied, the Google Fonts CSS API is asked for a \emph{subset} containing
+only those glyphs (\verb{&text=} parameter), which is dramatically smaller than
+the full font. Subsets are cached per character set.}
 }
 \value{
 Path to cached WOFF2 file or NA_character_.

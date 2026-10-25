@@ -41,6 +41,23 @@ card <- svg_card(
 save_svg(card, "my_card.svg")
 ```
 
+### Smaller SVGs with font subsetting
+
+By default the full WOFF2 font is embedded (so the card renders any text).
+When the card is final, `subset_fonts = TRUE` embeds only the glyphs the card
+actually uses, which typically shrinks the file dramatically:
+
+```{r svg-subset, eval=FALSE}
+save_svg(card, "my_card.svg", subset_fonts = TRUE)
+
+# Also available in svg_to_formats()
+svg_to_formats(card, "my_card", formats = c("svg", "png"), subset_fonts = TRUE)
+```
+
+The subset is downloaded from the Google Fonts CSS API on first use and cached
+per character set; when the download fails (e.g. offline), the full cached
+font is embedded instead.
+
 ## Converting to PNG
 
 ### Standard conversion (rsvg)

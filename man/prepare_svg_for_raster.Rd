@@ -4,10 +4,16 @@
 \alias{prepare_svg_for_raster}
 \title{Prepare SVG for rasterization (sanitize + embed fonts)}
 \usage{
-prepare_svg_for_raster(svg_content)
+prepare_svg_for_raster(svg_content, subset_fonts = FALSE)
 }
 \arguments{
 \item{svg_content}{Character SVG.}
+
+\item{subset_fonts}{If TRUE, embed a glyph \emph{subset} covering only the
+characters that actually appear in the SVG text, instead of the full font
+(much smaller output). Subsets are downloaded from the Google Fonts CSS
+API and cached per character set; when a subset cannot be obtained, the
+full font is embedded as fallback.}
 }
 \value{
 A sanitized SVG with embedded WOFF2 fonts.

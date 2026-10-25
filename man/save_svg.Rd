@@ -4,12 +4,18 @@
 \alias{save_svg}
 \title{Save SVG string to file (sanitized + embedded fonts)}
 \usage{
-save_svg(svg_content, output_path)
+save_svg(svg_content, output_path, subset_fonts = FALSE)
 }
 \arguments{
 \item{svg_content}{SVG string (or object coercible to character).}
 
 \item{output_path}{Output file path.}
+
+\item{subset_fonts}{If TRUE, embed a glyph \emph{subset} covering only the
+characters used by the card text, instead of the full font. This typically
+shrinks the saved SVG dramatically. Subsets are downloaded from the Google
+Fonts CSS API (network required on first use) and cached per character
+set; when a subset cannot be obtained, the full font is embedded instead.}
 }
 \value{
 Path to the saved SVG file.
@@ -21,12 +27,12 @@ Saves an SVG string to disk. Before saving, the function:
 break strict XML parsers, and
 \item detects and embeds fonts (WOFF2 via @font-face) for deterministic rendering.
 }
-
-This function expects the font helpers to be available in the package:
-\code{detect_svg_fonts()}, \code{ensure_cardargus_fonts()}, and \code{embed_svg_fonts()}.
 }
 \examples{
 svg <- svg_card("FAR", list(), list())
 save_svg(svg, tempfile(fileext = ".svg"))
+
+# Much smaller file: embed only the glyphs the card uses
+save_svg(svg, tempfile(fileext = ".svg"), subset_fonts = TRUE)
 
 }
