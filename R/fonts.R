@@ -297,7 +297,14 @@ download_google_font_woff2 <- function(family, weight = "400", text = NULL) {
     # Pattern matches: url(https://...woff2) or url("https://...woff2")
     m <- regexec('url\\(["\']?([^)"\']+\\.woff2)["\']?\\)', css)
     hit <- regmatches(css, m)[[1]]
-    
+
+    # Subset responses (&text=) serve woff2 from extensionless URLs
+    # (fonts.gstatic.com/l/font?kit=...), identified by format('woff2').
+    if (length(hit) < 2) {
+      m <- regexec('url\\(["\']?([^)"\']+)["\']?\\)\\s*format\\([\'"]woff2[\'"]\\)', css)
+      hit <- regmatches(css, m)[[1]]
+    }
+
     if (length(hit) >= 2) {
       font_url <- hit[2]
       
