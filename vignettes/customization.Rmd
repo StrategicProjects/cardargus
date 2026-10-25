@@ -116,7 +116,8 @@ card <- svg_card(title = "ALERT", theme = "dark", bg_color = "#e74c3c", ...)
 
 A theme controls `bg_color`, `title_color`, `label_color`, `value_bg_color`,
 `value_text_color`, `value_border_color`, `footer_color` and (optionally)
-`font`.
+`font`. See the *Theme Gallery* vignette (`vignette("themes")`) for a rendered
+card in every preset.
 
 ## Accessibility
 

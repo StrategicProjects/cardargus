@@ -26,6 +26,9 @@
 
 ## Minor improvements
 
+* New *Theme Gallery* vignette (`vignette("themes")`) shows a rendered card in
+  every preset theme (pre-rendered, self-contained SVGs saved with
+  `subset_fonts = TRUE`).
 * All new `svg_card()` arguments were appended to the end of the signature, so
   existing positional calls keep working unchanged.
 * `save_svg()` now reuses the same sanitize+embed pipeline as the converters

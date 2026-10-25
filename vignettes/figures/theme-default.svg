@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="225" viewBox="0 0 420 225" role="img" aria-labelledby="cardtitle-558be844">
+  <title id="cardtitle-558be844">DEFAULT</title>
+  
+    <defs>
+      <style>
+@font-face{font-family:"Jost";src:url("data:font/woff2;base64,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") format("woff2");font-weight:100 900;font-style:normal;}
+
+        
+        .card-title { font-family: "Jost", sans-serif; font-weight: 700; font-size: 16px; fill: white; }
+        .field-label { font-family: "Jost", sans-serif; font-weight: 600; font-size: 11px; fill: white; }
+        .field-value { font-family: "Jost", sans-serif; font-weight: 400; font-size: 11px; fill: #212529; }
+        .footer-text { font-family: "Jost", sans-serif; font-style: italic; font-size: 8px; fill: white; opacity: 0.8; }
+      </style>
+      <clipPath id="card-clip-558be844">
+        <rect width="420" rx="8" ry="8"/>
+      </clipPath>
+      
+    </defs>
+  <!-- Background -->
+  <rect width="420" height="225" rx="8" fill="#fab255"/>
+  <!-- Content -->
+  <text x="20" y="36.0" class="card-title" dominant-baseline="alphabetic">DEFAULT</text>
+  <g transform="translate(20.0, 54.2)">
+      <title>UH: 192</title>
+      
+      <linearGradient id="s193fb0c9_1" x2="0" y2="100%">
+        <stop offset="0" stop-color="#bbb" stop-opacity=".1"/>
+        <stop offset="1" stop-opacity=".1"/>
+      </linearGradient>
+      <clipPath id="r193fb0c9_1">
+        <rect width="56" height="21" rx="3" ry="3" fill="#fff"/>
+      </clipPath>
+      <g clip-path="url(#r193fb0c9_1)">
+        <rect width="56" height="21" fill="#555"/>
+        <rect x="25" width="32" height="21" fill="white"/>
+        <rect width="56" height="21" fill="url(#s193fb0c9_1)"/>
+      </g>
+      <g fill="#fff" text-anchor="middle" font-family="Jost" font-size="11" dominant-baseline="middle">
+        <text x="13.4" y="12.5" fill="#010101" text-rendering="geometricPrecision" alignment-baseline="middle" fill-opacity=".3">UH</text>
+        <text x="12.4" y="11.5" text-rendering="geometricPrecision" alignment-baseline="middle" fill="#fff">UH</text>
+        <text x="41.5" y="12.5" text-rendering="geometricPrecision" alignment-baseline="middle" fill="#ccc" fill-opacity=".3">192</text>
+        <text x="40.5" y="11.5" text-rendering="geometricPrecision" alignment-baseline="middle" fill="#333">192</text>
+      </g>
+    </g>
+  <g transform="translate(80.0, 54.2)">
+      <title>Recurso: 36,4 milhões</title>
+      
+      <linearGradient id="sb8d7de1b_2" x2="0" y2="100%">
+        <stop offset="0" stop-color="#bbb" stop-opacity=".1"/>
+        <stop offset="1" stop-opacity=".1"/>
+      </linearGradient>
+      <clipPath id="rb8d7de1b_2">
+        <rect width="122" height="21" rx="3" ry="3" fill="#fff"/>
+      </clipPath>
+      <g clip-path="url(#rb8d7de1b_2)">
+        <rect width="122" height="21" fill="#555"/>
+        <rect x="47" width="75" height="21" fill="white"/>
+        <rect width="122" height="21" fill="url(#sb8d7de1b_2)"/>
+      </g>
+      <g fill="#fff" text-anchor="middle" font-family="Jost" font-size="11" dominant-baseline="middle">
+        <text x="24.5" y="12.5" fill="#010101" text-rendering="geometricPrecision" alignment-baseline="middle" fill-opacity=".3">Recurso</text>
+        <text x="23.5" y="11.5" text-rendering="geometricPrecision" alignment-baseline="middle" fill="#fff">Recurso</text>
+        <text x="85.7" y="12.5" text-rendering="geometricPrecision" alignment-baseline="middle" fill="#ccc" fill-opacity=".3">36,4 milhões</text>
+        <text x="84.7" y="11.5" text-rendering="geometricPrecision" alignment-baseline="middle" fill="#333">36,4 milhões</text>
+      </g>
+    </g>
+  <g transform="translate(20.0, 84.8)"><svg width="50" height="56" viewBox="0 0 572 564" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M286.666 20.5544H286.667C288.134 21.715 288.135 21.7152 289.632 22.8992L289.749 22.991L296.055 27.8855C297.612 29.0963 297.62 29.102 299.224 30.3494L299.286 30.3982C303.942 33.9851 308.638 37.4306 313.189 40.7546V40.7556C321.461 46.8148 329.655 53.0311 337.908 59.3513L337.915 59.3552L337.921 59.3601C344.353 64.2774 350.827 69.114 357.341 73.8875C365.614 79.9503 373.812 86.1666 382.062 92.4851L382.068 92.49L382.074 92.4939C388.507 97.4112 394.981 102.248 401.494 107.021C409.767 113.084 417.965 119.3 426.216 125.619L426.223 125.624L426.229 125.629C432.661 130.546 439.135 135.381 445.647 140.154V140.155C455.07 147.062 464.394 154.154 473.814 161.36V161.361C477.79 164.402 481.786 167.427 485.808 170.431C490.661 174.058 495.497 177.743 500.38 181.478L500.382 181.479C507.012 186.55 513.763 191.711 520.628 196.791L523.576 198.963C525.209 200.168 526.818 201.371 528.404 202.582L528.463 202.627C533.293 206.281 538.402 209.786 544.27 212.95C547.924 215.038 550.174 216.439 551.839 217.864C552.719 218.617 553.229 219.211 553.545 219.699C554.612 226.321 554.459 233.408 554.206 242.494L554.204 242.543L554.203 242.593C554.126 246.06 554.128 249.524 554.14 252.824L554.153 256.064C554.164 263.428 554.097 270.804 553.974 278.204C553.791 289.17 553.734 300.108 553.706 310.974C553.658 328.506 553.512 346.045 553.304 363.599C553.1 380.713 552.944 397.833 552.85 414.958C552.844 415.915 552.838 417.197 552.832 418.186V418.187C552.786 426.524 552.743 434.86 552.7 443.194C552.522 478.111 552.171 511.279 551.815 545.753H21.2832C20.7333 493.984 20.5786 479.892 20.4639 462.669L20.3359 440.362L20.1943 415.014C20.1911 414.454 20.1792 412.399 20.1758 411.807V411.805L20.085 398.968C20.0155 390.411 19.9296 381.858 19.832 373.31L19.6777 360.494C19.4613 343.026 19.3339 325.556 19.2871 308.082V308.077L19.25 299.915C19.2077 293.111 19.1365 286.304 19.0312 279.492L18.9639 275.404C18.8433 268.123 18.8074 260.831 18.8369 253.517V253.508C18.8501 249.686 18.8353 245.777 18.7422 241.813L18.6973 240.111C18.5223 233.825 18.4012 229.443 18.3936 226.112C18.3865 223.051 18.4852 221.56 18.5771 220.816C18.6272 220.74 18.6858 220.648 18.7588 220.542C18.9536 220.258 19.175 219.946 19.457 219.556C22.9656 216.262 27.149 213.504 32.6768 210.43L32.8105 210.356L32.9414 210.28C38.8184 206.877 44.038 202.807 48.1201 199.693C49.7923 198.462 51.4636 197.236 53.1348 196.014L53.165 195.993L53.1943 195.97C60.023 190.936 66.7359 185.779 73.2754 180.769C79.5598 175.964 85.9122 171.229 92.3311 166.531L92.334 166.529C99.3183 161.415 106.203 156.196 113.013 150.852C120.322 145.117 127.778 139.528 135.377 133.967L135.391 133.957C142.144 129.004 148.787 123.974 155.348 118.948L155.349 118.949C163.393 112.788 171.512 106.72 179.708 100.714L179.716 100.708L179.725 100.702C186.417 95.7851 193.002 90.793 199.502 85.8152C207.547 79.6542 215.667 73.586 223.862 67.5798L223.878 67.5681C231.583 61.9076 239.15 56.1311 246.587 50.4353C253.736 44.9702 260.959 39.5928 268.253 34.2781L268.265 34.2693L268.275 34.2615C272.777 30.9703 277.275 27.5745 281.734 24.0115C283.011 22.9996 283.012 22.9988 284.314 21.9666L284.346 21.9412C285.02 21.4043 285.692 20.8622 286.364 20.3191C286.465 20.3971 286.565 20.476 286.666 20.5544Z" stroke="white" stroke-width="35"/>
+    </svg></g>
+  <text x="85.0" y="101.1" class="field-label">Empreendimento</text>
+  <rect x="85.0" y="105.1" width="315.0" height="30.3" rx="4" fill="#f8f8ff" stroke="#dee2e6" stroke-width="1"/>
+  <text x="95.0" y="122.5" class="field-value">CAIARA II</text>
+  <g transform="translate(20.0, 153.1)"><svg xmlns="http://www.w3.org/2000/svg" width="55" height="34" viewBox="0 0 55 34" aria-hidden="true"><polyline points="3.00,31.00 12.80,21.67 22.60,26.33 32.40,12.33 42.20,17.00 52.00,3.00" fill="none" stroke="white" stroke-width="2.00" stroke-linecap="round" stroke-linejoin="round"/><circle cx="52.00" cy="3.00" r="3.00" fill="white"/></svg></g>
+  <text x="85.0" y="158.4" class="field-label">Tendência</text>
+  <rect x="85.0" y="162.4" width="120.0" height="30.3" rx="4" fill="#f8f8ff" stroke="#dee2e6" stroke-width="1"/>
+  <text x="95.0" y="179.8" class="field-value">Alta</text>
+  <text x="215.0" y="158.4" class="field-label">Município</text>
+  <rect x="215.0" y="162.4" width="185.0" height="30.3" rx="4" fill="#f8f8ff" stroke="#dee2e6" stroke-width="1"/>
+  <text x="225.0" y="179.8" class="field-value">Recife</text>
+  <text x="20" y="216.7" class="footer-text" dominant-baseline="alphabetic">cardargus • theme gallery</text>
+  <!-- Top-right logos -->
+  
+</svg>
