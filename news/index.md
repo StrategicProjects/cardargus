@@ -1,5 +1,66 @@
 # Changelog
 
+## cardargus 0.3.0
+
+### New features
+
+- **Themes.**
+  [`svg_card()`](https://strategicprojects.github.io/cardargus/reference/svg_card.md)
+  gains a `theme` argument accepting a preset name or a
+  [`card_theme()`](https://strategicprojects.github.io/cardargus/reference/card_theme.md)
+  object. Eight presets ship with the package (`"default"`, `"light"`,
+  `"dark"`, `"slate"`, `"ocean"`, `"forest"`, `"sunset"`, `"violet"`;
+  see
+  [`card_themes()`](https://strategicprojects.github.io/cardargus/reference/card_themes.md)),
+  and any component can be customized with `card_theme(name, ...)`.
+  Arguments set explicitly in the
+  [`svg_card()`](https://strategicprojects.github.io/cardargus/reference/svg_card.md)
+  call always win over the theme.
+- **Sparklines.** New
+  [`create_sparkline()`](https://strategicprojects.github.io/cardargus/reference/create_sparkline.md)
+  generates small line, area or bar mini-charts as standalone SVG
+  strings, embeddable in any
+  [`svg_card()`](https://strategicprojects.github.io/cardargus/reference/svg_card.md)
+  slot that accepts raw SVG (`with_icon`, `logos`, `bottom_logos`).
+- **Font subsetting.**
+  [`save_svg()`](https://strategicprojects.github.io/cardargus/reference/save_svg.md)
+  and
+  [`svg_to_formats()`](https://strategicprojects.github.io/cardargus/reference/svg_to_formats.md)
+  gain `subset_fonts`: instead of embedding the full WOFF2, embed a
+  glyph subset covering only the characters that appear in the card, via
+  the Google Fonts CSS API (`&text=`). This typically shrinks
+  self-contained SVGs dramatically. Subsets are cached per character
+  set, with fallback to the full font when the subset cannot be
+  downloaded.
+- **Accessibility.** Cards now carry an SVG `<title>` element (the card
+  title), `role="img"` and `aria-labelledby` on the root element, so
+  screen readers announce them properly when embedded in HTML. A new
+  `alt` argument to
+  [`svg_card()`](https://strategicprojects.github.io/cardargus/reference/svg_card.md)
+  adds a longer description as an SVG `<desc>` element.
+- New `value_border_color` argument to
+  [`svg_card()`](https://strategicprojects.github.io/cardargus/reference/svg_card.md)
+  controls the border color of value boxes (previously hard-coded to
+  `"#dee2e6"`).
+
+### Minor improvements
+
+- New *Theme Gallery* vignette
+  ([`vignette("themes")`](https://strategicprojects.github.io/cardargus/articles/themes.md))
+  shows a rendered card in every preset theme (pre-rendered,
+  self-contained SVGs saved with `subset_fonts = TRUE`).
+- All new
+  [`svg_card()`](https://strategicprojects.github.io/cardargus/reference/svg_card.md)
+  arguments were appended to the end of the signature, so existing
+  positional calls keep working unchanged.
+- [`save_svg()`](https://strategicprojects.github.io/cardargus/reference/save_svg.md)
+  now reuses the same sanitize+embed pipeline as the converters
+  ([`prepare_svg_for_raster()`](https://strategicprojects.github.io/cardargus/reference/prepare_svg_for_raster.md))
+  instead of duplicating it.
+- [`load_svg_for_embed()`](https://strategicprojects.github.io/cardargus/reference/load_svg_for_embed.md)
+  now reports a missing file via `cli` (the last remaining legacy
+  [`stop()`](https://rdrr.io/r/base/stop.html) call).
+
 ## cardargus 0.2.5
 
 CRAN release: 2026-07-27

@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">cardargus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -126,6 +126,22 @@ PNG/PDF:</p>
 <span></span>
 <span><span class="co"># Save to file (with embedded fonts)</span></span>
 <span><span class="fu"><a href="../reference/save_svg.html">save_svg</a></span><span class="op">(</span><span class="va">card</span>, <span class="st">"my_card.svg"</span><span class="op">)</span></span></code></pre></div>
+<div class="section level3">
+<h3 id="smaller-svgs-with-font-subsetting">Smaller SVGs with font subsetting<a class="anchor" aria-label="anchor" href="#smaller-svgs-with-font-subsetting"></a>
+</h3>
+<p>By default the full WOFF2 font is embedded (so the card renders any
+text). When the card is final, <code>subset_fonts = TRUE</code> embeds
+only the glyphs the card actually uses, which typically shrinks the file
+dramatically:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/save_svg.html">save_svg</a></span><span class="op">(</span><span class="va">card</span>, <span class="st">"my_card.svg"</span>, subset_fonts <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Also available in svg_to_formats()</span></span>
+<span><span class="fu"><a href="../reference/svg_to_formats.html">svg_to_formats</a></span><span class="op">(</span><span class="va">card</span>, <span class="st">"my_card"</span>, formats <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"svg"</span>, <span class="st">"png"</span><span class="op">)</span>, subset_fonts <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p>The subset is downloaded from the Google Fonts CSS API on first use
+and cached per character set; when the download fails (e.g. offline),
+the full cached font is embedded instead.</p>
+</div>
 </div>
 <div class="section level2">
 <h2 id="converting-to-png">Converting to PNG<a class="anchor" aria-label="anchor" href="#converting-to-png"></a>
@@ -135,7 +151,7 @@ PNG/PDF:</p>
 </h3>
 <p>Uses librsvg/ImageMagick. Fast and reliable, but requires fonts to be
 embedded in the SVG:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Convert SVG string to PNG</span></span>
 <span><span class="fu"><a href="../reference/svg_to_png.html">svg_to_png</a></span><span class="op">(</span><span class="va">card</span>, <span class="st">"my_card.png"</span><span class="op">)</span></span>
 <span></span>
@@ -148,7 +164,7 @@ embedded in the SVG:</p>
 <p>Uses headless Chrome via the <code>chromote</code> package. Provides
 <strong>perfect font rendering</strong>, including Google Fonts loaded
 via <code>@import</code>:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Check if Chrome is available</span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="../reference/chrome_available.html">chrome_available</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="co"># High-quality PNG with Chrome</span></span>
@@ -160,7 +176,7 @@ via <code>@import</code>:</p>
 <div class="section level4">
 <h4 id="installing-chrome-support">Installing Chrome support<a class="anchor" aria-label="anchor" href="#installing-chrome-support"></a>
 </h4>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Install chromote package</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"chromote"</span><span class="op">)</span></span>
 <span></span>
@@ -177,7 +193,7 @@ via <code>@import</code>:</p>
 <div class="section level3">
 <h3 id="background-options">Background options<a class="anchor" aria-label="anchor" href="#background-options"></a>
 </h3>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Transparent background (preserves rounded corners)</span></span>
 <span><span class="fu"><a href="../reference/svg_to_png.html">svg_to_png</a></span><span class="op">(</span><span class="va">card</span>, <span class="st">"card_transparent.png"</span>, dpi <span class="op">=</span> <span class="fl">300</span><span class="op">)</span></span>
 <span></span>
@@ -191,7 +207,7 @@ via <code>@import</code>:</p>
 <h3 id="png-with-margin">PNG with margin<a class="anchor" aria-label="anchor" href="#png-with-margin"></a>
 </h3>
 <p>Add a margin around the card:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Add 20px margin with white background</span></span>
 <span><span class="fu"><a href="../reference/svg_to_png_with_margin.html">svg_to_png_with_margin</a></span><span class="op">(</span></span>
 <span>  <span class="va">card</span>,</span>
@@ -213,7 +229,7 @@ selectable and scales without pixelation).</p>
 <p><code><a href="../reference/svg_to_pdf.html">svg_to_pdf()</a></code> mirrors <code><a href="../reference/svg_to_png.html">svg_to_png()</a></code>: it
 sanitizes the SVG, embeds the required fonts, and writes a vector PDF
 via <code><a href="https://docs.ropensci.org/rsvg/reference/rsvg.html" class="external-link">rsvg::rsvg_pdf()</a></code>. No Chrome required.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Vector PDF (via rsvg)</span></span>
 <span><span class="fu"><a href="../reference/svg_to_pdf.html">svg_to_pdf</a></span><span class="op">(</span><span class="va">card</span>, <span class="st">"my_card.pdf"</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -222,12 +238,12 @@ via <code><a href="https://docs.ropensci.org/rsvg/reference/rsvg.html" class="ex
 </h3>
 <p>Use <code><a href="../reference/svg_to_pdf_chrome.html">svg_to_pdf_chrome()</a></code> when you rely on web fonts
 loaded via <code>@import</code>:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="../reference/chrome_available.html">chrome_available</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu"><a href="../reference/svg_to_pdf_chrome.html">svg_to_pdf_chrome</a></span><span class="op">(</span><span class="va">card</span>, <span class="st">"my_card.pdf"</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
 <p>PDF is also available from the knitr helper:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Saves card.pdf using Chrome when available, else rsvg</span></span>
 <span><span class="fu"><a href="../reference/save_card_for_knitr.html">save_card_for_knitr</a></span><span class="op">(</span><span class="va">card</span>, format <span class="op">=</span> <span class="st">"pdf"</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -236,7 +252,7 @@ loaded via <code>@import</code>:</p>
 <h2 id="multiple-formats">Multiple formats<a class="anchor" aria-label="anchor" href="#multiple-formats"></a>
 </h2>
 <p>Export to multiple formats at once:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Export to SVG, PNG and (vector) PDF</span></span>
 <span><span class="fu"><a href="../reference/svg_to_formats.html">svg_to_formats</a></span><span class="op">(</span></span>
 <span>  <span class="va">card</span>,</span>
@@ -250,7 +266,7 @@ loaded via <code>@import</code>:</p>
 <h2 id="batch-processing">Batch processing<a class="anchor" aria-label="anchor" href="#batch-processing"></a>
 </h2>
 <p>Convert multiple cards efficiently:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create multiple cards</span></span>
 <span><span class="va">cards</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="../reference/svg_card.html">svg_card</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Card 1"</span>, badges_data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>, fields <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,</span>
@@ -288,7 +304,7 @@ rsvg</li>
 <div class="section level3">
 <h3 id="inline-svg-display">Inline SVG display<a class="anchor" aria-label="anchor" href="#inline-svg-display"></a>
 </h3>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Display card directly in document (HTML only)</span></span>
 <span><span class="fu"><a href="../reference/include_card.html">include_card</a></span><span class="op">(</span><span class="va">card</span><span class="op">)</span></span>
 <span></span>
@@ -298,7 +314,7 @@ rsvg</li>
 <div class="section level3">
 <h3 id="png-display-better-compatibility">PNG display (better compatibility)<a class="anchor" aria-label="anchor" href="#png-display-better-compatibility"></a>
 </h3>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Display as PNG with auto engine selection</span></span>
 <span><span class="fu"><a href="../reference/include_card_png.html">include_card_png</a></span><span class="op">(</span><span class="va">card</span>, dpi <span class="op">=</span> <span class="fl">150</span><span class="op">)</span></span>
 <span></span>
@@ -311,7 +327,7 @@ rsvg</li>
 <div class="section level3">
 <h3 id="save-for-knitr">Save for knitr<a class="anchor" aria-label="anchor" href="#save-for-knitr"></a>
 </h3>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Save and get path for knitr::include_graphics</span></span>
 <span><span class="va">path</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/save_card_for_knitr.html">save_card_for_knitr</a></span><span class="op">(</span></span>
 <span>  <span class="va">card</span>, </span>
@@ -325,7 +341,7 @@ rsvg</li>
 <div class="section level3">
 <h3 id="custom-knitr-engine">Custom knitr engine<a class="anchor" aria-label="anchor" href="#custom-knitr-engine"></a>
 </h3>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Register the cardargus engine</span></span>
 <span><span class="fu"><a href="../reference/register_cardargus_knitr.html">register_cardargus_knitr</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
@@ -339,7 +355,7 @@ rsvg</li>
 <h2 id="integration-with-gridggplot2">Integration with grid/ggplot2<a class="anchor" aria-label="anchor" href="#integration-with-gridggplot2"></a>
 </h2>
 <p>Convert cards to grobs for use with grid graphics:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">grid</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Convert card to grob (auto-selects best engine)</span></span>
@@ -399,7 +415,7 @@ rsvg</li>
 <div class="section level3">
 <h3 id="file-size-considerations">File size considerations<a class="anchor" aria-label="anchor" href="#file-size-considerations"></a>
 </h3>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Smaller file (lower quality)</span></span>
 <span><span class="fu"><a href="../reference/svg_to_png_chrome.html">svg_to_png_chrome</a></span><span class="op">(</span><span class="va">card</span>, <span class="st">"card_web.png"</span>, dpi <span class="op">=</span> <span class="fl">96</span><span class="op">)</span></span>
 <span></span>
@@ -413,7 +429,7 @@ rsvg</li>
 <div class="section level2">
 <h2 id="comparing-engines">Comparing engines<a class="anchor" aria-label="anchor" href="#comparing-engines"></a>
 </h2>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Same card, different engines</span></span>
 <span><span class="fu"><a href="../reference/svg_to_png.html">svg_to_png</a></span><span class="op">(</span><span class="va">card</span>, <span class="st">"card_rsvg.png"</span>, dpi <span class="op">=</span> <span class="fl">300</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/svg_to_png_chrome.html">svg_to_png_chrome</a></span><span class="op">(</span><span class="va">card</span>, <span class="st">"card_chrome.png"</span>, dpi <span class="op">=</span> <span class="fl">300</span><span class="op">)</span></span>
@@ -426,7 +442,7 @@ rsvg</li>
 <div class="section level2">
 <h2 id="error-handling">Error handling<a class="anchor" aria-label="anchor" href="#error-handling"></a>
 </h2>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Safe conversion with fallback</span></span>
 <span><span class="va">convert_card</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">card</span>, <span class="va">output_path</span>, <span class="va">dpi</span> <span class="op">=</span> <span class="fl">300</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="../reference/chrome_available.html">chrome_available</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
@@ -465,7 +481,7 @@ ensure fonts are embedded with <code><a href="../reference/save_svg.html">save_s
 <div class="section level3">
 <h3 id="chrome-not-found">Chrome not found<a class="anchor" aria-label="anchor" href="#chrome-not-found"></a>
 </h3>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Check Chrome availability</span></span>
 <span><span class="fu"><a href="../reference/chrome_available.html">chrome_available</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
@@ -482,7 +498,7 @@ ensure fonts are embedded with <code><a href="../reference/save_svg.html">save_s
 <h3 id="slow-chrome-conversion">Slow Chrome conversion<a class="anchor" aria-label="anchor" href="#slow-chrome-conversion"></a>
 </h3>
 <p>Chrome has startup overhead. For batch processing, consider:</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># For many cards, rsvg may be faster if fonts are embedded</span></span>
 <span><span class="fu"><a href="../reference/svg_to_png.html">svg_to_png</a></span><span class="op">(</span><span class="va">card</span>, <span class="st">"output.png"</span>, dpi <span class="op">=</span> <span class="fl">300</span><span class="op">)</span></span>
 <span></span>
@@ -492,7 +508,7 @@ ensure fonts are embedded with <code><a href="../reference/save_svg.html">save_s
 <div class="section level3">
 <h3 id="timeout-errors">Timeout errors<a class="anchor" aria-label="anchor" href="#timeout-errors"></a>
 </h3>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Increase timeout for complex SVGs</span></span>
 <span><span class="fu"><a href="../reference/svg_to_png_chrome.html">svg_to_png_chrome</a></span><span class="op">(</span><span class="va">card</span>, <span class="st">"output.png"</span>, timeout <span class="op">=</span> <span class="fl">60</span><span class="op">)</span>  <span class="co"># 60 seconds</span></span></code></pre></div>
 </div>
@@ -504,7 +520,7 @@ ensure fonts are embedded with <code><a href="../reference/save_svg.html">save_s
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by <a href="https://github.com/milkway" class="external-link">André Leite</a>, <a href="https://github.com/marcoswasiliew" class="external-link">Marcos Wasiliew</a>, <a href="https://github.com/hugoavmedeiros" class="external-link">Hugo Vasconcelos</a>, <a href="https://github.com/cagaf" class="external-link">Carlos Amorim</a>, <a href="https://github.com/DiCarvalhoB" class="external-link">Diogo Bezerra</a>, Júlia Nascimento Barreto.</p>
+  <p>Developed by <a href="https://github.com/milkway" class="external-link">André Leite</a>, <a href="https://github.com/marcoswasiliew" class="external-link">Marcos Wasiliew</a>, <a href="https://github.com/hugoavmedeiros" class="external-link">Hugo Vasconcelos</a>, <a href="https://github.com/cagaf" class="external-link">Carlos Amorim</a>, <a href="https://github.com/DiCarvalhoB" class="external-link">Diogo Bezerra</a>, <a href="https://orcid.org/0009-0004-2851-7770" class="external-link">Júlia Nascimento Barreto</a>.</p>
 </div>
 
 <div class="pkgdown-footer-right">

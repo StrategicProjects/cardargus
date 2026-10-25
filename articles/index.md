@@ -14,3 +14,5 @@
   Management](https://strategicprojects.github.io/cardargus/articles/fonts.md):
 - [Icons and
   Logos](https://strategicprojects.github.io/cardargus/articles/icons.md):
+- [Theme
+  Gallery](https://strategicprojects.github.io/cardargus/articles/themes.md):

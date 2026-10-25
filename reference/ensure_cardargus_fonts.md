@@ -5,7 +5,7 @@ Ensure cardargus fonts are available (WOFF2 cache)
 ## Usage
 
 ``` r
-ensure_cardargus_fonts(families, weight = "400")
+ensure_cardargus_fonts(families, weight = "400", text = NULL)
 ```
 
 ## Arguments
@@ -17,6 +17,14 @@ ensure_cardargus_fonts(families, weight = "400")
 - weight:
 
   Weight to request when downloading (default "400").
+
+- text:
+
+  Optional normalized character set (see
+  [`font_subset_charset()`](https://strategicprojects.github.io/cardargus/reference/font_subset_charset.md)).
+  When supplied, a glyph subset is downloaded/cached instead of the full
+  font; if the subset cannot be obtained, the full font is used as
+  fallback.
 
 ## Value
 

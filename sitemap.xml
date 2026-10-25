@@ -8,6 +8,7 @@
 <url><loc>https://strategicprojects.github.io/cardargus/articles/fonts.html</loc></url>
 <url><loc>https://strategicprojects.github.io/cardargus/articles/icons.html</loc></url>
 <url><loc>https://strategicprojects.github.io/cardargus/articles/index.html</loc></url>
+<url><loc>https://strategicprojects.github.io/cardargus/articles/themes.html</loc></url>
 <url><loc>https://strategicprojects.github.io/cardargus/authors.html</loc></url>
 <url><loc>https://strategicprojects.github.io/cardargus/index.html</loc></url>
 <url><loc>https://strategicprojects.github.io/cardargus/news/index.html</loc></url>
@@ -15,6 +16,8 @@
 <url><loc>https://strategicprojects.github.io/cardargus/reference/batch_svg_to_png.html</loc></url>
 <url><loc>https://strategicprojects.github.io/cardargus/reference/batch_svg_to_png_chrome.html</loc></url>
 <url><loc>https://strategicprojects.github.io/cardargus/reference/build_svg_html.html</loc></url>
+<url><loc>https://strategicprojects.github.io/cardargus/reference/card_theme.html</loc></url>
+<url><loc>https://strategicprojects.github.io/cardargus/reference/card_themes.html</loc></url>
 <url><loc>https://strategicprojects.github.io/cardargus/reference/card_to_grob.html</loc></url>
 <url><loc>https://strategicprojects.github.io/cardargus/reference/cardargus-package.html</loc></url>
 <url><loc>https://strategicprojects.github.io/cardargus/reference/chrome_available.html</loc></url>
@@ -29,6 +32,7 @@
 <url><loc>https://strategicprojects.github.io/cardargus/reference/create_badge_row.html</loc></url>
 <url><loc>https://strategicprojects.github.io/cardargus/reference/create_bottom_logo_row.html</loc></url>
 <url><loc>https://strategicprojects.github.io/cardargus/reference/create_logo_row.html</loc></url>
+<url><loc>https://strategicprojects.github.io/cardargus/reference/create_sparkline.html</loc></url>
 <url><loc>https://strategicprojects.github.io/cardargus/reference/css_gradient_to_svg.html</loc></url>
 <url><loc>https://strategicprojects.github.io/cardargus/reference/custom_logo_svg.html</loc></url>
 <url><loc>https://strategicprojects.github.io/cardargus/reference/detect_svg_fonts.html</loc></url>
@@ -43,6 +47,7 @@
 <url><loc>https://strategicprojects.github.io/cardargus/reference/font_available.html</loc></url>
 <url><loc>https://strategicprojects.github.io/cardargus/reference/font_cache_dir.html</loc></url>
 <url><loc>https://strategicprojects.github.io/cardargus/reference/font_cache_path.html</loc></url>
+<url><loc>https://strategicprojects.github.io/cardargus/reference/font_subset_charset.html</loc></url>
 <url><loc>https://strategicprojects.github.io/cardargus/reference/generate_id.html</loc></url>
 <url><loc>https://strategicprojects.github.io/cardargus/reference/get_chrome_download_info.html</loc></url>
 <url><loc>https://strategicprojects.github.io/cardargus/reference/get_chrome_platform.html</loc></url>
@@ -83,6 +88,8 @@
 <url><loc>https://strategicprojects.github.io/cardargus/reference/svg_font_families_regex.html</loc></url>
 <url><loc>https://strategicprojects.github.io/cardargus/reference/svg_geometry.html</loc></url>
 <url><loc>https://strategicprojects.github.io/cardargus/reference/svg_geometry_regex.html</loc></url>
+<url><loc>https://strategicprojects.github.io/cardargus/reference/svg_text_content.html</loc></url>
+<url><loc>https://strategicprojects.github.io/cardargus/reference/svg_text_content_regex.html</loc></url>
 <url><loc>https://strategicprojects.github.io/cardargus/reference/svg_to_formats.html</loc></url>
 <url><loc>https://strategicprojects.github.io/cardargus/reference/svg_to_pdf.html</loc></url>
 <url><loc>https://strategicprojects.github.io/cardargus/reference/svg_to_pdf_chrome.html</loc></url>

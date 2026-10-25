@@ -8,16 +8,10 @@ Saves an SVG string to disk. Before saving, the function:
 2.  detects and embeds fonts (WOFF2 via @font-face) for deterministic
     rendering.
 
-This function expects the font helpers to be available in the package:
-[`detect_svg_fonts()`](https://strategicprojects.github.io/cardargus/reference/detect_svg_fonts.md),
-[`ensure_cardargus_fonts()`](https://strategicprojects.github.io/cardargus/reference/ensure_cardargus_fonts.md),
-and
-[`embed_svg_fonts()`](https://strategicprojects.github.io/cardargus/reference/embed_svg_fonts.md).
-
 ## Usage
 
 ``` r
-save_svg(svg_content, output_path)
+save_svg(svg_content, output_path, subset_fonts = FALSE)
 ```
 
 ## Arguments
@@ -30,6 +24,14 @@ save_svg(svg_content, output_path)
 
   Output file path.
 
+- subset_fonts:
+
+  If TRUE, embed a glyph *subset* covering only the characters used by
+  the card text, instead of the full font. This typically shrinks the
+  saved SVG dramatically. Subsets are downloaded from the Google Fonts
+  CSS API (network required on first use) and cached per character set;
+  when a subset cannot be obtained, the full font is embedded instead.
+
 ## Value
 
 Path to the saved SVG file.
@@ -39,5 +41,10 @@ Path to the saved SVG file.
 ``` r
 svg <- svg_card("FAR", list(), list())
 save_svg(svg, tempfile(fileext = ".svg"))
-#> [1] "/tmp/Rtmp5UyWGR/file2289587c4463.svg"
+#> [1] "/tmp/RtmphAsF68/file1d5818047c5e.svg"
+
+# Much smaller file: embed only the glyphs the card uses
+save_svg(svg, tempfile(fileext = ".svg"), subset_fonts = TRUE)
+#> Warning: Could not download a subset of font "Jost"; using the full font.
+#> [1] "/tmp/RtmphAsF68/file1d58d8d34b9.svg"
 ```

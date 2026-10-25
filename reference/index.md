@@ -7,6 +7,22 @@ Main functions for creating SVG cards
 - [`svg_card()`](https://strategicprojects.github.io/cardargus/reference/svg_card.md)
   : Create an Information Card in SVG Format
 
+## Themes
+
+Preset visual themes for cards
+
+- [`card_theme()`](https://strategicprojects.github.io/cardargus/reference/card_theme.md)
+  : Create (or customize) a card theme
+- [`card_themes()`](https://strategicprojects.github.io/cardargus/reference/card_themes.md)
+  : List available preset card themes
+
+## Sparklines
+
+Inline mini-charts for cards
+
+- [`create_sparkline()`](https://strategicprojects.github.io/cardargus/reference/create_sparkline.md)
+  : Create a sparkline SVG
+
 ## Badges
 
 Functions for creating shields.io-style badges

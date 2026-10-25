@@ -4,16 +4,12 @@ sanitizes the SVG to remove problematic Inkscape/Sodipodi metadata that can
 break strict XML parsers, and
 detects and embeds fonts (WOFF2 via @font-face) for deterministic rendering.
 
-
-This function expects the font helpers to be available in the package:
-detect_svg_fonts(), ensure_cardargus_fonts(), and embed_svg_fonts()."><meta property="og:description" content="Saves an SVG string to disk. Before saving, the function:
+"><meta property="og:description" content="Saves an SVG string to disk. Before saving, the function:
 sanitizes the SVG to remove problematic Inkscape/Sodipodi metadata that can
 break strict XML parsers, and
 detects and embeds fonts (WOFF2 via @font-face) for deterministic rendering.
 
-
-This function expects the font helpers to be available in the package:
-detect_svg_fonts(), ensure_cardargus_fonts(), and embed_svg_fonts()."><meta property="og:image" content="https://strategicprojects.github.io/cardargus/logo.svg"></head><body>
+"><meta property="og:image" content="https://strategicprojects.github.io/cardargus/logo.svg"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -21,7 +17,7 @@ detect_svg_fonts(), ensure_cardargus_fonts(), and embed_svg_fonts()."><meta prop
 
     <a class="navbar-brand me-2" href="../index.html">cardargus</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -59,13 +55,11 @@ detect_svg_fonts(), ensure_cardargus_fonts(), and embed_svg_fonts()."><meta prop
     <p>Saves an SVG string to disk. Before saving, the function:</p><ol><li><p>sanitizes the SVG to remove problematic Inkscape/Sodipodi metadata that can
 break strict XML parsers, and</p></li>
 <li><p>detects and embeds fonts (WOFF2 via @font-face) for deterministic rendering.</p></li>
-</ol><p>This function expects the font helpers to be available in the package:
-<code><a href="detect_svg_fonts.html">detect_svg_fonts()</a></code>, <code><a href="ensure_cardargus_fonts.html">ensure_cardargus_fonts()</a></code>, and <code><a href="embed_svg_fonts.html">embed_svg_fonts()</a></code>.</p>
-    </div>
+</ol></div>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">save_svg</span><span class="op">(</span><span class="va">svg_content</span>, <span class="va">output_path</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">save_svg</span><span class="op">(</span><span class="va">svg_content</span>, <span class="va">output_path</span>, subset_fonts <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -79,6 +73,14 @@ break strict XML parsers, and</p></li>
 <dt id="arg-output-path">output_path<a class="anchor" aria-label="anchor" href="#arg-output-path"></a></dt>
 <dd><p>Output file path.</p></dd>
 
+
+<dt id="arg-subset-fonts">subset_fonts<a class="anchor" aria-label="anchor" href="#arg-subset-fonts"></a></dt>
+<dd><p>If TRUE, embed a glyph <em>subset</em> covering only the
+characters used by the card text, instead of the full font. This typically
+shrinks the saved SVG dramatically. Subsets are downloaded from the Google
+Fonts CSS API (network required on first use) and cached per character
+set; when a subset cannot be obtained, the full font is embedded instead.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -89,7 +91,12 @@ break strict XML parsers, and</p></li>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">svg</span> <span class="op">&lt;-</span> <span class="fu"><a href="svg_card.html">svg_card</a></span><span class="op">(</span><span class="st">"FAR"</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">save_svg</span><span class="op">(</span><span class="va">svg</span>, <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".svg"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/tmp/Rtmp5UyWGR/file2289587c4463.svg"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/tmp/RtmphAsF68/file1d5818047c5e.svg"</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Much smaller file: embed only the glyphs the card uses</span></span></span>
+<span class="r-in"><span><span class="fu">save_svg</span><span class="op">(</span><span class="va">svg</span>, <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".svg"</span><span class="op">)</span>, subset_fonts <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Could not download a subset of font <span style="color: #0000BB;">"Jost"</span>; using the full font.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/tmp/RtmphAsF68/file1d58d8d34b9.svg"</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
@@ -98,7 +105,7 @@ break strict XML parsers, and</p></li>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by <a href="https://github.com/milkway" class="external-link">André Leite</a>, <a href="https://github.com/marcoswasiliew" class="external-link">Marcos Wasiliew</a>, <a href="https://github.com/hugoavmedeiros" class="external-link">Hugo Vasconcelos</a>, <a href="https://github.com/cagaf" class="external-link">Carlos Amorim</a>, <a href="https://github.com/DiCarvalhoB" class="external-link">Diogo Bezerra</a>, Júlia Nascimento Barreto.</p>
+  <p>Developed by <a href="https://github.com/milkway" class="external-link">André Leite</a>, <a href="https://github.com/marcoswasiliew" class="external-link">Marcos Wasiliew</a>, <a href="https://github.com/hugoavmedeiros" class="external-link">Hugo Vasconcelos</a>, <a href="https://github.com/cagaf" class="external-link">Carlos Amorim</a>, <a href="https://github.com/DiCarvalhoB" class="external-link">Diogo Bezerra</a>, <a href="https://orcid.org/0009-0004-2851-7770" class="external-link">Júlia Nascimento Barreto</a>.</p>
 </div>
 
 <div class="pkgdown-footer-right">

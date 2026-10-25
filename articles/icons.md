@@ -204,13 +204,35 @@ card <- svg_card(
 )
 ```
 
+## Sparklines
+
+[`create_sparkline()`](https://strategicprojects.github.io/cardargus/reference/create_sparkline.md)
+turns a numeric vector into a small line, area or bar chart as a
+standalone SVG string — usable anywhere a raw SVG is accepted
+(`with_icon`, `logos`, `bottom_logos`):
+
+``` r
+
+spark <- create_sparkline(c(3, 5, 2, 8, 7), color = "white")
+
+fields <- list(
+  list(list(label = "Tendência", value = "Alta", with_icon = spark))
+)
+card <- svg_card("Vendas", fields = fields)
+
+# Variants
+create_sparkline(c(1, 4, 2, 6), type = "area", color = "#0ea5e9")
+create_sparkline(c(5, 2, 8, 3, 7), type = "bar")
+```
+
 ## Summary: How to use icons and logos
 
-| Element          | How to specify                        |
-|------------------|---------------------------------------|
-| Default icon     | `with_icon = TRUE`                    |
-| Built-in icon    | `with_icon = icon_house()`            |
-| Custom SVG file  | `with_icon = "/path/to/file.svg"`     |
-| Bundled logo     | `logos = c(get_svg_path("name.svg"))` |
-| Custom logo file | `logos = c("/path/to/logo.svg")`      |
-| SVG string       | `logos = list('<svg>...</svg>')`      |
+| Element          | How to specify                             |
+|------------------|--------------------------------------------|
+| Default icon     | `with_icon = TRUE`                         |
+| Built-in icon    | `with_icon = icon_house()`                 |
+| Custom SVG file  | `with_icon = "/path/to/file.svg"`          |
+| Bundled logo     | `logos = c(get_svg_path("name.svg"))`      |
+| Custom logo file | `logos = c("/path/to/logo.svg")`           |
+| SVG string       | `logos = list('<svg>...</svg>')`           |
+| Sparkline        | `with_icon = create_sparkline(c(1, 2, 3))` |

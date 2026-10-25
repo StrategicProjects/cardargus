@@ -18,7 +18,8 @@ svg_to_formats(
   output_base,
   formats = c("svg", "png"),
   dpi = 300,
-  background = "transparent"
+  background = "transparent",
+  subset_fonts = FALSE
 )
 ```
 
@@ -43,6 +44,13 @@ svg_to_formats(
 - background:
 
   Background color for PNG output.
+
+- subset_fonts:
+
+  If TRUE, embed only the glyphs used by the SVG text (see
+  [`save_svg()`](https://strategicprojects.github.io/cardargus/reference/save_svg.md));
+  mainly relevant for the `"svg"` output, whose file size it reduces
+  dramatically.
 
 ## Value
 

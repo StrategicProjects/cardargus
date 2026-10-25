@@ -17,8 +17,8 @@
 - **[Diogo Bezerra](https://github.com/DiCarvalhoB)**. Author.
   [](https://orcid.org/0000-0002-1216-8674)
 
-- **Júlia Nascimento Barreto**. Author.
-  [](https://orcid.org/0009-0004-2851-7770)
+- **[Júlia Nascimento Barreto](https://orcid.org/0009-0004-2851-7770)**.
+  Author. [](https://orcid.org/0009-0004-2851-7770)
 
 ## Citation
 
@@ -27,13 +27,13 @@ Source:
 
 Leite A, Wasiliew M, Vasconcelos H, Amorim C, Bezerra D, Nascimento
 Barreto J (2026). *cardargus: Generate SVG Information Cards with
-Embedded Fonts and Badges*. R package version 0.2.5,
+Embedded Fonts and Badges*. R package version 0.3.0,
 <https://strategicprojects.github.io/cardargus/>.
 
     @Manual{,
       title = {cardargus: Generate SVG Information Cards with Embedded Fonts and Badges},
       author = {André Leite and Marcos Wasiliew and Hugo Vasconcelos and Carlos Amorim and Diogo Bezerra and Júlia {Nascimento Barreto}},
       year = {2026},
-      note = {R package version 0.2.5},
+      note = {R package version 0.3.0},
       url = {https://strategicprojects.github.io/cardargus/},
     }
