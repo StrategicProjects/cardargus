@@ -41,10 +41,10 @@ Path to the saved SVG file.
 ``` r
 svg <- svg_card("FAR", list(), list())
 save_svg(svg, tempfile(fileext = ".svg"))
-#> [1] "/tmp/RtmphAsF68/file1d5818047c5e.svg"
+#> [1] "/tmp/Rtmpo5ai1T/file1bce220cb94b.svg"
 
 # Much smaller file: embed only the glyphs the card uses
 save_svg(svg, tempfile(fileext = ".svg"), subset_fonts = TRUE)
 #> Warning: Could not download a subset of font "Jost"; using the full font.
-#> [1] "/tmp/RtmphAsF68/file1d58d8d34b9.svg"
+#> [1] "/tmp/Rtmpo5ai1T/file1bced91459b.svg"
 ```

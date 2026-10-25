@@ -91,12 +91,12 @@ set; when a subset cannot be obtained, the full font is embedded instead.</p></d
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">svg</span> <span class="op">&lt;-</span> <span class="fu"><a href="svg_card.html">svg_card</a></span><span class="op">(</span><span class="st">"FAR"</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">save_svg</span><span class="op">(</span><span class="va">svg</span>, <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".svg"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/tmp/RtmphAsF68/file1d5818047c5e.svg"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/tmp/Rtmpo5ai1T/file1bce220cb94b.svg"</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Much smaller file: embed only the glyphs the card uses</span></span></span>
 <span class="r-in"><span><span class="fu">save_svg</span><span class="op">(</span><span class="va">svg</span>, <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".svg"</span><span class="op">)</span>, subset_fonts <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Could not download a subset of font <span style="color: #0000BB;">"Jost"</span>; using the full font.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/tmp/RtmphAsF68/file1d58d8d34b9.svg"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/tmp/Rtmpo5ai1T/file1bced91459b.svg"</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
