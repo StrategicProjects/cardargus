@@ -29,7 +29,7 @@
 #' }
 load_svg_for_embed <- function(svg_path, target_height = 40, target_width = NULL) {
   if (!file.exists(svg_path)) {
-    stop("SVG file not found: ", svg_path)
+    cli::cli_abort("SVG file not found: {.path {svg_path}}")
   }
   
   # Read SVG content
