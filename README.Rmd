@@ -158,10 +158,14 @@ svg_card(title = "My Card", ...)
 
 - 📦 **Self-contained SVG**: All styles and fonts embedded
 - 🎨 **Customizable**: Colors, fonts, icons, and layouts
+- 🖌️ **Themes**: Preset themes (`dark`, `ocean`, `forest`, ...) via `card_theme()`
+- 📈 **Sparklines**: Inline line/area/bar mini-charts with `create_sparkline()`
 - 🌈 **Gradient Backgrounds**: CSS-style linear gradients support
 - 🏷️ **Badges**: Shields.io-style with dynamic colors and uniform height
 - 🖼️ **Icons**: Built-in SVG icon library
 - 📄 **Export**: High-quality PNG with transparent background
+- ✂️ **Font subsetting**: `save_svg(..., subset_fonts = TRUE)` embeds only the glyphs used
+- ♿ **Accessible**: SVG `<title>`/`<desc>`, `role="img"` and `aria-labelledby` built in
 - 🔤 **Google Fonts**: Native support via showtext/sysfonts
 - 📊 **R Markdown/Quarto**: Direct display functions
 
