@@ -185,6 +185,50 @@ svg_font_families_regex <- function(svg_content) {
   normalize_font_families(families)
 }
 
+#' Extract the visible text content of an SVG
+#'
+#' Collects the character content of `<text>`, `<tspan>` and `<textPath>`
+#' elements. Used to build the character set for font subsetting; duplicated
+#' characters are harmless there, so no effort is made to deduplicate.
+#'
+#' @param svg_content SVG string.
+#' @return A single string with all visible text (possibly empty).
+#' @keywords internal
+svg_text_content <- function(svg_content) {
+  doc <- svg_xml_parse(svg_content)
+  if (!is.null(doc)) {
+    nodes <- xml2::xml_find_all(
+      doc,
+      "//*[local-name()='text' or local-name()='tspan' or local-name()='textPath']"
+    )
+    if (!length(nodes)) return("")
+    return(paste(xml2::xml_text(nodes), collapse = ""))
+  }
+  svg_text_content_regex(svg_content)
+}
+
+#' Regex fallback for [svg_text_content()]
+#' @param svg_content SVG string.
+#' @keywords internal
+svg_text_content_regex <- function(svg_content) {
+  svg <- as.character(svg_content)
+  # Drop style/script blocks so CSS text is not mistaken for visible content.
+  svg <- gsub("<style[\\s\\S]*?</style\\s*>", "", svg, perl = TRUE)
+  svg <- gsub("<script[\\s\\S]*?</script\\s*>", "", svg, perl = TRUE)
+
+  m <- gregexpr("<(text|tspan|textPath)\\b[^>]*>([^<]*)", svg, perl = TRUE)
+  hits <- regmatches(svg, m)[[1]]
+  if (!length(hits)) return("")
+
+  txt <- paste(sub("^<[^>]*>", "", hits), collapse = "")
+  # Undo the XML entities escape_xml() produces.
+  txt <- gsub("&lt;", "<", txt, fixed = TRUE)
+  txt <- gsub("&gt;", ">", txt, fixed = TRUE)
+  txt <- gsub("&quot;", "\"", txt, fixed = TRUE)
+  txt <- gsub("&apos;", "'", txt, fixed = TRUE)
+  gsub("&amp;", "&", txt, fixed = TRUE)
+}
+
 #' Normalize a vector of raw font-family values
 #'
 #' Takes the first family of each declaration, strips quotes/whitespace, dedups,
