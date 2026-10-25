@@ -41,6 +41,8 @@ navbar:
           href: articles/cardargus.html
         - text: Customizing Cards
           href: articles/customization.html
+        - text: Theme Gallery
+          href: articles/themes.html
         - text: Working with Badges
           href: articles/badges.html
         - text: Icons and Logos
