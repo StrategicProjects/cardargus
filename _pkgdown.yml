@@ -55,7 +55,18 @@ reference:
     desc: Main functions for creating SVG cards
     contents:
       - svg_card
-      
+
+  - title: Themes
+    desc: Preset visual themes for cards
+    contents:
+      - card_theme
+      - card_themes
+
+  - title: Sparklines
+    desc: Inline mini-charts for cards
+    contents:
+      - create_sparkline
+
   - title: Badges
     desc: Functions for creating shields.io-style badges
     contents:
