@@ -9,7 +9,8 @@ svg_to_formats(
   output_base,
   formats = c("svg", "png"),
   dpi = 300,
-  background = "transparent"
+  background = "transparent",
+  subset_fonts = FALSE
 )
 }
 \arguments{
@@ -22,6 +23,10 @@ svg_to_formats(
 \item{dpi}{Resolution for raster formats.}
 
 \item{background}{Background color for PNG output.}
+
+\item{subset_fonts}{If TRUE, embed only the glyphs used by the SVG text
+(see \code{\link[=save_svg]{save_svg()}}); mainly relevant for the \code{"svg"} output, whose file
+size it reduces dramatically.}
 }
 \value{
 Named list with paths to generated files.

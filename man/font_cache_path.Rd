@@ -4,10 +4,14 @@
 \alias{font_cache_path}
 \title{Build a cache filename for a font family}
 \usage{
-font_cache_path(family)
+font_cache_path(family, text = NULL)
 }
 \arguments{
 \item{family}{Font family name.}
+
+\item{text}{Optional normalized character set (see \code{\link[=font_subset_charset]{font_subset_charset()}}).
+When supplied, the cache key gets a stable suffix derived from the
+character set, so each subset is cached separately from the full font.}
 }
 \value{
 Path to the cached font file.

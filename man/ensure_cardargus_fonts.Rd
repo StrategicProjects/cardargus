@@ -4,12 +4,16 @@
 \alias{ensure_cardargus_fonts}
 \title{Ensure cardargus fonts are available (WOFF2 cache)}
 \usage{
-ensure_cardargus_fonts(families, weight = "400")
+ensure_cardargus_fonts(families, weight = "400", text = NULL)
 }
 \arguments{
 \item{families}{Character vector of font families.}
 
 \item{weight}{Weight to request when downloading (default "400").}
+
+\item{text}{Optional normalized character set (see \code{\link[=font_subset_charset]{font_subset_charset()}}).
+When supplied, a glyph subset is downloaded/cached instead of the full
+font; if the subset cannot be obtained, the full font is used as fallback.}
 }
 \value{
 Named character vector family -> font file path (NA if unavailable).

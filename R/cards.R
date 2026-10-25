@@ -95,8 +95,6 @@
 #' svg_card("FAR", badges, fields, theme = "ocean",
 #'          alt = "Card com indicadores do programa FAR")
 svg_card <- function(title = "FAR",
-                     theme = NULL,
-                     alt = NULL,
                      badges_data = list(),
                      fields = list(),
                      bg_color = "#fab255",
@@ -111,7 +109,6 @@ svg_card <- function(title = "FAR",
                      label_color = "white",
                      value_bg_color = "#f8f8ff",
                      value_text_color = "#212529",
-                     value_border_color = "#dee2e6",
                      show_house_icon = TRUE,
                      logos = list(),
                      logos_height = 40,
@@ -123,7 +120,12 @@ svg_card <- function(title = "FAR",
                      footer_fontsize = 8,
                      footer_color = "white",
                      uniform_row_height = TRUE,
-                     show_viewer = interactive()
+                     show_viewer = interactive(),
+                     # New in 0.3.0 — kept at the end so existing positional
+                     # calls (title, badges_data, fields, ...) keep working.
+                     theme = NULL,
+                     alt = NULL,
+                     value_border_color = "#dee2e6"
                      ) {
 
   # ===== THEME SUPPORT =====

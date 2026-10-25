@@ -62,3 +62,25 @@ test_that("helpers tolerate non-parseable / empty input via fallback", {
   expect_equal(cardargus:::svg_dimension("not xml at all", "width"), NA_real_)
   expect_equal(cardargus:::svg_font_families(""), character())
 })
+
+test_that("svg_text_content extracts visible text, not CSS", {
+  svg <- paste0(
+    '<svg xmlns="http://www.w3.org/2000/svg">',
+    '<style>.t{font-family:"Jost";}</style>',
+    '<text>FAR</text>',
+    '<text><tspan>36,4</tspan></text>',
+    '</svg>'
+  )
+  txt <- cardargus:::svg_text_content(svg)
+  expect_match(txt, "FAR", fixed = TRUE)
+  expect_match(txt, "36,4", fixed = TRUE)
+  expect_false(grepl("Jost", txt, fixed = TRUE))
+})
+
+test_that("svg_text_content_regex agrees and un-escapes entities", {
+  svg <- '<svg><style>.x{fill:red;}</style><text>A &amp; B &lt;ok&gt;</text></svg>'
+  txt <- cardargus:::svg_text_content_regex(svg)
+  expect_match(txt, "A & B <ok>", fixed = TRUE)
+  expect_false(grepl("fill:red", txt, fixed = TRUE))
+  expect_equal(cardargus:::svg_text_content_regex("<svg></svg>"), "")
+})
