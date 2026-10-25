@@ -1,3 +1,14 @@
+# cardargus 0.3.0
+
+## New features
+
+* **Accessibility.** Cards now carry an SVG `<title>` element (the card title),
+  `role="img"` and `aria-labelledby` on the root element, so screen readers
+  announce them properly when embedded in HTML. A new `alt` argument to
+  `svg_card()` adds a longer description as an SVG `<desc>` element.
+* New `value_border_color` argument to `svg_card()` controls the border color
+  of value boxes (previously hard-coded to `"#dee2e6"`).
+
 # cardargus 0.2.5
 
 ## New features
