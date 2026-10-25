@@ -303,11 +303,12 @@ install.packages("chromote")
 
 ## Authors
 
-- **André Leite** - *Maintainer* - [leite@castlab.org](mailto:leite@castlab.org)
-- **Marcos Wasiliew** - [marcos.wasiliew@gmail.com](mailto:marcos.wasiliew@gmail.com)
-- **Hugo Vasconcelos** - [hugo.vasconcelos@ufpe.br](mailto:hugo.vasconcelos@ufpe.br)
-- **Carlos Amorim** - [carlos.agaf@ufpe.br](mailto:carlos.agaf@ufpe.br)
-- **Diogo Bezerra** - [diogo.bezerra@ufpe.br](mailto:diogo.bezerra@ufpe.br)
+- **André Leite** - *Maintainer* - [leite@castlab.org](mailto:leite@castlab.org) - [ORCID 0000-0002-4718-9766](https://orcid.org/0000-0002-4718-9766)
+- **Marcos Wasiliew** - [marcos.wasiliew@gmail.com](mailto:marcos.wasiliew@gmail.com) - [ORCID 0009-0004-4694-3159](https://orcid.org/0009-0004-4694-3159)
+- **Hugo Vasconcelos** - [hugo.vasconcelos@ufpe.br](mailto:hugo.vasconcelos@ufpe.br) - [ORCID 0000-0001-6249-0920](https://orcid.org/0000-0001-6249-0920)
+- **Carlos Amorim** - [carlos.agaf@ufpe.br](mailto:carlos.agaf@ufpe.br) - [ORCID 0000-0001-6315-8305](https://orcid.org/0000-0001-6315-8305)
+- **Diogo Bezerra** - [diogo.bezerra@ufpe.br](mailto:diogo.bezerra@ufpe.br) - [ORCID 0000-0002-1216-8674](https://orcid.org/0000-0002-1216-8674)
+- **Júlia Nascimento Barreto** - [juliabarreto@gd.seplag.pe.gov.br](mailto:juliabarreto@gd.seplag.pe.gov.br) - [ORCID 0009-0004-2851-7770](https://orcid.org/0009-0004-2851-7770)
 
 ## License
 
