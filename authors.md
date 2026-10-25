@@ -23,7 +23,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/StrategicProjects/cardargus/blob/main/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/StrategicProjects/cardargus/blob/v0.3.0/DESCRIPTION)
 
 Leite A, Wasiliew M, Vasconcelos H, Amorim C, Bezerra D, Nascimento
 Barreto J (2026). *cardargus: Generate SVG Information Cards with
