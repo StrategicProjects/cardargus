@@ -2,6 +2,8 @@
 
 ## cardargus 0.3.0
 
+CRAN release: 2026-10-25
+
 ### New features
 
 - **Themes.**
