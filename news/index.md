@@ -1,5 +1,47 @@
 # Changelog
 
+## cardargus 0.3.1
+
+### Bug fixes
+
+- Full-font embedding no longer caches the *Cyrillic* subset of Google’s
+  CSS response
+  ([\#27](https://github.com/StrategicProjects/cardargus/issues/27)).
+  The Google Fonts CSS API splits its response into one `@font-face`
+  block per script, listing Cyrillic first; the download fallback used
+  to take the first [`url()`](https://rdrr.io/r/base/connections.html)
+  it found, so the cached “full” WOFF2 could not render Latin text and
+  [`save_svg()`](https://strategicprojects.github.io/cardargus/reference/save_svg.md)
+  without `subset_fonts` fell back to system fonts. The downloader now
+  parses every `@font-face` block and picks the one whose
+  `unicode-range` covers Basic Latin (both for WOFF2 and for the TTF
+  fallback). Glyph subsets requested via `subset_fonts` were never
+  affected.
+- The font cache is migrated once on first use: full fonts cached by
+  earlier versions (potentially the Cyrillic subset) are moved to a
+  `stale-pre-0.3.1/` quarantine folder inside the cache and
+  re-downloaded on demand; cached glyph subsets are kept. Nothing is
+  deleted — local fonts added with
+  [`register_font()`](https://strategicprojects.github.io/cardargus/reference/register_font.md)
+  live in the same cache and can be restored from the quarantine folder
+  (or registered again); a one-time message says so. Downloads via the
+  `gfonts` package were always correct but are re-fetched as well.
+- Downloaded font files are now validated by their magic bytes (WOFF2
+  and sfnt/TTF/OTF signatures), and failed or invalid downloads are
+  removed from the cache instead of being served on the next call —
+  e.g. an HTML page injected by a captive portal no longer poisons the
+  cache.
+- A font cached in an alternative format (e.g. the TTF fallback) is now
+  found by
+  [`download_google_font_woff2()`](https://strategicprojects.github.io/cardargus/reference/download_google_font_woff2.md)
+  on the next call instead of being re-downloaded every time.
+- Known limitation: the full font downloaded via the CSS API covers the
+  *latin* block (Basic Latin + Latin-1 Supplement, which includes all
+  Portuguese accented characters); glyphs from other blocks, such as
+  *latin-ext* (e.g. Polish or Vietnamese), are not included. Use
+  `subset_fonts = TRUE` for arbitrary text — subsets always contain
+  exactly the glyphs used.
+
 ## cardargus 0.3.0
 
 CRAN release: 2026-10-25
