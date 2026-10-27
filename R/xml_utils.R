@@ -234,20 +234,23 @@ svg_text_by_family <- function(svg_content) {
     txt <- xml2::xml_text(nd)
     if (!nzchar(txt)) next
 
-    # O predicado [1] num passo de eixo reverso (ancestor-or-self) devolve o
-    # ancestral MAIS PRÓXIMO, imitando a herança de font-family.
-    anc <- xml2::xml_find_first(nd, "ancestor-or-self::*[@font-family][1]")
-    fam <- if (inherits(anc, "xml_missing")) NA_character_
-           else xml2::xml_attr(anc, "font-family")
-
-    if (is.na(fam) || !nzchar(fam)) {
-      sty_node <- xml2::xml_find_first(
-        nd, "ancestor-or-self::*[contains(@style, 'font-family')][1]"
-      )
-      if (!inherits(sty_node, "xml_missing")) {
-        sty <- xml2::xml_attr(sty_node, "style")
+    # Nó MAIS PRÓXIMO que declara font-family, seja por atributo de
+    # apresentação ou por style inline (o predicado [1] num passo de eixo
+    # reverso devolve o ancestral mais próximo, imitando a herança). No mesmo
+    # nó, style vence o atributo de apresentação, como no CSS.
+    anc <- xml2::xml_find_first(
+      nd,
+      "ancestor-or-self::*[@font-family or contains(@style, 'font-family')][1]"
+    )
+    fam <- NA_character_
+    if (!inherits(anc, "xml_missing")) {
+      sty <- xml2::xml_attr(anc, "style")
+      if (!is.na(sty)) {
         m <- regmatches(sty, regexec("font-family\\s*:\\s*([^;]+)", sty))[[1]]
         if (length(m) >= 2) fam <- m[2]
+      }
+      if (is.na(fam) || !nzchar(fam)) {
+        fam <- xml2::xml_attr(anc, "font-family")
       }
     }
 

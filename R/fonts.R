@@ -266,25 +266,7 @@ font_subset_charset <- function(text) {
 #' @return `TRUE` se algum token do range cobre o code point.
 #' @keywords internal
 unicode_range_covers <- function(range, codepoint) {
-  tokens <- strsplit(gsub("\\s", "", range), ",", fixed = TRUE)[[1]]
-  for (tok in tokens) {
-    tok <- toupper(sub("^U\\+", "", tok, ignore.case = TRUE))
-    if (grepl("?", tok, fixed = TRUE)) {
-      # Wildcard: U+4?? cobre 0x400-0x4FF.
-      lo <- strtoi(gsub("?", "0", tok, fixed = TRUE), base = 16L)
-      hi <- strtoi(gsub("?", "F", tok, fixed = TRUE), base = 16L)
-    } else if (grepl("-", tok, fixed = TRUE)) {
-      parts <- strsplit(tok, "-", fixed = TRUE)[[1]]
-      lo <- strtoi(parts[1], base = 16L)
-      hi <- strtoi(parts[2], base = 16L)
-    } else {
-      lo <- hi <- strtoi(tok, base = 16L)
-    }
-    if (!is.na(lo) && !is.na(hi) && codepoint >= lo && codepoint <= hi) {
-      return(TRUE)
-    }
-  }
-  FALSE
+  unicode_range_covers_v(range, codepoint)[1]
 }
 
 #' Parse the @font-face blocks of a Google Fonts CSS response
@@ -370,18 +352,21 @@ google_css_latin_url <- function(css, url_patterns) {
 
 #' Range sidecar files: remember the unicode-range of a cached font file
 #'
-#' Fontes baixadas da CSS API ganham um arquivo `.range` ao lado (mesmo nome,
-#' extensão trocada) com o conteúdo do `unicode-range` do bloco de origem. O
-#' sidecar marca a PROVENIÊNCIA: só fontes com `.range` são blocos parciais da
-#' CSS API e podem ganhar blocos extras (#29). Fontes do `gfonts` e locais via
-#' [register_font()] não têm sidecar e são tratadas como completas.
+#' Fontes baixadas da CSS API ganham um arquivo `.range` ao lado (o caminho
+#' completo + `.range`, ex. `Jost.woff2.range`) com o conteúdo do
+#' `unicode-range` do bloco de origem. O sidecar marca a PROVENIÊNCIA: só
+#' fontes com `.range` são blocos parciais da CSS API e podem ganhar blocos
+#' extras (#29). Fontes do `gfonts` e locais via [register_font()] não têm
+#' sidecar e são tratadas como completas. O sidecar é POR ARQUIVO (a extensão
+#' fica no nome): registrar um `Jost.ttf` local não altera a proveniência de
+#' um `Jost.woff2` baixado da CSS API que continue no cache.
 #'
 #' @param font_path Caminho do arquivo de fonte cacheado.
 #' @param range Conteúdo do `unicode-range` a gravar.
 #' @return `read_font_range()`: o range, ou `NA_character_` sem sidecar.
 #' @keywords internal
 font_range_sidecar <- function(font_path) {
-  paste0(tools::file_path_sans_ext(font_path), ".range")
+  paste0(font_path, ".range")
 }
 
 #' @rdname font_range_sidecar
@@ -626,14 +611,38 @@ fetch_google_css <- function(css_url) {
 
 #' Which code points does a CSS unicode-range cover?
 #'
-#' Versão vetorizada de [unicode_range_covers()].
+#' Faz o parsing dos tokens UMA vez (em vetores lo/hi) e testa todos os code
+#' points contra eles; [unicode_range_covers()] é o wrapper escalar.
 #'
 #' @param range Conteúdo de uma declaração `unicode-range:`.
 #' @param codepoints Vetor de code points (inteiros).
 #' @return Vetor lógico paralelo a `codepoints`.
 #' @keywords internal
 unicode_range_covers_v <- function(range, codepoints) {
-  vapply(codepoints, function(cp) unicode_range_covers(range, cp), logical(1))
+  if (!length(codepoints)) return(logical(0))
+
+  tokens <- strsplit(gsub("\\s", "", range), ",", fixed = TRUE)[[1]]
+  lo <- hi <- integer(0)
+  for (tok in tokens) {
+    tok <- toupper(sub("^U\\+", "", tok, ignore.case = TRUE))
+    if (grepl("?", tok, fixed = TRUE)) {
+      # Wildcard: U+4?? cobre 0x400-0x4FF.
+      l <- strtoi(gsub("?", "0", tok, fixed = TRUE), base = 16L)
+      h <- strtoi(gsub("?", "F", tok, fixed = TRUE), base = 16L)
+    } else if (grepl("-", tok, fixed = TRUE)) {
+      parts <- strsplit(tok, "-", fixed = TRUE)[[1]]
+      l <- strtoi(parts[1], base = 16L)
+      h <- strtoi(parts[2], base = 16L)
+    } else {
+      l <- h <- strtoi(tok, base = 16L)
+    }
+    if (!is.na(l) && !is.na(h)) {
+      lo <- c(lo, l)
+      hi <- c(hi, h)
+    }
+  }
+
+  vapply(codepoints, function(cp) any(cp >= lo & cp <= hi), logical(1))
 }
 
 #' Cache slug for an extra @font-face block
@@ -698,9 +707,19 @@ download_google_font_blocks <- function(family, codepoints) {
       # Arquivo cacheado só é reusado se ainda for uma fonte válida; nesse
       # caso o sidecar existente descreve OS BYTES cacheados e prevalece
       # sobre o range do CSS recém-buscado (o Google pode ter alargado o
-      # range numa versão nova da fonte que não baixamos).
+      # range numa versão nova da fonte que não baixamos). Exceção: se o
+      # range cacheado NÃO cobre nenhum code point pedido e o do CSS novo
+      # cobre, o bloco mudou upstream — re-baixa em vez de reusar para
+      # sempre bytes que não servem.
       reused <- file.exists(dest) &&
         (if (is_ttf) is_ttf_file(dest) else is_woff2_file(dest))
+      if (reused) {
+        sr <- read_font_range(dest)
+        if (!is.na(sr) && !identical(sr, blocks$range[i]) &&
+            !any(unicode_range_covers_v(sr, codepoints))) {
+          reused <- FALSE
+        }
+      }
       if (file.exists(dest) && !reused) {
         unlink(dest)
         unlink(font_range_sidecar(dest))
@@ -885,8 +904,10 @@ font_available <- function(family) {
 list_fonts <- function() {
   cache_dir <- font_cache_dir()
   files <- list.files(cache_dir, pattern = "\\.(woff2|ttf|woff|otf)$", full.names = FALSE)
-  # Blocos extras (#29) complementam uma família já listada pelo arquivo primário.
+  # Blocos extras (#29) e subsets de glifos são artefatos internos do cache
+  # que complementam uma família já listada pelo arquivo primário.
   files <- files[!grepl("_blk-", files, fixed = TRUE)]
+  files <- files[!grepl("_sub[0-9a-f]{10}\\.", files)]
   unique(gsub("\\.(woff2|ttf|woff|otf)$", "", files))
 }
 
@@ -991,8 +1012,9 @@ register_font <- function(font_path, family = NULL) {
   file.copy(font_path, out_path, overwrite = TRUE)
 
   # A fonte local do usuário é tratada como completa: um sidecar .range órfão
-  # de um download anterior da CSS API faria blocos do Google sobreporem seus
-  # glifos (#29). O sidecar é compartilhado por chave, independente da extensão.
+  # de um download anterior da CSS API (sobrescrito pelo file.copy acima)
+  # faria blocos do Google sobreporem seus glifos (#29). O sidecar é por
+  # arquivo, então só o do arquivo recém-gravado é removido.
   unlink(font_range_sidecar(out_path))
 
   if (file.exists(out_path)) {
@@ -1140,10 +1162,7 @@ prepare_svg_for_raster <- function(svg_content, subset_fonts = FALSE) {
     cp[cp > 0x7FL]
   }
 
-  global_cp <- if (is.null(charset)) integer(0) else {
-    cp <- utf8ToInt(charset)
-    cp[cp > 0x7FL]
-  }
+  global_cp <- non_ascii_codepoints(charset)
 
   text_by_family <- if (length(global_cp)) svg_text_by_family(svg) else NULL
   family_codepoints <- function(fam) {

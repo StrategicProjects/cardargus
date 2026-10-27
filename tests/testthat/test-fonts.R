@@ -438,3 +438,42 @@ test_that("register_font removes a stale .range sidecar left by the CSS API", {
 
   unlink(c(cached, local_font))
 })
+
+test_that("range sidecars are per file, not shared across extensions", {
+  base <- tempfile()
+  woff2 <- paste0(base, ".woff2")
+  ttf <- paste0(base, ".ttf")
+  file.create(woff2, ttf)
+
+  cardargus:::write_font_range(woff2, "U+0000-00FF")
+  # O ttf com a mesma chave NÃO herda a proveniência do woff2: registrar um
+  # Jost.ttf local não pode apagar/alterar o sidecar do Jost.woff2 da CSS API.
+  expect_true(is.na(cardargus:::read_font_range(ttf)))
+  expect_identical(cardargus:::read_font_range(woff2), "U+0000-00FF")
+
+  unlink(c(woff2, ttf, cardargus:::font_range_sidecar(woff2)))
+})
+
+test_that("list_fonts hides _blk- and _sub cache artifacts", {
+  old <- Sys.getenv("_R_CHECK_PACKAGE_NAME_", unset = NA)
+  on.exit(
+    if (is.na(old)) Sys.unsetenv("_R_CHECK_PACKAGE_NAME_")
+    else Sys.setenv("_R_CHECK_PACKAGE_NAME_" = old),
+    add = TRUE
+  )
+  Sys.setenv("_R_CHECK_PACKAGE_NAME_" = "cardargus")  # cache em tempdir
+
+  cache_dir <- font_cache_dir()
+  files <- file.path(cache_dir, c(
+    "Testlist29.woff2",
+    "Testlist29_blk-latin-ext.woff2",
+    "Testlist29_sub0123456789.woff2"
+  ))
+  file.create(files)
+
+  listed <- list_fonts()
+  expect_true("Testlist29" %in% listed)
+  expect_false(any(grepl("Testlist29_", listed)))
+
+  unlink(files)
+})

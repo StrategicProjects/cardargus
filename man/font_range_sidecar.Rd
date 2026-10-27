@@ -21,10 +21,13 @@ write_font_range(font_path, range)
 \code{read_font_range()}: o range, ou \code{NA_character_} sem sidecar.
 }
 \description{
-Fontes baixadas da CSS API ganham um arquivo \code{.range} ao lado (mesmo nome,
-extensão trocada) com o conteúdo do \code{unicode-range} do bloco de origem. O
-sidecar marca a PROVENIÊNCIA: só fontes com \code{.range} são blocos parciais da
-CSS API e podem ganhar blocos extras (#29). Fontes do \code{gfonts} e locais via
-\code{\link[=register_font]{register_font()}} não têm sidecar e são tratadas como completas.
+Fontes baixadas da CSS API ganham um arquivo \code{.range} ao lado (o caminho
+completo + \code{.range}, ex. \code{Jost.woff2.range}) com o conteúdo do
+\code{unicode-range} do bloco de origem. O sidecar marca a PROVENIÊNCIA: só
+fontes com \code{.range} são blocos parciais da CSS API e podem ganhar blocos
+extras (#29). Fontes do \code{gfonts} e locais via \code{\link[=register_font]{register_font()}} não têm
+sidecar e são tratadas como completas. O sidecar é POR ARQUIVO (a extensão
+fica no nome): registrar um \code{Jost.ttf} local não altera a proveniência de
+um \code{Jost.woff2} baixado da CSS API que continue no cache.
 }
 \keyword{internal}

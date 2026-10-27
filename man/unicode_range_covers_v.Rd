@@ -15,6 +15,7 @@ unicode_range_covers_v(range, codepoints)
 Vetor lógico paralelo a \code{codepoints}.
 }
 \description{
-Versão vetorizada de \code{\link[=unicode_range_covers]{unicode_range_covers()}}.
+Faz o parsing dos tokens UMA vez (em vetores lo/hi) e testa todos os code
+points contra eles; \code{\link[=unicode_range_covers]{unicode_range_covers()}} é o wrapper escalar.
 }
 \keyword{internal}
