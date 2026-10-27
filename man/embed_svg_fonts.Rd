@@ -2,21 +2,27 @@
 % Please edit documentation in R/fonts.R
 \name{embed_svg_fonts}
 \alias{embed_svg_fonts}
-\title{Embed a font file into an SVG via @font-face}
+\title{Embed font files into an SVG via @font-face}
 \usage{
-embed_svg_fonts(svg_content, font_family, woff2_path)
+embed_svg_fonts(svg_content, font_family, woff2_path, unicode_range = NULL)
 }
 \arguments{
 \item{svg_content}{Character SVG.}
 
 \item{font_family}{Font family name to embed.}
 
-\item{woff2_path}{Path to a font file (.woff2, .ttf, .woff, or .otf).}
+\item{woff2_path}{Path(s) to font file(s) (.woff2, .ttf, .woff, or .otf).
+Pode ser um vetor: uma regra \verb{@font-face} é gerada por arquivo, na ordem
+dada (primário primeiro, blocos extras depois).}
+
+\item{unicode_range}{Optional \code{unicode-range} value(s), parallel to
+\code{woff2_path} (\code{NA} = sem declaração). Com múltiplos arquivos, os ranges
+dizem ao renderizador qual face usar para cada code point (#29).}
 }
 \value{
-SVG string with embedded @font-face rule.
+SVG string with embedded @font-face rule(s).
 }
 \description{
-Embed a font file into an SVG via @font-face
+Embed font files into an SVG via @font-face
 }
 \keyword{internal}

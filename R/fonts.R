@@ -179,6 +179,7 @@ migrate_font_cache <- function(dir) {
 
   stale <- list.files(dir, pattern = "\\.(woff2|ttf|woff|otf)$", full.names = TRUE)
   stale <- stale[!grepl("_sub[0-9a-f]{10}\\.", basename(stale))]
+  stale <- stale[!grepl("_blk-", basename(stale), fixed = TRUE)]
 
   if (length(stale)) {
     quarantine <- file.path(dir, "stale-pre-0.3.1")
@@ -273,25 +274,27 @@ unicode_range_covers <- function(range, codepoint) {
   FALSE
 }
 
-#' Extract the Latin-script font URL from a Google Fonts CSS response
+#' Parse the @font-face blocks of a Google Fonts CSS response
 #'
 #' O Google divide a resposta da CSS API em um bloco `@font-face` por script
-#' (cyrillic-ext, cyrillic, ..., latin), com o cirílico PRIMEIRO. Pegar a
-#' primeira `url()` da resposta devolvia o subset cirílico como se fosse a
-#' fonte completa (#27). Este helper examina todos os blocos e devolve a URL
-#' do bloco cujo `unicode-range` cobre o Latin básico (testa `U+0041`, "A").
-#' Quando nenhum bloco declara `unicode-range` cobrindo Latin (respostas de
-#' bloco único, ex. subsets via `&text=` ou TTF), vale a primeira URL.
+#' (cyrillic-ext, cyrillic, ..., latin, latin-ext, vietnamese...), cada um
+#' precedido por um comentário `/* nome-do-subset */` e com seu próprio
+#' `unicode-range`. Este helper devolve um data.frame com uma linha por bloco
+#' que tenha URL extraível: `url`, `range` (conteúdo do `unicode-range`, ou
+#' `NA` em respostas de bloco único, ex. subsets via `&text=`) e `subset`
+#' (nome do comentário, ou `NA`).
 #'
 #' @param css Resposta CSS da Google Fonts API.
 #' @param url_patterns Um ou mais regexes, cada um com um grupo de captura
 #'   extraindo a URL da fonte de dentro de um bloco; em cada bloco, vale o
 #'   primeiro padrão que casar (assim uma resposta misturando estilos de URL
-#'   entre blocos não esconde o bloco latin).
-#' @return A URL da fonte, ou `NA_character_`.
+#'   entre blocos não esconde nenhum bloco).
+#' @return data.frame com colunas `url`, `range`, `subset` (0 linhas se nada
+#'   casar).
 #' @keywords internal
-google_css_latin_url <- function(css, url_patterns) {
-  blocks <- regmatches(css, gregexpr("@font-face\\s*\\{[^}]*\\}", css))[[1]]
+google_css_font_blocks <- function(css, url_patterns) {
+  pat <- "(?:/\\*\\s*([^*]*?)\\s*\\*/\\s*)?@font-face\\s*\\{[^}]*\\}"
+  blocks <- regmatches(css, gregexpr(pat, css, perl = TRUE))[[1]]
   if (!length(blocks)) blocks <- css
 
   urls <- vapply(blocks, function(b) {
@@ -302,17 +305,88 @@ google_css_latin_url <- function(css, url_patterns) {
     NA_character_
   }, character(1), USE.NAMES = FALSE)
 
-  covers <- vapply(blocks, function(b) {
+  ranges <- vapply(blocks, function(b) {
     r <- regmatches(b, regexec("unicode-range:\\s*([^;}]+)", b))[[1]]
-    if (length(r) < 2) return(NA)
-    unicode_range_covers(r[2], 0x41L)
-  }, logical(1), USE.NAMES = FALSE)
+    if (length(r) >= 2) trimws(r[2]) else NA_character_
+  }, character(1), USE.NAMES = FALSE)
 
-  latin <- which(!is.na(urls) & !is.na(covers) & covers)
-  if (length(latin)) return(urls[latin[1]])
+  subsets <- vapply(blocks, function(b) {
+    r <- regmatches(b, regexec("^/\\*\\s*([^*]*?)\\s*\\*/", b))[[1]]
+    if (length(r) >= 2 && nzchar(r[2])) r[2] else NA_character_
+  }, character(1), USE.NAMES = FALSE)
 
-  first <- which(!is.na(urls))
-  if (length(first)) urls[first[1]] else NA_character_
+  keep <- !is.na(urls)
+  data.frame(url = urls[keep], range = ranges[keep], subset = subsets[keep],
+             stringsAsFactors = FALSE)
+}
+
+#' Extract the Latin-script @font-face block from a Google CSS response
+#'
+#' Devolve URL e `unicode-range` do bloco cujo range cobre o Latin básico
+#' (testa `U+0041`, "A") — pegar a primeira `url()` da resposta devolvia o
+#' subset cirílico como se fosse a fonte completa (#27). Quando nenhum bloco
+#' declara `unicode-range` cobrindo Latin (respostas de bloco único, ex.
+#' subsets via `&text=` ou TTF), vale o primeiro bloco com URL.
+#'
+#' @inheritParams google_css_font_blocks
+#' @return `list(url =, range =)`; ambos `NA` se nada casar.
+#' @keywords internal
+google_css_latin_block <- function(css, url_patterns) {
+  blocks <- google_css_font_blocks(css, url_patterns)
+  if (!nrow(blocks)) return(list(url = NA_character_, range = NA_character_))
+
+  covers <- vapply(seq_len(nrow(blocks)), function(i) {
+    !is.na(blocks$range[i]) && unicode_range_covers(blocks$range[i], 0x41L)
+  }, logical(1))
+
+  i <- if (any(covers)) which(covers)[1] else 1L
+  list(url = blocks$url[i], range = blocks$range[i])
+}
+
+#' Extract the Latin-script font URL from a Google Fonts CSS response
+#'
+#' Wrapper de [google_css_latin_block()] que devolve só a URL.
+#'
+#' @inheritParams google_css_font_blocks
+#' @return A URL da fonte, ou `NA_character_`.
+#' @keywords internal
+google_css_latin_url <- function(css, url_patterns) {
+  google_css_latin_block(css, url_patterns)$url
+}
+
+#' Range sidecar files: remember the unicode-range of a cached font file
+#'
+#' Fontes baixadas da CSS API ganham um arquivo `.range` ao lado (mesmo nome,
+#' extensão trocada) com o conteúdo do `unicode-range` do bloco de origem. O
+#' sidecar marca a PROVENIÊNCIA: só fontes com `.range` são blocos parciais da
+#' CSS API e podem ganhar blocos extras (#29). Fontes do `gfonts` e locais via
+#' [register_font()] não têm sidecar e são tratadas como completas.
+#'
+#' @param font_path Caminho do arquivo de fonte cacheado.
+#' @param range Conteúdo do `unicode-range` a gravar.
+#' @return `read_font_range()`: o range, ou `NA_character_` sem sidecar.
+#' @keywords internal
+font_range_sidecar <- function(font_path) {
+  paste0(tools::file_path_sans_ext(font_path), ".range")
+}
+
+#' @rdname font_range_sidecar
+#' @keywords internal
+read_font_range <- function(font_path) {
+  sidecar <- font_range_sidecar(font_path)
+  if (!file.exists(sidecar)) return(NA_character_)
+  out <- tryCatch(readLines(sidecar, n = 1L, warn = FALSE),
+                  error = function(e) character(0))
+  if (length(out) && nzchar(out)) out[1] else NA_character_
+}
+
+#' @rdname font_range_sidecar
+#' @keywords internal
+write_font_range <- function(font_path, range) {
+  if (is.na(range) || !nzchar(range)) return(invisible(NULL))
+  tryCatch(writeLines(range, font_range_sidecar(font_path)),
+           error = function(e) NULL)
+  invisible(NULL)
 }
 
 #' Is a file a WOFF2 font?
@@ -410,10 +484,83 @@ download_google_font_woff2 <- function(family, weight = "400", text = NULL) {
   }
   
   # Fallback: fetch CSS from Google Fonts API
+  urls_to_try <- google_css_urls(family, text = text)
+
+  for (css_url in urls_to_try) {
+    css <- fetch_google_css(css_url)
+    if (is.null(css) || !nzchar(css)) next
+
+    # Extract the woff2 URL of the LATIN block from the CSS (#27). Both URL
+    # styles are tried PER BLOCK: url(https://...woff2) and the extensionless
+    # URLs of subset responses (fonts.gstatic.com/l/font?kit=..., identified
+    # by format('woff2')) — so a response mixing styles across blocks cannot
+    # hide the latin block.
+    blk <- google_css_latin_block(css, c(
+      'url\\(["\']?([^)"\']+\\.woff2)["\']?\\)',
+      'url\\(["\']?([^)"\']+)["\']?\\)\\s*format\\([\'"]woff2[\'"]\\)'
+    ))
+
+    if (!is.na(blk$url)) {
+      ok <- tryCatch({
+        utils::download.file(blk$url, out, mode = "wb", quiet = TRUE)
+        TRUE
+      }, error = function(e) FALSE)
+
+      if (isTRUE(ok) && file.exists(out) && file.info(out)$size > 1000 &&
+          is_woff2_file(out)) {
+        # Marca a proveniência/cobertura do bloco baixado, para o embed poder
+        # completar com blocos extras (latin-ext etc.) quando o texto pedir (#29).
+        if (is.null(text)) write_font_range(out, blk$range)
+        return(out)
+      }
+      # Nunca deixe um download parcial/inválido no cache: a checagem
+      # file.exists() na entrada da função o devolveria para sempre.
+      unlink(out)
+    }
+  }
+
+  # If woff2 not found, try ttf as last resort
+  for (css_url in urls_to_try) {
+    css <- tryCatch({
+      paste(readLines(css_url, warn = FALSE), collapse = "\n")
+    }, error = function(e) NULL)
+
+    if (is.null(css) || !nzchar(css)) next
+
+    # Try ttf (also picking the Latin block, #27)
+    blk <- google_css_latin_block(css, 'url\\(["\']?([^)"\']+\\.ttf)["\']?\\)')
+
+    if (!is.na(blk$url)) {
+      ttf_out <- sub("\\.woff2$", ".ttf", out)
+
+      ok <- tryCatch({
+        utils::download.file(blk$url, ttf_out, mode = "wb", quiet = TRUE)
+        TRUE
+      }, error = function(e) FALSE)
+
+      if (isTRUE(ok) && file.exists(ttf_out) && file.info(ttf_out)$size > 1000 &&
+          is_ttf_file(ttf_out)) {
+        if (is.null(text)) write_font_range(ttf_out, blk$range)
+        return(ttf_out)
+      }
+      unlink(ttf_out)
+    }
+  }
+
+  NA_character_
+}
+
+#' Google Fonts CSS API URLs to try for a family
+#'
+#' @param family Font family name.
+#' @param text Optional normalized character set; when supplied, the `&text=`
+#'   parameter asks the API for a glyph subset.
+#' @return Character vector of URLs (css2 and legacy css formats).
+#' @keywords internal
+google_css_urls <- function(family, text = NULL) {
   family_encoded <- gsub(" ", "+", family)
 
-  # URLs to try (different API formats)
-  urls_to_try <- c(
+  urls <- c(
     sprintf("https://fonts.googleapis.com/css2?family=%s:wght@400&display=swap", family_encoded),
     sprintf("https://fonts.googleapis.com/css2?family=%s&display=swap", family_encoded),
     sprintf("https://fonts.googleapis.com/css?family=%s:400&display=swap", family_encoded),
@@ -422,91 +569,188 @@ download_google_font_woff2 <- function(family, weight = "400", text = NULL) {
 
   # Subsetting: the CSS API returns a font with only the requested glyphs.
   if (!is.null(text)) {
-    urls_to_try <- paste0(
-      urls_to_try, "&text=", utils::URLencode(text, reserved = TRUE)
-    )
+    urls <- paste0(urls, "&text=", utils::URLencode(text, reserved = TRUE))
   }
-  
+
+  urls
+}
+
+#' Fetch a Google Fonts CSS response (curl, with base-R fallback)
+#'
+#' @param css_url URL da CSS API.
+#' @return O CSS como string, ou `NULL` em falha.
+#' @keywords internal
+fetch_google_css <- function(css_url) {
   # User-Agent that triggers woff2 response
   ua <- "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-  
-  for (css_url in urls_to_try) {
-    css <- NULL
-    
-    # Try with curl package first (more reliable for headers)
-    if (requireNamespace("curl", quietly = TRUE)) {
-      css <- tryCatch({
-        h <- curl::new_handle()
-        curl::handle_setheaders(h, "User-Agent" = ua)
-        curl::handle_setopt(h, connecttimeout = 15L, timeout = 60L)
-        req <- curl::curl_fetch_memory(css_url, handle = h)
-        if (req$status_code == 200) rawToChar(req$content) else NULL
-      }, error = function(e) NULL)
-    }
-    
-    # Fallback to base R (may not get woff2 on all systems)
-    if (is.null(css) || !nzchar(css)) {
-      css <- tryCatch({
-        paste(readLines(css_url, warn = FALSE), collapse = "\n")
-      }, error = function(e) NULL)
-    }
-    
-    if (is.null(css) || !nzchar(css)) next
-    
-    # Extract the woff2 URL of the LATIN block from the CSS (#27). Both URL
-    # styles are tried PER BLOCK: url(https://...woff2) and the extensionless
-    # URLs of subset responses (fonts.gstatic.com/l/font?kit=..., identified
-    # by format('woff2')) — so a response mixing styles across blocks cannot
-    # hide the latin block.
-    font_url <- google_css_latin_url(css, c(
-      'url\\(["\']?([^)"\']+\\.woff2)["\']?\\)',
-      'url\\(["\']?([^)"\']+)["\']?\\)\\s*format\\([\'"]woff2[\'"]\\)'
-    ))
 
-    if (!is.na(font_url)) {
-      ok <- tryCatch({
-        utils::download.file(font_url, out, mode = "wb", quiet = TRUE)
-        TRUE
-      }, error = function(e) FALSE)
+  css <- NULL
 
-      if (isTRUE(ok) && file.exists(out) && file.info(out)$size > 1000 &&
-          is_woff2_file(out)) {
-        return(out)
-      }
-      # Nunca deixe um download parcial/inválido no cache: a checagem
-      # file.exists() na entrada da função o devolveria para sempre.
-      unlink(out)
-    }
+  # Try with curl package first (more reliable for headers)
+  if (requireNamespace("curl", quietly = TRUE)) {
+    css <- tryCatch({
+      h <- curl::new_handle()
+      curl::handle_setheaders(h, "User-Agent" = ua)
+      curl::handle_setopt(h, connecttimeout = 15L, timeout = 60L)
+      req <- curl::curl_fetch_memory(css_url, handle = h)
+      if (req$status_code == 200) rawToChar(req$content) else NULL
+    }, error = function(e) NULL)
   }
-  
-  # If woff2 not found, try ttf as last resort
-  for (css_url in urls_to_try) {
+
+  # Fallback to base R (may not get woff2 on all systems)
+  if (is.null(css) || !nzchar(css)) {
     css <- tryCatch({
       paste(readLines(css_url, warn = FALSE), collapse = "\n")
     }, error = function(e) NULL)
-    
-    if (is.null(css) || !nzchar(css)) next
-    
-    # Try ttf (also picking the Latin block, #27)
-    font_url <- google_css_latin_url(css, 'url\\(["\']?([^)"\']+\\.ttf)["\']?\\)')
-
-    if (!is.na(font_url)) {
-      ttf_out <- sub("\\.woff2$", ".ttf", out)
-
-      ok <- tryCatch({
-        utils::download.file(font_url, ttf_out, mode = "wb", quiet = TRUE)
-        TRUE
-      }, error = function(e) FALSE)
-
-      if (isTRUE(ok) && file.exists(ttf_out) && file.info(ttf_out)$size > 1000 &&
-          is_ttf_file(ttf_out)) {
-        return(ttf_out)
-      }
-      unlink(ttf_out)
-    }
   }
-  
-  NA_character_
+
+  css
+}
+
+#' Which code points does a CSS unicode-range cover?
+#'
+#' Versão vetorizada de [unicode_range_covers()].
+#'
+#' @param range Conteúdo de uma declaração `unicode-range:`.
+#' @param codepoints Vetor de code points (inteiros).
+#' @return Vetor lógico paralelo a `codepoints`.
+#' @keywords internal
+unicode_range_covers_v <- function(range, codepoints) {
+  vapply(codepoints, function(cp) unicode_range_covers(range, cp), logical(1))
+}
+
+#' Cache slug for an extra @font-face block
+#'
+#' @param subset Nome do subset no comentário do bloco (`"latin-ext"` etc.),
+#'   ou `NA`.
+#' @param range `unicode-range` do bloco (usado como fallback, via hash).
+#' @return Slug estável para compor o nome do arquivo em cache.
+#' @keywords internal
+font_block_slug <- function(subset, range) {
+  if (!is.na(subset) && nzchar(subset)) {
+    slug <- gsub("-+", "-", gsub("[^a-z0-9-]+", "-", tolower(subset)))
+    slug <- gsub("^-|-$", "", slug)
+    if (nzchar(slug)) return(slug)
+  }
+  substr(digest::digest(range, algo = "md5"), 1, 8)
+}
+
+#' Download the extra @font-face blocks needed by a set of code points
+#'
+#' Busca a resposta da CSS API e baixa cada bloco cujo `unicode-range` cubra
+#' algum dos code points pedidos (ex. *latin-ext* para "Łódź", *vietnamese*
+#' para "Việt"). Cada bloco é validado por magic bytes e cacheado como
+#' `<key>_blk-<slug>.<ext>` com sidecar `.range` (#29).
+#'
+#' @param family Font family name.
+#' @param codepoints Code points ainda não cobertos pelos blocos já embutidos.
+#' @return data.frame com colunas `path` e `range` dos blocos obtidos (0
+#'   linhas em falha); blocos cujos ranges não cobrem nenhum code point pedido
+#'   não são baixados.
+#' @keywords internal
+download_google_font_blocks <- function(family, codepoints) {
+  found <- data.frame(path = character(0), range = character(0),
+                      stringsAsFactors = FALSE)
+  if (!length(codepoints)) return(found)
+
+  key <- gsub("[^A-Za-z0-9._-]+", "_", family)
+  cache_dir <- font_cache_dir()
+
+  url_patterns <- c(
+    'url\\(["\']?([^)"\']+\\.woff2)["\']?\\)',
+    'url\\(["\']?([^)"\']+)["\']?\\)\\s*format\\([\'"]woff2[\'"]\\)',
+    'url\\(["\']?([^)"\']+\\.ttf)["\']?\\)'
+  )
+
+  for (css_url in google_css_urls(family)) {
+    css <- fetch_google_css(css_url)
+    if (is.null(css) || !nzchar(css)) next
+
+    blocks <- google_css_font_blocks(css, url_patterns)
+
+    for (i in seq_len(nrow(blocks))) {
+      if (is.na(blocks$range[i])) next
+      hit <- unicode_range_covers_v(blocks$range[i], codepoints)
+      if (!any(hit)) next
+
+      is_ttf <- grepl("\\.ttf(\\?|$)", blocks$url[i])
+      ext <- if (is_ttf) "ttf" else "woff2"
+      slug <- font_block_slug(blocks$subset[i], blocks$range[i])
+      dest <- file.path(cache_dir, paste0(key, "_blk-", slug, ".", ext))
+
+      ok <- file.exists(dest)
+      if (!ok) {
+        ok <- tryCatch({
+          utils::download.file(blocks$url[i], dest, mode = "wb", quiet = TRUE)
+          TRUE
+        }, error = function(e) FALSE)
+        ok <- isTRUE(ok) && file.exists(dest) && file.info(dest)$size > 200 &&
+          (if (is_ttf) is_ttf_file(dest) else is_woff2_file(dest))
+        if (!ok) unlink(dest)
+      }
+
+      if (ok) {
+        write_font_range(dest, blocks$range[i])
+        found <- rbind(found, data.frame(path = dest, range = blocks$range[i],
+                                         stringsAsFactors = FALSE))
+        codepoints <- codepoints[!hit]
+        if (!length(codepoints)) return(found)
+      }
+    }
+
+    # Esta resposta foi parseada com blocos; tentar outro formato de URL não
+    # traria cobertura nova para o que sobrou.
+    if (nrow(blocks)) break
+  }
+
+  found
+}
+
+#' Resolve the extra @font-face blocks a text needs beyond the primary font
+#'
+#' A fonte "completa" baixada da CSS API cobre só o bloco *latin* (#29). Dado
+#' o arquivo primário em cache e os code points usados no SVG, devolve os
+#' blocos extras (cacheados ou baixados) cujos `unicode-range` cobrem o que o
+#' primário não cobre. Só age quando o primário tem sidecar `.range` — sem
+#' sidecar a fonte veio do `gfonts` ou de [register_font()] e é tratada como
+#' completa, para nunca sobrepor glifos de uma fonte local do usuário.
+#'
+#' @param family Font family name.
+#' @param primary_path Caminho do arquivo primário em cache.
+#' @param codepoints Code points usados no texto do SVG (não-ASCII).
+#' @return data.frame com colunas `path` e `range` (0 linhas quando nada é
+#'   preciso ou possível).
+#' @keywords internal
+ensure_font_extra_blocks <- function(family, primary_path, codepoints) {
+  none <- data.frame(path = character(0), range = character(0),
+                     stringsAsFactors = FALSE)
+  if (!length(codepoints)) return(none)
+
+  primary_range <- read_font_range(primary_path)
+  if (is.na(primary_range)) return(none)
+
+  remaining <- codepoints[!unicode_range_covers_v(primary_range, codepoints)]
+  if (!length(remaining)) return(none)
+
+  key <- gsub("[^A-Za-z0-9._-]+", "_", family)
+  cache_dir <- font_cache_dir()
+  out <- none
+
+  # Blocos extras já cacheados cobrem primeiro (funciona offline).
+  cached <- list.files(cache_dir, pattern = "\\.(woff2|ttf|woff|otf)$",
+                       full.names = TRUE)
+  cached <- cached[startsWith(basename(cached), paste0(key, "_blk-"))]
+  for (fp in cached) {
+    r <- read_font_range(fp)
+    if (is.na(r)) next
+    hit <- unicode_range_covers_v(r, remaining)
+    if (!any(hit)) next
+    out <- rbind(out, data.frame(path = fp, range = r, stringsAsFactors = FALSE))
+    remaining <- remaining[!hit]
+    if (!length(remaining)) return(out)
+  }
+
+  rbind(out, download_google_font_blocks(family, remaining))
 }
 
 # ------------------------------------------------------------------------------
@@ -603,6 +847,8 @@ font_available <- function(family) {
 list_fonts <- function() {
   cache_dir <- font_cache_dir()
   files <- list.files(cache_dir, pattern = "\\.(woff2|ttf|woff|otf)$", full.names = FALSE)
+  # Blocos extras (#29) complementam uma família já listada pelo arquivo primário.
+  files <- files[!grepl("_blk-", files, fixed = TRUE)]
   unique(gsub("\\.(woff2|ttf|woff|otf)$", "", files))
 }
 
@@ -720,56 +966,80 @@ register_font <- function(font_path, family = NULL) {
 # Internal: embed fonts into SVG
 # ------------------------------------------------------------------------------
 
-#' Embed a font file into an SVG via @font-face
+#' Embed font files into an SVG via @font-face
 #'
 #' @param svg_content Character SVG.
 #' @param font_family Font family name to embed.
-#' @param woff2_path Path to a font file (.woff2, .ttf, .woff, or .otf).
-#' @return SVG string with embedded @font-face rule.
+#' @param woff2_path Path(s) to font file(s) (.woff2, .ttf, .woff, or .otf).
+#'   Pode ser um vetor: uma regra `@font-face` é gerada por arquivo, na ordem
+#'   dada (primário primeiro, blocos extras depois).
+#' @param unicode_range Optional `unicode-range` value(s), parallel to
+#'   `woff2_path` (`NA` = sem declaração). Com múltiplos arquivos, os ranges
+#'   dizem ao renderizador qual face usar para cada code point (#29).
+#' @return SVG string with embedded @font-face rule(s).
 #' @keywords internal
-embed_svg_fonts <- function(svg_content, font_family, woff2_path) {
+embed_svg_fonts <- function(svg_content, font_family, woff2_path,
+                            unicode_range = NULL) {
   if (!requireNamespace("base64enc", quietly = TRUE)) {
     cli::cli_abort(c(
       "x" = "Package {.pkg base64enc} is required to embed fonts.",
       "i" = "Install with: {.code install.packages('base64enc')}"
     ))
   }
-  if (is.na(woff2_path) || !file.exists(woff2_path)) {
+  if (is.null(unicode_range)) {
+    unicode_range <- rep(NA_character_, length(woff2_path))
+  }
+
+  usable <- !is.na(woff2_path) & file.exists(woff2_path)
+  if (!any(usable)) {
     return(as.character(svg_content))
   }
-  
+  woff2_path <- woff2_path[usable]
+  unicode_range <- unicode_range[usable]
+
   svg <- as.character(svg_content)
-  
+
   escaped_family <- gsub("([\\[\\](){}|.+*?^$\\\\])", "\\\\\\1", font_family, perl = TRUE)
-  
+
   pattern_dq <- sprintf('@font-face\\s*\\{[^}]*font-family\\s*:\\s*"%s"[^}]*\\}', escaped_family)
   svg <- gsub(pattern_dq, "", svg, perl = TRUE)
-  
+
   pattern_sq <- sprintf("@font-face\\s*\\{[^}]*font-family\\s*:\\s*'%s'[^}]*\\}", escaped_family)
   svg <- gsub(pattern_sq, "", svg, perl = TRUE)
-  
+
   svg <- gsub("\n{3,}", "\n\n", svg, perl = TRUE)
-  
-  raw <- readBin(woff2_path, "raw", n = file.info(woff2_path)$size)
-  b64 <- base64enc::base64encode(raw)
-  
-  ext <- tolower(tools::file_ext(woff2_path))
-  
-  mime_and_format <- switch(ext,
-                            "woff2" = c("font/woff2", "woff2"),
-                            "ttf"   = c("font/ttf", "truetype"),
-                            "woff"  = c("font/woff", "woff"),
-                            "otf"   = c("font/otf", "opentype"),
-                            c("font/woff2", "woff2")
-  )
-  mime_type <- mime_and_format[1]
-  format_str <- mime_and_format[2]
-  
-  css <- sprintf(
-    '@font-face{font-family:"%s";src:url("data:%s;base64,%s") format("%s");font-weight:100 900;font-style:normal;}',
-    font_family, mime_type, b64, format_str
-  )
-  
+
+  rules <- vapply(seq_along(woff2_path), function(i) {
+    fp <- woff2_path[i]
+    raw <- readBin(fp, "raw", n = file.info(fp)$size)
+    b64 <- base64enc::base64encode(raw)
+
+    ext <- tolower(tools::file_ext(fp))
+
+    mime_and_format <- switch(ext,
+                              "woff2" = c("font/woff2", "woff2"),
+                              "ttf"   = c("font/ttf", "truetype"),
+                              "woff"  = c("font/woff", "woff"),
+                              "otf"   = c("font/otf", "opentype"),
+                              c("font/woff2", "woff2")
+    )
+    mime_type <- mime_and_format[1]
+    format_str <- mime_and_format[2]
+
+    range_decl <- if (!is.na(unicode_range[i]) && nzchar(unicode_range[i])) {
+      sprintf("unicode-range:%s;", unicode_range[i])
+    } else {
+      ""
+    }
+
+    sprintf(
+      '@font-face{font-family:"%s";src:url("data:%s;base64,%s") format("%s");font-weight:100 900;font-style:normal;%s}',
+      font_family, mime_type, b64, format_str, range_decl
+    )
+  }, character(1))
+
+  css <- paste(rules, collapse = "\n")
+
   if (grepl("<style[^>]*>", svg, perl = TRUE)) {
     svg <- sub("(<style[^>]*>)", paste0("\\1\n", css, "\n"), svg, perl = TRUE)
   } else if (grepl("<defs>", svg, fixed = TRUE)) {
@@ -809,20 +1079,46 @@ prepare_svg_for_raster <- function(svg_content, subset_fonts = FALSE) {
   families <- detect_svg_fonts(svg)
   if (!length(families)) return(svg)
 
+  charset <- font_subset_charset(svg_text_content(svg))
+
   subset_text <- NULL
   if (isTRUE(subset_fonts)) {
-    subset_text <- font_subset_charset(svg_text_content(svg))
+    subset_text <- charset
+  }
+
+  # Fonte completa da CSS API cobre só o bloco latin: code points fora do
+  # ASCII podem pedir blocos extras (latin-ext, vietnamese...) (#29). Subsets
+  # via &text= já contêm exatamente os glifos usados e não precisam disso.
+  codepoints <- integer(0)
+  if (!isTRUE(subset_fonts) && !is.null(charset)) {
+    codepoints <- utf8ToInt(charset)
+    codepoints <- codepoints[codepoints > 0x7FL]
   }
 
   paths <- ensure_cardargus_fonts(families, text = subset_text)
   for (fam in names(paths)) {
     fp <- paths[[fam]]
     if (!is.na(fp) && file.exists(fp)) {
-      svg <- embed_svg_fonts(svg, font_family = fam, woff2_path = fp)
+      extra <- if (length(codepoints)) {
+        ensure_font_extra_blocks(fam, fp, codepoints)
+      } else {
+        NULL
+      }
+      if (!is.null(extra) && nrow(extra)) {
+        # Com blocos extras, o primário também leva seu unicode-range: cada
+        # face fica com cobertura explícita e a ordem das regras não importa.
+        svg <- embed_svg_fonts(
+          svg, font_family = fam,
+          woff2_path = c(fp, extra$path),
+          unicode_range = c(read_font_range(fp), extra$range)
+        )
+      } else {
+        svg <- embed_svg_fonts(svg, font_family = fam, woff2_path = fp)
+      }
     } else {
       cli::cli_warn("Font {.val {fam}} could not be embedded. PNG may use fallback font.")
     }
   }
-  
+
   svg
 }

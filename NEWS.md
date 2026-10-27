@@ -26,12 +26,17 @@
 * A font cached in an alternative format (e.g. the TTF fallback) is now found
   by `download_google_font_woff2()` on the next call instead of being
   re-downloaded every time.
-* Known limitation: the full font downloaded via the CSS API covers the
-  *latin* block (Basic Latin + Latin-1 Supplement, which includes all
-  Portuguese accented characters); glyphs from other blocks, such as
-  *latin-ext* (e.g. Polish or Vietnamese), are not included. Use
-  `subset_fonts = TRUE` for arbitrary text — subsets always contain exactly
-  the glyphs used.
+* Full-font embedding now covers text beyond Google's *latin* block (#29).
+  The *latin* block downloaded via the CSS API only spans Basic Latin +
+  Latin-1 Supplement (all Portuguese accented characters, but not e.g.
+  Polish `Ł` or Vietnamese `ệ`). When the SVG text uses code points outside
+  that block, the extra `@font-face` blocks that cover them (*latin-ext*,
+  *vietnamese*, *cyrillic*, ...) are downloaded, cached alongside the
+  primary font and embedded with their `unicode-range` preserved, so each
+  face is used exactly for its script. Latin-only SVGs produce byte-identical
+  output. Fonts added with `register_font()` or downloaded via `gfonts` are
+  complete files and are embedded alone, as before — no Google block ever
+  overrides a locally registered font.
 
 # cardargus 0.3.0
 
