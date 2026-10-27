@@ -207,6 +207,63 @@ svg_text_content <- function(svg_content) {
   svg_text_content_regex(svg_content)
 }
 
+#' Visible text grouped by the font family that renders it
+#'
+#' Para cada nó de texto, resolve a família pelo atributo `font-family` (ou
+#' por `style="font-family:..."`) mais próximo na cadeia ancestor-or-self.
+#' Texto cuja família não pôde ser resolvida (ex. definida via classe CSS)
+#' entra na chave especial `".unresolved"` — o chamador deve atribuí-lo a
+#' todas as famílias. Usado para embutir blocos `@font-face` extras só nas
+#' famílias cujo texto realmente os usa (#29).
+#'
+#' @param svg_content SVG string.
+#' @return Lista nomeada família (normalizada) -> texto, ou `NULL` quando o
+#'   SVG não pôde ser parseado (o chamador deve usar o texto global).
+#' @keywords internal
+svg_text_by_family <- function(svg_content) {
+  doc <- svg_xml_parse(svg_content)
+  if (is.null(doc)) return(NULL)
+
+  nodes <- xml2::xml_find_all(
+    doc,
+    "//*[local-name()='text' or local-name()='tspan' or local-name()='textPath']"
+  )
+
+  out <- list()
+  for (nd in nodes) {
+    txt <- xml2::xml_text(nd)
+    if (!nzchar(txt)) next
+
+    # O predicado [1] num passo de eixo reverso (ancestor-or-self) devolve o
+    # ancestral MAIS PRÓXIMO, imitando a herança de font-family.
+    anc <- xml2::xml_find_first(nd, "ancestor-or-self::*[@font-family][1]")
+    fam <- if (inherits(anc, "xml_missing")) NA_character_
+           else xml2::xml_attr(anc, "font-family")
+
+    if (is.na(fam) || !nzchar(fam)) {
+      sty_node <- xml2::xml_find_first(
+        nd, "ancestor-or-self::*[contains(@style, 'font-family')][1]"
+      )
+      if (!inherits(sty_node, "xml_missing")) {
+        sty <- xml2::xml_attr(sty_node, "style")
+        m <- regmatches(sty, regexec("font-family\\s*:\\s*([^;]+)", sty))[[1]]
+        if (length(m) >= 2) fam <- m[2]
+      }
+    }
+
+    key <- ".unresolved"
+    if (!is.na(fam) && nzchar(fam)) {
+      norm <- normalize_font_families(fam)
+      if (length(norm)) key <- norm[1]
+    }
+
+    prev <- out[[key]]
+    out[[key]] <- paste0(if (is.null(prev)) "" else prev, txt)
+  }
+
+  out
+}
+
 #' Regex fallback for [svg_text_content()]
 #' @param svg_content SVG string.
 #' @keywords internal

@@ -211,6 +211,19 @@ running_under_check <- function() {
   nzchar(Sys.getenv("_R_CHECK_PACKAGE_NAME_"))
 }
 
+#' Sanitize a font family name into its cache key
+#'
+#' Todo caminho de cache (primário, subsets `_sub`, blocos `_blk-` e sidecars
+#' `.range`) deriva DESTA mesma chave — mudanças aqui realinham todos os
+#' arquivos de uma vez.
+#'
+#' @param family Font family name.
+#' @return Chave estável para nomes de arquivo.
+#' @keywords internal
+font_cache_key <- function(family) {
+  gsub("[^A-Za-z0-9._-]+", "_", family)
+}
+
 #' Build a cache filename for a font family
 #'
 #' @param family Font family name.
@@ -220,7 +233,7 @@ running_under_check <- function() {
 #' @return Path to the cached font file.
 #' @keywords internal
 font_cache_path <- function(family, text = NULL) {
-  key <- gsub("[^A-Za-z0-9._-]+", "_", family)
+  key <- font_cache_key(family)
   if (!is.null(text) && nzchar(text)) {
     key <- paste0(key, "_sub", substr(digest::digest(text, algo = "md5"), 1, 10))
   }
@@ -293,7 +306,8 @@ unicode_range_covers <- function(range, codepoint) {
 #'   casar).
 #' @keywords internal
 google_css_font_blocks <- function(css, url_patterns) {
-  pat <- "(?:/\\*\\s*([^*]*?)\\s*\\*/\\s*)?@font-face\\s*\\{[^}]*\\}"
+  # O comentário é incluído no match e extraído depois, bloco a bloco.
+  pat <- "(?:/\\*\\s*[^*]*?\\s*\\*/\\s*)?@font-face\\s*\\{[^}]*\\}"
   blocks <- regmatches(css, gregexpr(pat, css, perl = TRUE))[[1]]
   if (!length(blocks)) blocks <- css
 
@@ -477,6 +491,9 @@ download_google_font_woff2 <- function(family, weight = "400", text = NULL) {
       dest <- file.path(font_cache_dir(), paste0(key, ".", ext))
 
       file.copy(src, dest, overwrite = TRUE)
+      # Fonte do gfonts é completa: um sidecar .range órfão de um download
+      # anterior da CSS API a marcaria como bloco parcial (#29).
+      unlink(font_range_sidecar(dest))
       dest
     }, error = function(e) NULL)
 
@@ -653,7 +670,7 @@ download_google_font_blocks <- function(family, codepoints) {
                       stringsAsFactors = FALSE)
   if (!length(codepoints)) return(found)
 
-  key <- gsub("[^A-Za-z0-9._-]+", "_", family)
+  key <- font_cache_key(family)
   cache_dir <- font_cache_dir()
 
   url_patterns <- c(
@@ -678,7 +695,18 @@ download_google_font_blocks <- function(family, codepoints) {
       slug <- font_block_slug(blocks$subset[i], blocks$range[i])
       dest <- file.path(cache_dir, paste0(key, "_blk-", slug, ".", ext))
 
-      ok <- file.exists(dest)
+      # Arquivo cacheado só é reusado se ainda for uma fonte válida; nesse
+      # caso o sidecar existente descreve OS BYTES cacheados e prevalece
+      # sobre o range do CSS recém-buscado (o Google pode ter alargado o
+      # range numa versão nova da fonte que não baixamos).
+      reused <- file.exists(dest) &&
+        (if (is_ttf) is_ttf_file(dest) else is_woff2_file(dest))
+      if (file.exists(dest) && !reused) {
+        unlink(dest)
+        unlink(font_range_sidecar(dest))
+      }
+
+      ok <- reused
       if (!ok) {
         ok <- tryCatch({
           utils::download.file(blocks$url[i], dest, mode = "wb", quiet = TRUE)
@@ -686,14 +714,24 @@ download_google_font_blocks <- function(family, codepoints) {
         }, error = function(e) FALSE)
         ok <- isTRUE(ok) && file.exists(dest) && file.info(dest)$size > 200 &&
           (if (is_ttf) is_ttf_file(dest) else is_woff2_file(dest))
-        if (!ok) unlink(dest)
+        if (!ok) {
+          unlink(dest)
+          next
+        }
+        write_font_range(dest, blocks$range[i])
       }
 
-      if (ok) {
+      range_use <- read_font_range(dest)
+      if (is.na(range_use)) {
         write_font_range(dest, blocks$range[i])
-        found <- rbind(found, data.frame(path = dest, range = blocks$range[i],
+        range_use <- blocks$range[i]
+      }
+
+      covered <- unicode_range_covers_v(range_use, codepoints)
+      if (any(covered)) {
+        found <- rbind(found, data.frame(path = dest, range = range_use,
                                          stringsAsFactors = FALSE))
-        codepoints <- codepoints[!hit]
+        codepoints <- codepoints[!covered]
         if (!length(codepoints)) return(found)
       }
     }
@@ -732,7 +770,7 @@ ensure_font_extra_blocks <- function(family, primary_path, codepoints) {
   remaining <- codepoints[!unicode_range_covers_v(primary_range, codepoints)]
   if (!length(remaining)) return(none)
 
-  key <- gsub("[^A-Za-z0-9._-]+", "_", family)
+  key <- font_cache_key(family)
   cache_dir <- font_cache_dir()
   out <- none
 
@@ -799,7 +837,7 @@ ensure_cardargus_fonts <- function(families, weight = "400", text = NULL) {
       )
     }
 
-    key <- gsub("[^A-Za-z0-9._-]+", "_", fam)
+    key <- font_cache_key(fam)
 
     for (ext in c("woff2", "ttf", "woff", "otf")) {
       fp <- file.path(cache_dir, paste0(key, ".", ext))
@@ -828,7 +866,7 @@ ensure_cardargus_fonts <- function(families, weight = "400", text = NULL) {
 #' font_available("Montserrat")
 font_available <- function(family) {
   cache_dir <- font_cache_dir()
-  key <- gsub("[^A-Za-z0-9._-]+", "_", family)
+  key <- font_cache_key(family)
   
   for (ext in c("woff2", "ttf", "woff", "otf")) {
     if (file.exists(file.path(cache_dir, paste0(key, ".", ext)))) {
@@ -947,11 +985,16 @@ register_font <- function(font_path, family = NULL) {
   }
   
   cache_dir <- font_cache_dir()
-  key <- gsub("[^A-Za-z0-9._-]+", "_", family)
+  key <- font_cache_key(family)
   out_path <- file.path(cache_dir, paste0(key, ".", ext))
   
   file.copy(font_path, out_path, overwrite = TRUE)
-  
+
+  # A fonte local do usuário é tratada como completa: um sidecar .range órfão
+  # de um download anterior da CSS API faria blocos do Google sobreporem seus
+  # glifos (#29). O sidecar é compartilhado por chave, independente da extensão.
+  unlink(font_range_sidecar(out_path))
+
   if (file.exists(out_path)) {
     cli::cli_alert_success("Font {.val {family}} registered successfully.")
     cli::cli_alert_info("Cached at: {.path {out_path}}")
@@ -1087,20 +1130,42 @@ prepare_svg_for_raster <- function(svg_content, subset_fonts = FALSE) {
   }
 
   # Fonte completa da CSS API cobre só o bloco latin: code points fora do
-  # ASCII podem pedir blocos extras (latin-ext, vietnamese...) (#29). Subsets
-  # via &text= já contêm exatamente os glifos usados e não precisam disso.
-  codepoints <- integer(0)
-  if (!isTRUE(subset_fonts) && !is.null(charset)) {
-    codepoints <- utf8ToInt(charset)
-    codepoints <- codepoints[codepoints > 0x7FL]
+  # ASCII podem pedir blocos extras (latin-ext, vietnamese...) (#29). Os code
+  # points são atribuídos POR FAMÍLIA (texto não atribuível conta para
+  # todas), para não embutir blocos numa família cujo texto não os usa.
+  non_ascii_codepoints <- function(txt) {
+    cs <- font_subset_charset(txt)
+    if (is.null(cs)) return(integer(0))
+    cp <- utf8ToInt(cs)
+    cp[cp > 0x7FL]
+  }
+
+  global_cp <- if (is.null(charset)) integer(0) else {
+    cp <- utf8ToInt(charset)
+    cp[cp > 0x7FL]
+  }
+
+  text_by_family <- if (length(global_cp)) svg_text_by_family(svg) else NULL
+  family_codepoints <- function(fam) {
+    # Parse indisponível: vale o texto global (atribuição conservadora).
+    if (is.null(text_by_family)) return(global_cp)
+    unique(c(
+      non_ascii_codepoints(text_by_family[[fam]]),
+      non_ascii_codepoints(text_by_family[[".unresolved"]])
+    ))
   }
 
   paths <- ensure_cardargus_fonts(families, text = subset_text)
   for (fam in names(paths)) {
     fp <- paths[[fam]]
     if (!is.na(fp) && file.exists(fp)) {
-      extra <- if (length(codepoints)) {
-        ensure_font_extra_blocks(fam, fp, codepoints)
+      # O gate é o ARQUIVO embutido, não o modo pedido: com subset_fonts, a
+      # falha do download do subset cai na fonte completa latin-only, que
+      # precisa dos blocos extras do mesmo jeito (#29).
+      is_subset_file <- grepl("_sub[0-9a-f]{10}\\.", basename(fp))
+      cps <- if (is_subset_file) integer(0) else family_codepoints(fam)
+      extra <- if (length(cps)) {
+        ensure_font_extra_blocks(fam, fp, cps)
       } else {
         NULL
       }

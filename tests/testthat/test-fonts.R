@@ -411,3 +411,30 @@ test_that("embed_svg_fonts keeps its single-font behavior (no unicode-range)", {
 
   unlink(fp)
 })
+
+test_that("register_font removes a stale .range sidecar left by the CSS API", {
+  old <- Sys.getenv("_R_CHECK_PACKAGE_NAME_", unset = NA)
+  on.exit(
+    if (is.na(old)) Sys.unsetenv("_R_CHECK_PACKAGE_NAME_")
+    else Sys.setenv("_R_CHECK_PACKAGE_NAME_" = old),
+    add = TRUE
+  )
+  Sys.setenv("_R_CHECK_PACKAGE_NAME_" = "cardargus")  # cache em tempdir
+
+  cache_dir <- font_cache_dir()
+  cached <- file.path(cache_dir, "Testreg29.woff2")
+  file.create(cached)
+  cardargus:::write_font_range(cached, "U+0000-00FF")
+
+  # Usuário registra a própria fonte (completa) para a mesma família
+  local_font <- tempfile(fileext = ".woff2")
+  writeBin(c(charToRaw("wOF2"), as.raw(0:9)), local_font)
+  suppressMessages(register_font(local_font, family = "Testreg29"))
+
+  # Sem sidecar, nenhum bloco do Google pode sobrepor a fonte local
+  expect_false(file.exists(cardargus:::font_range_sidecar(cached)))
+  out <- cardargus:::ensure_font_extra_blocks("Testreg29", cached, utf8ToInt("Ł"))
+  expect_equal(nrow(out), 0L)
+
+  unlink(c(cached, local_font))
+})
