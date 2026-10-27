@@ -247,3 +247,233 @@ test_that("migrate_font_cache quarantines pre-0.3.1 full fonts once, keeping sub
 
   unlink(dirname(d), recursive = TRUE)
 })
+
+# ---- Extra @font-face blocks for non-latin text (#29) ------------------------
+
+test_that("google_css_font_blocks returns url, range and subset per block", {
+  blocks <- cardargus:::google_css_font_blocks(css2_multiblock, woff2_url_pattern)
+
+  expect_equal(nrow(blocks), 4L)
+  expect_identical(
+    blocks$subset,
+    c("cyrillic-ext", "cyrillic", "latin-ext", "latin")
+  )
+  expect_identical(
+    blocks$url[3],
+    "https://fonts.gstatic.com/s/jost/v19/latin-ext.woff2"
+  )
+  expect_match(blocks$range[3], "U\\+0100-02BA")
+  # Bloco único sem unicode-range: range NA, subset NA
+  css_single <- "@font-face { src: url(https://x.test/f.woff2) format('woff2'); }"
+  single <- cardargus:::google_css_font_blocks(
+    css_single,
+    'url\\(["\']?([^)"\']+)["\']?\\)\\s*format\\([\'"]woff2[\'"]\\)'
+  )
+  expect_equal(nrow(single), 1L)
+  expect_true(is.na(single$range))
+  expect_true(is.na(single$subset))
+})
+
+test_that("google_css_latin_block returns the latin block's url AND range", {
+  blk <- cardargus:::google_css_latin_block(css2_multiblock, woff2_url_pattern)
+  expect_identical(blk$url, "https://fonts.gstatic.com/s/jost/v19/latin.woff2")
+  expect_match(blk$range, "U\\+0000-00FF")
+  # Sem match algum: NA/NA
+  blk_na <- cardargus:::google_css_latin_block("body{}", woff2_url_pattern)
+  expect_true(is.na(blk_na$url))
+  expect_true(is.na(blk_na$range))
+})
+
+test_that("font_block_slug uses the subset name, hashing only as fallback", {
+  expect_identical(cardargus:::font_block_slug("latin-ext", "U+0100-02BA"), "latin-ext")
+  expect_identical(cardargus:::font_block_slug("Latin Ext!", "U+0100"), "latin-ext")
+  hashed <- cardargus:::font_block_slug(NA_character_, "U+0100-02BA")
+  expect_match(hashed, "^[0-9a-f]{8}$")
+  # Determinístico para o mesmo range
+  expect_identical(hashed, cardargus:::font_block_slug(NA_character_, "U+0100-02BA"))
+})
+
+test_that("font range sidecars round-trip next to the font file", {
+  fp <- tempfile(fileext = ".woff2")
+  file.create(fp)
+
+  expect_true(is.na(cardargus:::read_font_range(fp)))
+  cardargus:::write_font_range(fp, "U+0000-00FF, U+0131")
+  expect_identical(cardargus:::read_font_range(fp), "U+0000-00FF, U+0131")
+  # NA não grava nada
+  fp2 <- tempfile(fileext = ".woff2")
+  cardargus:::write_font_range(fp2, NA_character_)
+  expect_false(file.exists(cardargus:::font_range_sidecar(fp2)))
+
+  unlink(c(fp, cardargus:::font_range_sidecar(fp)))
+})
+
+test_that("ensure_font_extra_blocks is inert without a primary .range sidecar", {
+  # Sem sidecar a fonte primária pode ser local (register_font) ou do gfonts:
+  # é tratada como completa e NADA é baixado ou sobreposto.
+  fp <- tempfile(fileext = ".woff2")
+  file.create(fp)
+  out <- cardargus:::ensure_font_extra_blocks("Jost", fp, utf8ToInt("Łódź"))
+  expect_equal(nrow(out), 0L)
+  unlink(fp)
+})
+
+test_that("ensure_font_extra_blocks is a no-op when the primary covers the text", {
+  fp <- tempfile(fileext = ".woff2")
+  file.create(fp)
+  cardargus:::write_font_range(fp, "U+0000-00FF, U+0131, U+2000-206F")
+  # pt-BR: todos os acentos estão no Latin-1 Supplement
+  out <- cardargus:::ensure_font_extra_blocks(
+    "Jost", fp, utf8ToInt(cardargus:::font_subset_charset("Educação"))
+  )
+  expect_equal(nrow(out), 0L)
+  unlink(c(fp, cardargus:::font_range_sidecar(fp)))
+})
+
+test_that("ensure_font_extra_blocks serves cached blocks offline", {
+  old <- Sys.getenv("_R_CHECK_PACKAGE_NAME_", unset = NA)
+  on.exit(
+    if (is.na(old)) Sys.unsetenv("_R_CHECK_PACKAGE_NAME_")
+    else Sys.setenv("_R_CHECK_PACKAGE_NAME_" = old),
+    add = TRUE
+  )
+  Sys.setenv("_R_CHECK_PACKAGE_NAME_" = "cardargus")  # cache em tempdir
+
+  cache_dir <- font_cache_dir()
+
+  fp <- file.path(cache_dir, "Testfam29.woff2")
+  file.create(fp)
+  cardargus:::write_font_range(fp, "U+0000-00FF")
+
+  blk <- file.path(cache_dir, "Testfam29_blk-latin-ext.woff2")
+  file.create(blk)
+  cardargus:::write_font_range(blk, "U+0100-024F, U+1E00-1EFF")
+
+  out <- cardargus:::ensure_font_extra_blocks(
+    "Testfam29", fp, utf8ToInt(cardargus:::font_subset_charset("Łódź"))
+  )
+  expect_equal(nrow(out), 1L)
+  expect_identical(out$path, blk)
+  expect_identical(out$range, "U+0100-024F, U+1E00-1EFF")
+
+  unlink(c(fp, blk, cardargus:::font_range_sidecar(fp),
+           cardargus:::font_range_sidecar(blk)))
+})
+
+test_that("embed_svg_fonts embeds several faces with their unicode-ranges", {
+  skip_if_not_installed("base64enc")
+
+  svg <- "<svg xmlns='http://www.w3.org/2000/svg'><defs><style>\n</style></defs><text>Ł</text></svg>"
+
+  primary <- tempfile(fileext = ".woff2")
+  writeBin(c(charToRaw("wOF2"), as.raw(0:9)), primary)
+  extra <- tempfile(fileext = ".woff2")
+  writeBin(c(charToRaw("wOF2"), as.raw(9:0)), extra)
+
+  out <- cardargus:::embed_svg_fonts(
+    svg, "Jost", c(primary, extra),
+    unicode_range = c("U+0000-00FF", "U+0100-024F")
+  )
+
+  faces <- gregexpr("@font-face", out, fixed = TRUE)[[1]]
+  expect_length(faces, 2L)
+  expect_match(out, "unicode-range:U\\+0000-00FF;", perl = TRUE)
+  expect_match(out, "unicode-range:U\\+0100-024F;", perl = TRUE)
+  # Primário antes do bloco extra
+  expect_lt(
+    regexpr("U+0000-00FF", out, fixed = TRUE)[1],
+    regexpr("U+0100-024F", out, fixed = TRUE)[1]
+  )
+  # Caminhos inexistentes são ignorados sem derrubar os válidos
+  out2 <- cardargus:::embed_svg_fonts(
+    svg, "Jost", c(primary, tempfile()),
+    unicode_range = c(NA_character_, "U+0100-024F")
+  )
+  expect_length(gregexpr("@font-face", out2, fixed = TRUE)[[1]], 1L)
+  expect_false(grepl("unicode-range", out2, fixed = TRUE))
+
+  unlink(c(primary, extra))
+})
+
+test_that("embed_svg_fonts keeps its single-font behavior (no unicode-range)", {
+  skip_if_not_installed("base64enc")
+
+  svg <- "<svg xmlns='http://www.w3.org/2000/svg'><text>Oi</text></svg>"
+  fp <- tempfile(fileext = ".woff2")
+  writeBin(c(charToRaw("wOF2"), as.raw(0:9)), fp)
+
+  out <- cardargus:::embed_svg_fonts(svg, "Jost", fp)
+  expect_match(out, '@font-face\\{font-family:"Jost"')
+  expect_false(grepl("unicode-range", out, fixed = TRUE))
+
+  # NA/arquivo ausente: SVG devolvido intacto
+  expect_identical(cardargus:::embed_svg_fonts(svg, "Jost", NA_character_), svg)
+
+  unlink(fp)
+})
+
+test_that("register_font removes a stale .range sidecar left by the CSS API", {
+  old <- Sys.getenv("_R_CHECK_PACKAGE_NAME_", unset = NA)
+  on.exit(
+    if (is.na(old)) Sys.unsetenv("_R_CHECK_PACKAGE_NAME_")
+    else Sys.setenv("_R_CHECK_PACKAGE_NAME_" = old),
+    add = TRUE
+  )
+  Sys.setenv("_R_CHECK_PACKAGE_NAME_" = "cardargus")  # cache em tempdir
+
+  cache_dir <- font_cache_dir()
+  cached <- file.path(cache_dir, "Testreg29.woff2")
+  file.create(cached)
+  cardargus:::write_font_range(cached, "U+0000-00FF")
+
+  # Usuário registra a própria fonte (completa) para a mesma família
+  local_font <- tempfile(fileext = ".woff2")
+  writeBin(c(charToRaw("wOF2"), as.raw(0:9)), local_font)
+  suppressMessages(register_font(local_font, family = "Testreg29"))
+
+  # Sem sidecar, nenhum bloco do Google pode sobrepor a fonte local
+  expect_false(file.exists(cardargus:::font_range_sidecar(cached)))
+  out <- cardargus:::ensure_font_extra_blocks("Testreg29", cached, utf8ToInt("Ł"))
+  expect_equal(nrow(out), 0L)
+
+  unlink(c(cached, local_font))
+})
+
+test_that("range sidecars are per file, not shared across extensions", {
+  base <- tempfile()
+  woff2 <- paste0(base, ".woff2")
+  ttf <- paste0(base, ".ttf")
+  file.create(woff2, ttf)
+
+  cardargus:::write_font_range(woff2, "U+0000-00FF")
+  # O ttf com a mesma chave NÃO herda a proveniência do woff2: registrar um
+  # Jost.ttf local não pode apagar/alterar o sidecar do Jost.woff2 da CSS API.
+  expect_true(is.na(cardargus:::read_font_range(ttf)))
+  expect_identical(cardargus:::read_font_range(woff2), "U+0000-00FF")
+
+  unlink(c(woff2, ttf, cardargus:::font_range_sidecar(woff2)))
+})
+
+test_that("list_fonts hides _blk- and _sub cache artifacts", {
+  old <- Sys.getenv("_R_CHECK_PACKAGE_NAME_", unset = NA)
+  on.exit(
+    if (is.na(old)) Sys.unsetenv("_R_CHECK_PACKAGE_NAME_")
+    else Sys.setenv("_R_CHECK_PACKAGE_NAME_" = old),
+    add = TRUE
+  )
+  Sys.setenv("_R_CHECK_PACKAGE_NAME_" = "cardargus")  # cache em tempdir
+
+  cache_dir <- font_cache_dir()
+  files <- file.path(cache_dir, c(
+    "Testlist29.woff2",
+    "Testlist29_blk-latin-ext.woff2",
+    "Testlist29_sub0123456789.woff2"
+  ))
+  file.create(files)
+
+  listed <- list_fonts()
+  expect_true("Testlist29" %in% listed)
+  expect_false(any(grepl("Testlist29_", listed)))
+
+  unlink(files)
+})

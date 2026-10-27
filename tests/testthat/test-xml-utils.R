@@ -84,3 +84,47 @@ test_that("svg_text_content_regex agrees and un-escapes entities", {
   expect_false(grepl("fill:red", txt, fixed = TRUE))
   expect_equal(cardargus:::svg_text_content_regex("<svg></svg>"), "")
 })
+
+# ---- svg_text_by_family (#29: blocos extras por família) ---------------------
+
+test_that("svg_text_by_family attributes text to the nearest font-family", {
+  svg <- paste0(
+    "<svg xmlns='http://www.w3.org/2000/svg'>",
+    "<g font-family='Montserrat'><text>Łódź</text></g>",
+    "<text font-family='Jost'>Plain <tspan font-family='Roboto'>nested</tspan></text>",
+    "<text>orphan</text>",
+    "</svg>"
+  )
+  out <- cardargus:::svg_text_by_family(svg)
+
+  expect_identical(out[["Montserrat"]], "Łódź")
+  # O <text> pai inclui o texto do tspan (sobre-atribuição segura);
+  # o tspan aninhado resolve para a família mais próxima.
+  expect_match(out[["Jost"]], "Plain")
+  expect_identical(out[["Roboto"]], "nested")
+  # Texto sem família resolvível cai na chave especial
+  expect_identical(out[[".unresolved"]], "orphan")
+})
+
+test_that("svg_text_by_family resolves font-family from style attributes", {
+  svg <- paste0(
+    "<svg xmlns='http://www.w3.org/2000/svg'>",
+    "<text style=\"fill:#000;font-family:'Open Sans', sans-serif\">Hi</text>",
+    "</svg>"
+  )
+  out <- cardargus:::svg_text_by_family(svg)
+  expect_identical(out[["Open Sans"]], "Hi")
+})
+
+test_that("svg_text_by_family: inline style on the node beats an ancestor attribute", {
+  svg <- paste0(
+    "<svg xmlns='http://www.w3.org/2000/svg'>",
+    "<g font-family='Jost'>",
+    "<text style=\"font-family:'Noto Sans'\">Łódź</text>",
+    "<text>herdado</text>",
+    "</g></svg>"
+  )
+  out <- cardargus:::svg_text_by_family(svg)
+  expect_identical(out[["Noto Sans"]], "Łódź")
+  expect_identical(out[["Jost"]], "herdado")
+})
