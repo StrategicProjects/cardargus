@@ -1,3 +1,24 @@
+# cardargus 0.3.1
+
+## Bug fixes
+
+* Full-font embedding no longer caches the *Cyrillic* subset of Google's CSS
+  response (#27). The Google Fonts CSS API splits its response into one
+  `@font-face` block per script, listing Cyrillic first; the download fallback
+  used to take the first `url()` it found, so the cached "full" WOFF2 could
+  not render Latin text and `save_svg()` without `subset_fonts` fell back to
+  system fonts. The downloader now parses every `@font-face` block and picks
+  the one whose `unicode-range` covers Basic Latin (both for WOFF2 and for the
+  TTF fallback). Glyph subsets requested via `subset_fonts` were never
+  affected.
+* The font cache is migrated once on first use: full fonts cached by earlier
+  versions (potentially the Cyrillic subset) are discarded and re-downloaded
+  on demand; cached glyph subsets are kept. Downloads via the `gfonts` package
+  were always correct but are re-fetched as well.
+* Downloaded WOFF2 files are now validated by their magic bytes, and failed or
+  invalid downloads are removed from the cache instead of being served on the
+  next call.
+
 # cardargus 0.3.0
 
 ## New features

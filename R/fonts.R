@@ -149,6 +149,19 @@ font_cache_dir <- function(persistent = TRUE) {
   }
 
   if (!dir.exists(dir)) dir.create(dir, recursive = TRUE, showWarnings = FALSE)
+
+  # Invalida (uma única vez) fontes completas cacheadas por versões < 0.3.1:
+  # o fallback via CSS salvava o primeiro bloco @font-face da resposta do
+  # Google, que é o subset CIRÍLICO, como se fosse a fonte completa (#27).
+  # Subsets de glifos ("_sub<hash>") não são afetados e ficam no cache.
+  marker <- file.path(dir, ".cache-v2")
+  if (!file.exists(marker)) {
+    stale <- list.files(dir, pattern = "\\.(woff2|ttf|woff|otf)$", full.names = TRUE)
+    stale <- stale[!grepl("_sub[0-9a-f]{10}\\.", basename(stale))]
+    unlink(stale)
+    file.create(marker, showWarnings = FALSE)
+  }
+
   dir
 }
 
@@ -198,6 +211,89 @@ font_subset_charset <- function(text) {
   if (is.na(text) || !nzchar(text)) return(NULL)
   chars <- sort(unique(strsplit(text, "")[[1]]))
   paste(chars, collapse = "")
+}
+
+#' Does a CSS unicode-range cover a given code point?
+#'
+#' @param range Conteúdo de uma declaração `unicode-range:` (sem o nome da
+#'   propriedade), ex. `"U+0000-00FF, U+0131, U+4??"`.
+#' @param codepoint Code point (inteiro) a testar.
+#' @return `TRUE` se algum token do range cobre o code point.
+#' @keywords internal
+unicode_range_covers <- function(range, codepoint) {
+  tokens <- strsplit(gsub("\\s", "", range), ",", fixed = TRUE)[[1]]
+  for (tok in tokens) {
+    tok <- toupper(sub("^U\\+", "", tok, ignore.case = TRUE))
+    if (grepl("?", tok, fixed = TRUE)) {
+      # Wildcard: U+4?? cobre 0x400-0x4FF.
+      lo <- strtoi(gsub("?", "0", tok, fixed = TRUE), base = 16L)
+      hi <- strtoi(gsub("?", "F", tok, fixed = TRUE), base = 16L)
+    } else if (grepl("-", tok, fixed = TRUE)) {
+      parts <- strsplit(tok, "-", fixed = TRUE)[[1]]
+      lo <- strtoi(parts[1], base = 16L)
+      hi <- strtoi(parts[2], base = 16L)
+    } else {
+      lo <- hi <- strtoi(tok, base = 16L)
+    }
+    if (!is.na(lo) && !is.na(hi) && codepoint >= lo && codepoint <= hi) {
+      return(TRUE)
+    }
+  }
+  FALSE
+}
+
+#' Extract the Latin-script font URL from a Google Fonts CSS response
+#'
+#' O Google divide a resposta da CSS API em um bloco `@font-face` por script
+#' (cyrillic-ext, cyrillic, ..., latin), com o cirílico PRIMEIRO. Pegar a
+#' primeira `url()` da resposta devolvia o subset cirílico como se fosse a
+#' fonte completa (#27). Este helper examina todos os blocos e devolve a URL
+#' do bloco cujo `unicode-range` cobre o Latin básico (testa `U+0041`, "A").
+#' Quando nenhum bloco declara `unicode-range` cobrindo Latin (respostas de
+#' bloco único, ex. subsets via `&text=` ou TTF), vale a primeira URL.
+#'
+#' @param css Resposta CSS da Google Fonts API.
+#' @param url_pattern Regex com um grupo de captura extraindo a URL da fonte
+#'   de dentro de um bloco.
+#' @return A URL da fonte, ou `NA_character_`.
+#' @keywords internal
+google_css_latin_url <- function(css, url_pattern) {
+  blocks <- regmatches(css, gregexpr("@font-face\\s*\\{[^}]*\\}", css))[[1]]
+  if (!length(blocks)) blocks <- css
+
+  urls <- vapply(blocks, function(b) {
+    hit <- regmatches(b, regexec(url_pattern, b))[[1]]
+    if (length(hit) >= 2) hit[2] else NA_character_
+  }, character(1), USE.NAMES = FALSE)
+
+  covers <- vapply(blocks, function(b) {
+    r <- regmatches(b, regexec("unicode-range:\\s*([^;}]+)", b))[[1]]
+    if (length(r) < 2) return(NA)
+    unicode_range_covers(r[2], 0x41L)
+  }, logical(1), USE.NAMES = FALSE)
+
+  latin <- which(!is.na(urls) & !is.na(covers) & covers)
+  if (length(latin)) return(urls[latin[1]])
+
+  first <- which(!is.na(urls))
+  if (length(first)) urls[first[1]] else NA_character_
+}
+
+#' Is a file a WOFF2 font?
+#'
+#' Confere os magic bytes (`wOF2`) para não cachear como fonte uma página de
+#' erro HTML que tenha passado pela checagem de tamanho.
+#'
+#' @param path Caminho do arquivo.
+#' @return `TRUE` se o arquivo começa com a assinatura WOFF2.
+#' @keywords internal
+is_woff2_file <- function(path) {
+  if (!file.exists(path)) return(FALSE)
+  con <- tryCatch(file(path, "rb"), error = function(e) NULL,
+                  warning = function(w) NULL)
+  if (is.null(con)) return(FALSE)
+  on.exit(close(con), add = TRUE)
+  identical(readBin(con, "raw", 4L), charToRaw("wOF2"))
 }
 
 #' Download a Google Font as WOFF2 to the cache
@@ -293,29 +389,31 @@ download_google_font_woff2 <- function(family, weight = "400", text = NULL) {
     
     if (is.null(css) || !nzchar(css)) next
     
-    # Extract woff2 URL from CSS
-    # Pattern matches: url(https://...woff2) or url("https://...woff2")
-    m <- regexec('url\\(["\']?([^)"\']+\\.woff2)["\']?\\)', css)
-    hit <- regmatches(css, m)[[1]]
+    # Extract the woff2 URL of the LATIN block from the CSS (#27):
+    # url(https://...woff2) or url("https://...woff2")
+    font_url <- google_css_latin_url(css, 'url\\(["\']?([^)"\']+\\.woff2)["\']?\\)')
 
     # Subset responses (&text=) serve woff2 from extensionless URLs
     # (fonts.gstatic.com/l/font?kit=...), identified by format('woff2').
-    if (length(hit) < 2) {
-      m <- regexec('url\\(["\']?([^)"\']+)["\']?\\)\\s*format\\([\'"]woff2[\'"]\\)', css)
-      hit <- regmatches(css, m)[[1]]
+    if (is.na(font_url)) {
+      font_url <- google_css_latin_url(
+        css, 'url\\(["\']?([^)"\']+)["\']?\\)\\s*format\\([\'"]woff2[\'"]\\)'
+      )
     }
 
-    if (length(hit) >= 2) {
-      font_url <- hit[2]
-      
+    if (!is.na(font_url)) {
       ok <- tryCatch({
         utils::download.file(font_url, out, mode = "wb", quiet = TRUE)
         TRUE
       }, error = function(e) FALSE)
-      
-      if (isTRUE(ok) && file.exists(out) && file.info(out)$size > 1000) {
+
+      if (isTRUE(ok) && file.exists(out) && file.info(out)$size > 1000 &&
+          is_woff2_file(out)) {
         return(out)
       }
+      # Nunca deixe um download parcial/inválido no cache: a checagem
+      # file.exists() na entrada da função o devolveria para sempre.
+      unlink(out)
     }
   }
   
@@ -327,22 +425,21 @@ download_google_font_woff2 <- function(family, weight = "400", text = NULL) {
     
     if (is.null(css) || !nzchar(css)) next
     
-    # Try ttf
-    m <- regexec('url\\(["\']?([^)"\']+\\.ttf)["\']?\\)', css)
-    hit <- regmatches(css, m)[[1]]
-    
-    if (length(hit) >= 2) {
-      font_url <- hit[2]
+    # Try ttf (also picking the Latin block, #27)
+    font_url <- google_css_latin_url(css, 'url\\(["\']?([^)"\']+\\.ttf)["\']?\\)')
+
+    if (!is.na(font_url)) {
       ttf_out <- sub("\\.woff2$", ".ttf", out)
-      
+
       ok <- tryCatch({
         utils::download.file(font_url, ttf_out, mode = "wb", quiet = TRUE)
         TRUE
       }, error = function(e) FALSE)
-      
+
       if (isTRUE(ok) && file.exists(ttf_out) && file.info(ttf_out)$size > 1000) {
         return(ttf_out)
       }
+      unlink(ttf_out)
     }
   }
   
