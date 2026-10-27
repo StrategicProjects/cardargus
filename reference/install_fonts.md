@@ -40,30 +40,38 @@ install_fonts()
 #> ℹ Downloading "Jost"...
 #> ✔ Jost (WOFF2)
 #> ℹ Downloading "Jost"...
-#> ✔ Downloading "Montserrat"... [292ms]
+
+#> ✔ Downloading "Montserrat"... [159ms]
 #> 
 #> ℹ Downloading "Montserrat"...
 #> ✔ Montserrat (WOFF2)
 #> ℹ Downloading "Montserrat"...
-#> ✔ Downloading "Roboto"... [162ms]
+
+#> ✔ Downloading "Roboto"... [78ms]
 #> 
 #> ℹ Downloading "Roboto"...
 #> ✔ Roboto (WOFF2)
 #> ℹ Downloading "Roboto"...
-#> ✔ Downloading "Open Sans"... [159ms]
+
+#> ✔ Downloading "Open Sans"... [91ms]
 #> 
 #> ℹ Downloading "Open Sans"...
 #> ✔ Open Sans (WOFF2)
 #> ℹ Downloading "Open Sans"...
+
 #> 
 #> ℹ Downloading "Open Sans"...
+
 #> ── Summary 
 #> ℹ Downloading "Open Sans"...
+
 #> ℹ Downloaded 4/4 fonts
 #> ℹ Downloading "Open Sans"...
+
 #> ℹ Cache: /home/runner/.cache/R/cardargus
 #> ℹ Downloading "Open Sans"...
-#> ✔ Downloading "Open Sans"... [165ms]
+
+#> ✔ Downloading "Open Sans"... [103ms]
 #> 
 install_fonts(c("Jost", "Roboto"))
 #> 
@@ -74,20 +82,26 @@ install_fonts(c("Jost", "Roboto"))
 #> ℹ Downloading "Jost"...
 #> ✔ Jost (WOFF2)
 #> ℹ Downloading "Jost"...
+
 #> ✔ Downloading "Roboto"... [11ms]
 #> 
 #> ℹ Downloading "Roboto"...
 #> ✔ Roboto (WOFF2)
 #> ℹ Downloading "Roboto"...
+
 #> 
 #> ℹ Downloading "Roboto"...
+
 #> ── Summary 
 #> ℹ Downloading "Roboto"...
+
 #> ℹ Downloaded 2/2 fonts
 #> ℹ Downloading "Roboto"...
+
 #> ℹ Cache: /home/runner/.cache/R/cardargus
 #> ℹ Downloading "Roboto"...
-#> ✔ Downloading "Roboto"... [35ms]
+
+#> ✔ Downloading "Roboto"... [32ms]
 #> 
 # }
 ```
