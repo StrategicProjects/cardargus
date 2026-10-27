@@ -12,12 +12,26 @@
   TTF fallback). Glyph subsets requested via `subset_fonts` were never
   affected.
 * The font cache is migrated once on first use: full fonts cached by earlier
-  versions (potentially the Cyrillic subset) are discarded and re-downloaded
-  on demand; cached glyph subsets are kept. Downloads via the `gfonts` package
-  were always correct but are re-fetched as well.
-* Downloaded WOFF2 files are now validated by their magic bytes, and failed or
-  invalid downloads are removed from the cache instead of being served on the
-  next call.
+  versions (potentially the Cyrillic subset) are moved to a
+  `stale-pre-0.3.1/` quarantine folder inside the cache and re-downloaded on
+  demand; cached glyph subsets are kept. Nothing is deleted — local fonts
+  added with `register_font()` live in the same cache and can be restored
+  from the quarantine folder (or registered again); a one-time message says
+  so. Downloads via the `gfonts` package were always correct but are
+  re-fetched as well.
+* Downloaded font files are now validated by their magic bytes (WOFF2 and
+  sfnt/TTF/OTF signatures), and failed or invalid downloads are removed from
+  the cache instead of being served on the next call — e.g. an HTML page
+  injected by a captive portal no longer poisons the cache.
+* A font cached in an alternative format (e.g. the TTF fallback) is now found
+  by `download_google_font_woff2()` on the next call instead of being
+  re-downloaded every time.
+* Known limitation: the full font downloaded via the CSS API covers the
+  *latin* block (Basic Latin + Latin-1 Supplement, which includes all
+  Portuguese accented characters); glyphs from other blocks, such as
+  *latin-ext* (e.g. Polish or Vietnamese), are not included. Use
+  `subset_fonts = TRUE` for arbitrary text — subsets always contain exactly
+  the glyphs used.
 
 # cardargus 0.3.0
 

@@ -181,26 +181,69 @@ test_that("is_woff2_file checks the magic bytes", {
   unlink(c(good, bad))
 })
 
-test_that("font_cache_dir invalidates pre-0.3.1 full fonts once, keeping subsets", {
-  d <- font_cache_dir(persistent = FALSE)
-  marker <- file.path(d, ".cache-v2")
+test_that("is_ttf_file checks sfnt magic bytes", {
+  ttf <- tempfile(fileext = ".ttf")
+  writeBin(c(as.raw(c(0x00, 0x01, 0x00, 0x00)), as.raw(0:9)), ttf)
+  expect_true(cardargus:::is_ttf_file(ttf))
+
+  otf <- tempfile(fileext = ".otf")
+  writeBin(c(charToRaw("OTTO"), as.raw(0:9)), otf)
+  expect_true(cardargus:::is_ttf_file(otf))
+
+  bad <- tempfile(fileext = ".ttf")
+  writeLines("<html>captive portal</html>", bad)
+  expect_false(cardargus:::is_ttf_file(bad))
+
+  expect_false(cardargus:::is_ttf_file(tempfile()))
+  unlink(c(ttf, otf, bad))
+})
+
+test_that("google_css_latin_url tries every URL pattern per block", {
+  # Estilos de URL misturados entre blocos: o cirílico com .woff2 explícito,
+  # o latin com URL sem extensão — o bloco latin ainda deve vencer.
+  css_mixed <- paste(
+    "/* cyrillic */",
+    "@font-face {",
+    "  src: url(https://fonts.gstatic.com/s/jost/v19/cyr.woff2) format('woff2');",
+    "  unicode-range: U+0400-045F;",
+    "}",
+    "/* latin */",
+    "@font-face {",
+    "  src: url(https://fonts.gstatic.com/l/font?kit=latin123) format('woff2');",
+    "  unicode-range: U+0000-00FF;",
+    "}",
+    sep = "\n"
+  )
+  expect_identical(
+    cardargus:::google_css_latin_url(css_mixed, c(
+      woff2_url_pattern,
+      'url\\(["\']?([^)"\']+)["\']?\\)\\s*format\\([\'"]woff2[\'"]\\)'
+    )),
+    "https://fonts.gstatic.com/l/font?kit=latin123"
+  )
+})
+
+test_that("migrate_font_cache quarantines pre-0.3.1 full fonts once, keeping subsets", {
+  # Diretório isolado: o teste não toca o cache compartilhado da sessão.
+  d <- file.path(tempfile("fontcache"), "cardargus-fonts")
+  dir.create(d, recursive = TRUE)
 
   # Simula um cache de versão anterior: fonte completa (possivelmente o
   # subset cirílico, #27) + um subset de glifos legítimo, sem o marker.
   full <- file.path(d, "Jost.woff2")
   subs <- file.path(d, "Jost_sub0123456789.woff2")
   file.create(full, subs)
-  unlink(marker)
 
-  d2 <- font_cache_dir(persistent = FALSE)
-  expect_identical(d2, d)
+  expect_message(cardargus:::migrate_font_cache(d), "re-downloaded")
   expect_false(file.exists(full))
+  expect_true(file.exists(file.path(d, "stale-pre-0.3.1", "Jost.woff2")))
   expect_true(file.exists(subs))
-  expect_true(file.exists(marker))
+  expect_true(file.exists(file.path(d, ".cache-v2")))
 
-  # Com o marker presente, nada mais é apagado
+  # Com o marker presente, nada mais é movido
   file.create(full)
-  font_cache_dir(persistent = FALSE)
+  expect_silent(cardargus:::migrate_font_cache(d))
   expect_true(file.exists(full))
-  unlink(c(full, subs))
+
+  unlink(dirname(d), recursive = TRUE)
 })

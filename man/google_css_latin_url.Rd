@@ -4,13 +4,15 @@
 \alias{google_css_latin_url}
 \title{Extract the Latin-script font URL from a Google Fonts CSS response}
 \usage{
-google_css_latin_url(css, url_pattern)
+google_css_latin_url(css, url_patterns)
 }
 \arguments{
 \item{css}{Resposta CSS da Google Fonts API.}
 
-\item{url_pattern}{Regex com um grupo de captura extraindo a URL da fonte
-de dentro de um bloco.}
+\item{url_patterns}{Um ou mais regexes, cada um com um grupo de captura
+extraindo a URL da fonte de dentro de um bloco; em cada bloco, vale o
+primeiro padrão que casar (assim uma resposta misturando estilos de URL
+entre blocos não esconde o bloco latin).}
 }
 \value{
 A URL da fonte, ou \code{NA_character_}.
